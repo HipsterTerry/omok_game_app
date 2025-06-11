@@ -31,13 +31,31 @@ class _GameRulesScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFFFDF7E3),
       appBar: AppBar(
-        title: const Text('오목 게임 방법'),
-        backgroundColor: Colors.orange,
+        title: const Text(
+          '오목 게임 방법',
+          style: TextStyle(
+            fontFamily: 'Cafe24Ohsquare',
+            color: Color(0xFF2D2D2D),
+          ),
+        ),
+        backgroundColor: const Color(0xFFFFD966),
         elevation: 0,
+        iconTheme: const IconThemeData(
+          color: Color(0xFF2D2D2D),
+        ),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: const Color(0xFF2D2D2D),
+          unselectedLabelColor: const Color(
+            0xFF2D2D2D,
+          ).withOpacity(0.6),
+          indicatorColor: const Color(0xFFFFA3A3),
+          labelStyle: const TextStyle(
+            fontFamily: 'SUIT',
+            fontWeight: FontWeight.bold,
+          ),
           tabs: const [
             Tab(
               icon: Icon(Icons.sports_esports),

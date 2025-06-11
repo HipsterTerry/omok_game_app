@@ -404,44 +404,40 @@ class _SkillEffectDialogState
                       ],
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _getSkillIcon(
-                          widget
-                              .character
-                              .skillType,
+                  child:
+                      TweenAnimationBuilder<
+                        double
+                      >(
+                        duration: const Duration(
+                          milliseconds: 800,
                         ),
-                        size: 60,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        widget
-                            .character
-                            .skillName,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight:
-                              FontWeight.bold,
+                        tween: Tween(
+                          begin: 0.0,
+                          end: 1.0,
                         ),
-                        textAlign:
-                            TextAlign.center,
+                        builder: (context, value, _) {
+                          return Transform.scale(
+                            scale:
+                                0.5 +
+                                (value * 1.5),
+                            child: Opacity(
+                              opacity:
+                                  1.0 -
+                                  (value * 0.3),
+                              child: Icon(
+                                _getSkillIcon(
+                                  widget
+                                      .character
+                                      .skillType,
+                                ),
+                                size: 80,
+                                color:
+                                    Colors.white,
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '스킬 발동!',
-                        style: TextStyle(
-                          color: Colors.white
-                              .withOpacity(0.9),
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),

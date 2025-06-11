@@ -34,10 +34,19 @@ class _EnhancedGameBoardWidgetState
 
   @override
   Widget build(BuildContext context) {
+    // 모바일 환경에 최적화된 보드 크기 설정
+    final screenSize = MediaQuery.of(
+      context,
+    ).size;
+    final availableSize =
+        screenSize.width < screenSize.height
+        ? screenSize.width -
+              40 // 세로 모드: 좌우 여백 40px
+        : screenSize.height -
+              200; // 가로 모드: 상하 UI 공간 확보
+
     final size =
-        widget.boardSize ??
-        MediaQuery.of(context).size.width *
-            0.95; // 크기 확대
+        widget.boardSize ?? availableSize;
 
     return Container(
       width: size,
@@ -69,6 +78,8 @@ class _EnhancedGameBoardWidgetState
             onTapCancel: () => setState(
               () => _isPressed = false,
             ),
+            // 모바일 터치 개선: 더 정확한 터치 감지
+            behavior: HitTestBehavior.opaque,
             child: CustomPaint(
               size: Size(size, size),
               painter: EnhancedOmokBoardPainter(
@@ -111,6 +122,9 @@ class _EnhancedGameBoardWidgetState
     TapDownDetails details,
     double size,
   ) {
+    // 햅틱 피드백 추가 (모바일 환경)
+    HapticFeedback.lightImpact();
+
     setState(() => _isPressed = true);
     final position = _getGridPosition(
       details.localPosition,
@@ -132,6 +146,10 @@ class _EnhancedGameBoardWidgetState
     final boardSize = widget.gameState.boardSize;
     final cellSize = size / (boardSize + 1);
 
+    // 모바일 터치 정밀도 개선: 허용 오차 확대
+    final touchTolerance =
+        cellSize * 0.45; // 45% 허용 오차
+
     final col =
         ((localPosition.dx / cellSize) - 1)
             .round();
@@ -143,7 +161,18 @@ class _EnhancedGameBoardWidgetState
         row < boardSize &&
         col >= 0 &&
         col < boardSize) {
-      return Position(row, col);
+      // 실제 터치 위치와 격자점의 거리 계산
+      final actualX = (col + 1) * cellSize;
+      final actualY = (row + 1) * cellSize;
+      final distance =
+          (localPosition -
+                  Offset(actualX, actualY))
+              .distance;
+
+      // 허용 오차 범위 내에서만 유효한 위치로 인정
+      if (distance <= touchTolerance) {
+        return Position(row, col);
+      }
     }
     return null;
   }

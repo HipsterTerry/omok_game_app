@@ -113,7 +113,6 @@ class OmokGameLogic {
         return player;
       }
     }
-
     return null;
   }
 

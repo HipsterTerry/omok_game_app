@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/character.dart';
 import '../models/player_profile.dart';
 import '../services/character_service.dart';
-import '../widgets/character_card_widget.dart';
 import '../logic/ai_player.dart';
 import 'enhanced_game_screen.dart';
 import '../models/game_state.dart';
 
-class CharacterSelectionScreen extends StatefulWidget {
+class CharacterSelectionScreen
+    extends StatefulWidget {
   final BoardSize boardSize;
   final bool isAIGame;
   final AIDifficulty? aiDifficulty;
@@ -24,140 +25,211 @@ class CharacterSelectionScreen extends StatefulWidget {
       _CharacterSelectionScreenState();
 }
 
-class _CharacterSelectionScreenState extends State<CharacterSelectionScreen>
+class _CharacterSelectionScreenState
+    extends State<CharacterSelectionScreen>
     with TickerProviderStateMixin {
-  Character? _selectedBlackCharacter;
-  Character? _selectedWhiteCharacter;
-  bool _useBasicStones = true; // 기본 돌 사용 여부
+  Character? _blackPlayerCharacter;
+  Character? _whitePlayerCharacter;
+  bool _useCharacterStone = false;
+  late AnimationController _bounceController;
 
   @override
   void initState() {
     super.initState();
+    _bounceController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
   }
 
   @override
   void dispose() {
+    _bounceController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460)],
+      backgroundColor: const Color(0xFFFDF7E3),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFFD966),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Color(0xFF2D2D2D),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          '캐릭터 선택',
+          style: TextStyle(
+            color: Color(0xFF2D2D2D),
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Cafe24Ohsquare',
           ),
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // 헤더
-              _buildHeader(),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // 🎮 키치한 헤더
+            _buildCuteHeader(),
 
-              // 돌 타입 선택 (기본 vs 캐릭터)
-              _buildStoneTypeSelector(),
+            // 🔥 돌 타입 선택 토글
+            _buildStoneToggle(),
 
-              // 캐릭터 선택 영역 (캐릭터돌 선택 시에만 표시)
-              if (!_useBasicStones) ...[
-                Expanded(child: _buildCharacterSelection()),
-              ] else ...[
-                Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.circle, size: 120, color: Colors.grey[600]),
-                        const SizedBox(height: 20),
-                        Text(
-                          '기본 흑/백돌로 게임합니다',
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 18,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            // ✨ 캐릭터 선택 영역
+            Expanded(
+              child: _useCharacterStone
+                  ? _buildDualPlayerCharacterSelection()
+                  : _buildBasicStonePreview(),
+            ),
 
-              // 하단 버튼
-              _buildBottomButtons(),
-            ],
-          ),
+            // 🚀 시작 버튼
+            _buildStartButton(),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildCuteHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          Text(
-            '캐릭터돌 선택',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              foreground: Paint()
-                ..shader = const LinearGradient(
-                  colors: [Colors.orange, Colors.yellow],
-                ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
-            ),
+          // 🎯 귀여운 아이콘들
+          Row(
+            mainAxisAlignment:
+                MainAxisAlignment.center,
+            children: [
+              _buildBounceIcon('🐭', 0),
+              _buildBounceIcon('🐯', 200),
+              _buildBounceIcon('🐲', 400),
+              _buildBounceIcon('🐰', 600),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           Text(
-            'FPS 무기처럼 캐릭터돌을 선택하세요',
-            style: TextStyle(color: Colors.grey[400], fontSize: 16),
+            _useCharacterStone
+                ? '두 플레이어 모두 12지신 캐릭터를 선택하세요!'
+                : '기본 흑백돌로 클래식하게 플레이하세요!',
+            style: const TextStyle(
+              color: Color(
+                0xFF2D2D2D,
+              ), // 메인 텍스트 색상
+              fontSize: 16,
+              fontFamily:
+                  'Pretendard', // 서브 텍스트 폰트
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStoneTypeSelector() {
+  Widget _buildBounceIcon(
+    String emoji,
+    int delay,
+  ) {
+    return TweenAnimationBuilder<double>(
+      duration: Duration(
+        milliseconds: 1000 + delay,
+      ),
+      tween: Tween(begin: 0.0, end: 1.0),
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.8 + (value * 0.4),
+          child: Text(
+            emoji,
+            style: const TextStyle(fontSize: 32),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStoneToggle() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 20,
+      ),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.orange.withOpacity(0.3)),
+        color: const Color(
+          0xFFA3D8F4,
+        ).withOpacity(0.3), // 보조 포인트 색상
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(
+          color: const Color(0xFFA3D8F4),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(
+              0xFFA3D8F4,
+            ).withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () => setState(() => _useBasicStones = true),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 15),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() {
+                  _useCharacterStone = false;
+                  _blackPlayerCharacter = null;
+                  _whitePlayerCharacter = null;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(
+                  milliseconds: 300,
+                ),
+                padding:
+                    const EdgeInsets.symmetric(
+                      vertical: 16,
+                    ),
                 decoration: BoxDecoration(
-                  color: _useBasicStones
-                      ? Colors.orange.withOpacity(0.3)
+                  color: !_useCharacterStone
+                      ? const Color(
+                          0xFFFFD966,
+                        ) // 새로운 버튼 색상
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius:
+                      BorderRadius.circular(25),
                 ),
                 child: Column(
                   children: [
                     Icon(
                       Icons.circle,
-                      color: _useBasicStones ? Colors.orange : Colors.grey,
-                      size: 32,
+                      color: !_useCharacterStone
+                          ? const Color(
+                              0xFF2D2D2D,
+                            ) // 메인 텍스트 색상
+                          : const Color(
+                              0xFF2D2D2D,
+                            ).withOpacity(0.5),
+                      size: 28,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '기본 돌',
+                      '기본돌',
                       style: TextStyle(
-                        color: _useBasicStones ? Colors.orange : Colors.grey,
-                        fontWeight: FontWeight.bold,
+                        color: !_useCharacterStone
+                            ? Colors.white
+                            : Colors.grey,
+                        fontWeight:
+                            FontWeight.bold,
+                        fontSize: 16,
                       ),
-                    ),
-                    Text(
-                      '일반 흑/백돌',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
                   ],
                 ),
@@ -166,33 +238,47 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen>
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () => setState(() => _useBasicStones = false),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 15),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() {
+                  _useCharacterStone = true;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(
+                  milliseconds: 300,
+                ),
+                padding:
+                    const EdgeInsets.symmetric(
+                      vertical: 16,
+                    ),
                 decoration: BoxDecoration(
-                  color: !_useBasicStones
-                      ? Colors.orange.withOpacity(0.3)
+                  color: _useCharacterStone
+                      ? Colors.orange
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius:
+                      BorderRadius.circular(25),
                 ),
                 child: Column(
                   children: [
                     Icon(
                       Icons.auto_awesome,
-                      color: !_useBasicStones ? Colors.orange : Colors.grey,
-                      size: 32,
+                      color: _useCharacterStone
+                          ? Colors.white
+                          : Colors.grey,
+                      size: 28,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '캐릭터돌',
                       style: TextStyle(
-                        color: !_useBasicStones ? Colors.orange : Colors.grey,
-                        fontWeight: FontWeight.bold,
+                        color: _useCharacterStone
+                            ? Colors.white
+                            : Colors.grey,
+                        fontWeight:
+                            FontWeight.bold,
+                        fontSize: 16,
                       ),
-                    ),
-                    Text(
-                      '12지신 특수효과',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
                   ],
                 ),
@@ -204,160 +290,231 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen>
     );
   }
 
-  Widget _buildCharacterSelection() {
+  Widget _buildBasicStonePreview() {
+    return Center(
+      child: Column(
+        mainAxisAlignment:
+            MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(40),
+            decoration: BoxDecoration(
+              color: Colors.brown[800],
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(
+                    0.5,
+                  ),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: Colors.black87,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
+          const Text(
+            '🎯 클래식 오목',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '전통적인 흑백돌로\n순수한 실력 대결!',
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 16,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDualPlayerCharacterSelection() {
     return Column(
       children: [
-        // 흑돌 캐릭터 선택
-        _buildPlayerSection(
-          '흑돌 캐릭터',
-          _selectedBlackCharacter,
-          (character) => setState(() => _selectedBlackCharacter = character),
-          Colors.grey[800]!,
-        ),
+        // 플레이어 상태 표시
+        _buildPlayerStatus(),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
 
-        // 백돌 캐릭터 선택 (AI 게임이 아닐 때만)
-        if (!widget.isAIGame)
-          _buildPlayerSection(
-            '백돌 캐릭터',
-            _selectedWhiteCharacter,
-            (character) => setState(() => _selectedWhiteCharacter = character),
-            Colors.grey[300]!,
-          ),
+        // 캐릭터 그리드
+        Expanded(child: _buildCharacterGrid()),
       ],
     );
   }
 
-  Widget _buildPlayerSection(
-    String title,
-    Character? selectedCharacter,
-    Function(Character?) onSelect,
-    Color themeColor,
-  ) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildPlayerStatus() {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 20,
+      ),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF16213E),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color: themeColor,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
-                if (selectedCharacter != null)
-                  TextButton(
-                    onPressed: () => onSelect(null),
-                    child: const Text('기본돌로 변경'),
-                  ),
-              ],
+          // 흑돌 플레이어
+          Expanded(
+            child: _buildPlayerCard(
+              PlayerType.black,
+              _blackPlayerCharacter,
+              '흑돌 플레이어',
+              Colors.grey[700]!,
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(width: 16),
 
-          if (selectedCharacter != null) ...[
-            // 선택된 캐릭터 표시
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: selectedCharacter.tierColor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: selectedCharacter.tierColor,
-                  width: 2,
+          // VS 구분자
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.purple,
+              shape: BoxShape.circle,
+            ),
+            child: const Text(
+              'VS',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          // 백돌 플레이어
+          Expanded(
+            child: _buildPlayerCard(
+              PlayerType.white,
+              _whitePlayerCharacter,
+              '백돌 플레이어',
+              Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlayerCard(
+    PlayerType playerType,
+    Character? character,
+    String playerName,
+    Color stoneColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: character != null
+            ? character.tierColor.withOpacity(0.2)
+            : Colors.grey.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color:
+              character?.tierColor ?? Colors.grey,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          // 플레이어 이름
+          Row(
+            mainAxisAlignment:
+                MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.circle,
+                color: stoneColor,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                playerName,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              child: Row(
-                children: [
-                  Text(
-                    _getCharacterEmoji(selectedCharacter.type),
-                    style: const TextStyle(fontSize: 32),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          selectedCharacter.koreanName,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          selectedCharacter.skill.name,
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: selectedCharacter.tierColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      selectedCharacter.tierName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          // 캐릭터 정보
+          if (character != null) ...[
+            Icon(
+              _getCharacterIcon(character.type),
+              color: character.tierColor,
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              character.koreanName,
+              style: TextStyle(
+                color: character.tierColor,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              character.skill.name,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 10,
               ),
             ),
           ] else ...[
-            // 캐릭터 선택 그리드
-            Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: CharacterService.getAllCharacters().length,
-                itemBuilder: (context, index) {
-                  final character = CharacterService.getAllCharacters()[index];
-                  return GestureDetector(
-                    onTap: () => onSelect(character),
-                    child: CharacterCardWidget(
-                      character: character,
-                      isUnlocked: true,
-                      isSelected: false,
-                    ),
-                  );
-                },
+            Icon(
+              Icons.person_outline,
+              color: Colors.grey,
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              '캐릭터 선택',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
               ),
             ),
           ],
@@ -366,63 +523,277 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen>
     );
   }
 
-  Widget _buildBottomButtons() {
+  Widget _buildCharacterGrid() {
+    final characters =
+        CharacterService.getAllCharacters();
+
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 20,
+      ),
+      child: GridView.builder(
+        gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              childAspectRatio: 0.8,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+        itemCount: characters.length,
+        itemBuilder: (context, index) {
+          final character = characters[index];
+          final isBlackSelected =
+              _blackPlayerCharacter?.type ==
+              character.type;
+          final isWhiteSelected =
+              _whitePlayerCharacter?.type ==
+              character.type;
+          final isSelected =
+              isBlackSelected || isWhiteSelected;
+
+          return GestureDetector(
+            onTap: () =>
+                _selectCharacter(character),
+            child: AnimatedContainer(
+              duration: const Duration(
+                milliseconds: 200,
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isSelected
+                      ? [
+                          character.tierColor
+                              .withOpacity(0.8),
+                          character.tierColor
+                              .withOpacity(0.6),
+                        ]
+                      : [
+                          const Color(0xFF16213E),
+                          const Color(0xFF1A1A2E),
+                        ],
+                ),
+                borderRadius:
+                    BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected
+                      ? character.tierColor
+                      : Colors.grey.withOpacity(
+                          0.3,
+                        ),
+                  width: isSelected ? 2 : 1,
+                ),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: character
+                              .tierColor
+                              .withOpacity(0.5),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Column(
+                mainAxisAlignment:
+                    MainAxisAlignment.center,
+                children: [
+                  // 선택된 플레이어 표시
+                  if (isSelected) ...[
+                    Container(
+                      padding:
+                          const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                      decoration: BoxDecoration(
+                        color: Colors.white
+                            .withOpacity(0.9),
+                        borderRadius:
+                            BorderRadius.circular(
+                              8,
+                            ),
+                      ),
+                      child: Text(
+                        isBlackSelected
+                            ? '흑돌'
+                            : '백돌',
+                        style: TextStyle(
+                          color: isBlackSelected
+                              ? Colors.black
+                              : Colors.black,
+                          fontSize: 8,
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                  ],
+
+                  // 캐릭터 아이콘
+                  Icon(
+                    _getCharacterIcon(
+                      character.type,
+                    ),
+                    color: isSelected
+                        ? Colors.white
+                        : character.tierColor,
+                    size: 24,
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  // 캐릭터 이름
+                  Text(
+                    character.koreanName,
+                    style: TextStyle(
+                      color: isSelected
+                          ? Colors.white
+                          : Colors.white70,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 2),
+
+                  // 티어 표시
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 1,
+                        ),
+                    decoration: BoxDecoration(
+                      color: character.tierColor
+                          .withOpacity(0.3),
+                      borderRadius:
+                          BorderRadius.circular(
+                            4,
+                          ),
+                    ),
+                    child: Text(
+                      _getTierName(
+                        character.tier,
+                      ),
+                      style: TextStyle(
+                        color:
+                            character.tierColor,
+                        fontSize: 8,
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _selectCharacter(Character character) {
+    HapticFeedback.lightImpact();
+
+    setState(() {
+      // 이미 선택된 캐릭터면 해제
+      if (_blackPlayerCharacter?.type ==
+          character.type) {
+        _blackPlayerCharacter = null;
+      } else if (_whitePlayerCharacter?.type ==
+          character.type) {
+        _whitePlayerCharacter = null;
+      } else {
+        // 새로운 캐릭터 선택
+        if (_blackPlayerCharacter == null) {
+          _blackPlayerCharacter = character;
+        } else if (_whitePlayerCharacter ==
+            null) {
+          _whitePlayerCharacter = character;
+        } else {
+          // 둘 다 선택되어 있으면 흑돌 플레이어를 새로 선택된 캐릭터로 교체
+          _blackPlayerCharacter = character;
+        }
+      }
+    });
+  }
+
+  String _getTierName(CharacterTier tier) {
+    switch (tier) {
+      case CharacterTier.heaven:
+        return '천급';
+      case CharacterTier.earth:
+        return '지급';
+      case CharacterTier.human:
+        return '인급';
+    }
+  }
+
+  Widget _buildStartButton() {
+    final canStart =
+        !_useCharacterStone ||
+        (_blackPlayerCharacter != null &&
+            _whitePlayerCharacter != null);
+
     return Container(
       padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          Expanded(
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[700],
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                '뒤로',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      child: SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton(
+          onPressed: canStart ? _startGame : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: canStart
+                ? Colors.green
+                : Colors.grey,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                16,
               ),
             ),
+            elevation: canStart ? 8 : 2,
           ),
-          const SizedBox(width: 15),
-          Expanded(
-            flex: 2,
-            child: ElevatedButton(
-              onPressed: _startGame,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                '게임 시작',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+          child: Text(
+            _useCharacterStone
+                ? (_blackPlayerCharacter !=
+                              null &&
+                          _whitePlayerCharacter !=
+                              null
+                      ? '🚀 게임 시작!'
+                      : '두 플레이어 모두 캐릭터를 선택하세요')
+                : '🚀 게임 시작!',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
   void _startGame() {
-    Navigator.pushReplacement(
+    HapticFeedback.mediumImpact();
+
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EnhancedGameScreen(
           boardSize: widget.boardSize,
-          playerCharacter: _useBasicStones ? null : _selectedBlackCharacter,
+          blackCharacter: _useCharacterStone
+              ? _blackPlayerCharacter
+              : null,
+          whiteCharacter: _useCharacterStone
+              ? _whitePlayerCharacter
+              : null,
           isAIGame: widget.isAIGame,
-          aiDifficulty: widget.aiDifficulty,
         ),
       ),
     );
@@ -435,7 +806,7 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen>
       case CharacterType.ox:
         return '🐂';
       case CharacterType.tiger:
-        return '🐅';
+        return '🐯';
       case CharacterType.rabbit:
         return '🐰';
       case CharacterType.dragon:
@@ -451,9 +822,38 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen>
       case CharacterType.rooster:
         return '🐓';
       case CharacterType.dog:
-        return '🐶';
+        return '🐕';
       case CharacterType.pig:
         return '🐷';
+    }
+  }
+
+  IconData _getCharacterIcon(CharacterType type) {
+    switch (type) {
+      case CharacterType.rat:
+        return Icons.pets;
+      case CharacterType.ox:
+        return Icons.grass;
+      case CharacterType.tiger:
+        return Icons.flash_on;
+      case CharacterType.rabbit:
+        return Icons.eco;
+      case CharacterType.dragon:
+        return Icons.flare;
+      case CharacterType.snake:
+        return Icons.waves;
+      case CharacterType.horse:
+        return Icons.directions_run;
+      case CharacterType.goat:
+        return Icons.cloud;
+      case CharacterType.monkey:
+        return Icons.psychology;
+      case CharacterType.rooster:
+        return Icons.access_time;
+      case CharacterType.dog:
+        return Icons.shield;
+      case CharacterType.pig:
+        return Icons.savings;
     }
   }
 }
