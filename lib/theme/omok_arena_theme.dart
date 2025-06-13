@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/constants/app_colors.dart';
 
 /// Omok Arena 키치 테마 정의
 final ThemeData omokArenaTheme = ThemeData(
@@ -7,28 +8,26 @@ final ThemeData omokArenaTheme = ThemeData(
   // 컬러 스킴 정의
   colorScheme: const ColorScheme.light(
     // 기본 배경
-    surface: Color(0xFFDFFBFF), // 민트빛 파스텔 배경
-    onSurface: Color(0xFF5C47CE), // 전체 텍스트 색상
+    surface: AppColors.background, // 민트빛 파스텔 배경
+    onSurface: AppColors.primaryText, // 전체 텍스트 색상
     // 버튼 관련
-    primary: Color(0xFF89E0F7), // 버튼 배경색
-    onPrimary: Color(0xFF5C47CE), // 버튼 텍스트
-    primaryContainer: Color(0xFF8BBEDC), // 버튼 테두리
+    primary: AppColors.primary, // 버튼 배경색
+    onPrimary: AppColors.primaryText, // 버튼 텍스트
+    primaryContainer:
+        AppColors.primaryContainer, // 버튼 테두리
     // 강조 색상
-    secondary: Color(0xFF51D4EB), // 강조 테두리
-    onSecondary: Color(0xFF5C47CE),
+    secondary: AppColors.secondary, // 강조 테두리
+    onSecondary: AppColors.primaryText,
 
     // 카드/컨테이너
-    surfaceContainerHighest: Color(
-      0xFFF4FEFF,
-    ), // 클라우드형 UI 영역 배경
-    surfaceContainer: Color(
-      0xFFFAF9FB,
-    ), // 캐릭터 선택 배경
+    surfaceContainerHighest:
+        AppColors.surfaceHigh, // 클라우드형 UI 영역 배경
+    surfaceContainer:
+        AppColors.surface, // 캐릭터 선택 배경
     // 오목판
-    surfaceContainerLow: Color(
-      0xFFFFFDFB,
-    ), // 오목판 바탕
-    outline: Color(0xFFC5F6F9), // 오목판 외곽 테두리
+    surfaceContainerLow:
+        AppColors.surfaceLow, // 오목판 바탕
+    outline: AppColors.outline, // 오목판 외곽 테두리
   ),
 
   // 텍스트 테마
@@ -38,19 +37,19 @@ final ThemeData omokArenaTheme = ThemeData(
       fontFamily: 'Cafe24Ohsquare',
       fontSize: 32,
       fontWeight: FontWeight.bold,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     displayMedium: TextStyle(
       fontFamily: 'Cafe24Ohsquare',
       fontSize: 28,
       fontWeight: FontWeight.bold,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     displaySmall: TextStyle(
       fontFamily: 'Cafe24Ohsquare',
       fontSize: 24,
       fontWeight: FontWeight.bold,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
 
     // 헤드라인 - Cafe24Ohsquare
