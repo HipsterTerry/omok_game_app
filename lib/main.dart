@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'screens/splash_screen.dart';
 import 'theme/omok_arena_theme.dart';
 
 void main() {
@@ -16,7 +16,8 @@ class OmokGameApp extends StatelessWidget {
       title: 'Omok Arena',
       theme: omokArenaTheme,
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home:
+          const SplashScreen(), // 앱 시작점을 Splash Screen으로 변경
     );
   }
 }

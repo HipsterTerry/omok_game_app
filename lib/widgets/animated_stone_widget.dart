@@ -20,12 +20,10 @@ class AnimatedStoneWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AnimatedStoneWidget> createState() =>
-      _AnimatedStoneWidgetState();
+  State<AnimatedStoneWidget> createState() => _AnimatedStoneWidgetState();
 }
 
-class _AnimatedStoneWidgetState
-    extends State<AnimatedStoneWidget>
+class _AnimatedStoneWidgetState extends State<AnimatedStoneWidget>
     with TickerProviderStateMixin {
   late AnimationController _dropController;
   late AnimationController _bounceController;
@@ -62,10 +60,7 @@ class _AnimatedStoneWidgetState
           begin: -50.0, // 위에서 시작
           end: 0.0, // 제자리로
         ).animate(
-          CurvedAnimation(
-            parent: _dropController,
-            curve: Curves.easeInQuart,
-          ),
+          CurvedAnimation(parent: _dropController, curve: Curves.easeInQuart),
         );
 
     _bounceAnimation =
@@ -73,22 +68,12 @@ class _AnimatedStoneWidgetState
           begin: 0.0,
           end: -8.0, // 살짝 튕김
         ).animate(
-          CurvedAnimation(
-            parent: _bounceController,
-            curve: Curves.elasticOut,
-          ),
+          CurvedAnimation(parent: _bounceController, curve: Curves.elasticOut),
         );
 
-    _scaleAnimation =
-        Tween<double>(
-          begin: 1.0,
-          end: 1.3,
-        ).animate(
-          CurvedAnimation(
-            parent: _scaleController,
-            curve: Curves.elasticInOut,
-          ),
-        );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.3).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.elasticInOut),
+    );
 
     // 애니메이션 시퀀스 시작
     _startAnimation();
@@ -121,8 +106,7 @@ class _AnimatedStoneWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final isBlack =
-        widget.stoneType == PlayerType.black;
+    final isBlack = widget.stoneType == PlayerType.black;
 
     return AnimatedBuilder(
       animation: Listenable.merge([
@@ -132,15 +116,9 @@ class _AnimatedStoneWidgetState
       ]),
       builder: (context, child) {
         return Transform.translate(
-          offset: Offset(
-            0,
-            _dropAnimation.value +
-                _bounceAnimation.value,
-          ),
+          offset: Offset(0, _dropAnimation.value + _bounceAnimation.value),
           child: Transform.scale(
-            scale: widget.isLastMove
-                ? _scaleAnimation.value
-                : 1.0,
+            scale: widget.isLastMove ? _scaleAnimation.value : 1.0,
             child: _buildStone(isBlack),
           ),
         );
@@ -149,9 +127,7 @@ class _AnimatedStoneWidgetState
   }
 
   Widget _buildStone(bool isBlack) {
-    final tier =
-        widget.character?.tier ??
-        CharacterTier.human;
+    final tier = widget.character?.tier ?? CharacterTier.human;
 
     return Container(
       width: widget.stoneRadius * 2,
@@ -168,9 +144,7 @@ class _AnimatedStoneWidgetState
               height: widget.stoneRadius * 2,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.black.withOpacity(
-                  0.3,
-                ),
+                color: Colors.black.withOpacity(0.3),
               ),
             ),
           ),
@@ -182,10 +156,7 @@ class _AnimatedStoneWidgetState
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
-                colors: _getStoneColors(
-                  isBlack,
-                  tier,
-                ),
+                colors: _getStoneColors(isBlack, tier),
                 stops: tier == CharacterTier.human
                     ? [0.3, 1.0]
                     : [0.0, 0.7, 1.0],
@@ -196,23 +167,13 @@ class _AnimatedStoneWidgetState
               ),
               boxShadow: [
                 BoxShadow(
-                  color: _getTierColor(
-                    tier,
-                  ).withOpacity(0.5),
-                  blurRadius:
-                      tier == CharacterTier.heaven
-                      ? 8
-                      : 4,
-                  spreadRadius:
-                      tier == CharacterTier.heaven
-                      ? 2
-                      : 0,
+                  color: _getTierColor(tier).withOpacity(0.5),
+                  blurRadius: tier == CharacterTier.heaven ? 8 : 4,
+                  spreadRadius: tier == CharacterTier.heaven ? 2 : 0,
                 ),
               ],
             ),
-            child: Center(
-              child: _buildCharacterIcon(),
-            ),
+            child: Center(child: _buildCharacterIcon()),
           ),
 
           // 하이라이트
@@ -224,9 +185,7 @@ class _AnimatedStoneWidgetState
               height: widget.stoneRadius * 0.8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(
-                  isBlack ? 0.3 : 0.7,
-                ),
+                color: Colors.white.withOpacity(isBlack ? 0.3 : 0.7),
               ),
             ),
           ),
@@ -235,33 +194,23 @@ class _AnimatedStoneWidgetState
     );
   }
 
-  List<Color> _getStoneColors(
-    bool isBlack,
-    CharacterTier tier,
-  ) {
+  List<Color> _getStoneColors(bool isBlack, CharacterTier tier) {
     if (isBlack) {
       switch (tier) {
         case CharacterTier.heaven:
           return [
             const Color(0xFF4A4A4A),
             const Color(0xFF1C1C1C),
-            const Color(
-              0xFFFFD700,
-            ).withOpacity(0.3),
+            const Color(0xFFFFD700).withOpacity(0.3),
           ];
         case CharacterTier.earth:
           return [
             const Color(0xFF3A3A3A),
             const Color(0xFF101010),
-            const Color(
-              0xFFC0C0C0,
-            ).withOpacity(0.2),
+            const Color(0xFFC0C0C0).withOpacity(0.2),
           ];
         case CharacterTier.human:
-          return [
-            const Color(0xFF2C2C2C),
-            const Color(0xFF000000),
-          ];
+          return [const Color(0xFF2C2C2C), const Color(0xFF000000)];
       }
     } else {
       switch (tier) {
@@ -269,23 +218,16 @@ class _AnimatedStoneWidgetState
           return [
             const Color(0xFFFFFFF0),
             const Color(0xFFE0E0E0),
-            const Color(
-              0xFFFFD700,
-            ).withOpacity(0.4),
+            const Color(0xFFFFD700).withOpacity(0.4),
           ];
         case CharacterTier.earth:
           return [
             const Color(0xFFFFFFFF),
             const Color(0xFFE0E0E0),
-            const Color(
-              0xFFC0C0C0,
-            ).withOpacity(0.3),
+            const Color(0xFFC0C0C0).withOpacity(0.3),
           ];
         case CharacterTier.human:
-          return [
-            const Color(0xFFFFFFFF),
-            const Color(0xFFE0E0E0),
-          ];
+          return [const Color(0xFFFFFFFF), const Color(0xFFE0E0E0)];
       }
     }
   }
@@ -324,19 +266,11 @@ class _AnimatedStoneWidgetState
   }
 
   Widget _buildCharacterIcon() {
-    if (widget.character == null)
-      return const SizedBox.shrink();
+    if (widget.character == null) return const SizedBox.shrink();
 
-    final emoji = _getCharacterEmoji(
-      widget.character!.type,
-    );
+    final emoji = _getCharacterEmoji(widget.character!.type);
 
-    return Text(
-      emoji,
-      style: TextStyle(
-        fontSize: widget.stoneRadius * 0.8,
-      ),
-    );
+    return Text(emoji, style: TextStyle(fontSize: widget.stoneRadius * 0.8));
   }
 
   String _getCharacterEmoji(CharacterType type) {
@@ -369,8 +303,7 @@ class _AnimatedStoneWidgetState
   }
 }
 
-class PulseAnimationWidget
-    extends StatefulWidget {
+class PulseAnimationWidget extends StatefulWidget {
   final Widget child;
   final Color color;
   final double radius;
@@ -383,12 +316,10 @@ class PulseAnimationWidget
   });
 
   @override
-  State<PulseAnimationWidget> createState() =>
-      _PulseAnimationWidgetState();
+  State<PulseAnimationWidget> createState() => _PulseAnimationWidgetState();
 }
 
-class _PulseAnimationWidgetState
-    extends State<PulseAnimationWidget>
+class _PulseAnimationWidgetState extends State<PulseAnimationWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -397,22 +328,14 @@ class _PulseAnimationWidgetState
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(
-        milliseconds: 1000,
-      ),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
 
-    _animation =
-        Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: Curves.easeOut,
-          ),
-        );
+    _animation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.repeat();
   }
@@ -433,20 +356,12 @@ class _PulseAnimationWidgetState
           children: [
             // 펄스 효과
             Container(
-              width:
-                  widget.radius *
-                  2 *
-                  (1 + _animation.value),
-              height:
-                  widget.radius *
-                  2 *
-                  (1 + _animation.value),
+              width: widget.radius * 2 * (1 + _animation.value),
+              height: widget.radius * 2 * (1 + _animation.value),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: widget.color.withOpacity(
-                    1 - _animation.value,
-                  ),
+                  color: widget.color.withOpacity(1 - _animation.value),
                   width: 2,
                 ),
               ),
@@ -459,8 +374,7 @@ class _PulseAnimationWidgetState
   }
 }
 
-class WinningLineAnimationWidget
-    extends StatefulWidget {
+class WinningLineAnimationWidget extends StatefulWidget {
   final List<Offset> positions;
   final Color color;
   final double strokeWidth;
@@ -473,13 +387,11 @@ class WinningLineAnimationWidget
   });
 
   @override
-  State<WinningLineAnimationWidget>
-  createState() =>
+  State<WinningLineAnimationWidget> createState() =>
       _WinningLineAnimationWidgetState();
 }
 
-class _WinningLineAnimationWidgetState
-    extends State<WinningLineAnimationWidget>
+class _WinningLineAnimationWidgetState extends State<WinningLineAnimationWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -492,16 +404,10 @@ class _WinningLineAnimationWidgetState
       vsync: this,
     );
 
-    _animation =
-        Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(
-          CurvedAnimation(
-            parent: _controller,
-            curve: Curves.easeInOut,
-          ),
-        );
+    _animation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _controller.forward();
   }
@@ -558,28 +464,17 @@ class WinningLinePainter extends CustomPainter {
       ..strokeWidth = strokeWidth * 2
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
-      ..maskFilter = const MaskFilter.blur(
-        BlurStyle.normal,
-        4,
-      );
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
 
     final path = Path();
-    path.moveTo(
-      positions.first.dx,
-      positions.first.dy,
-    );
+    path.moveTo(positions.first.dx, positions.first.dy);
 
     for (int i = 1; i < positions.length; i++) {
-      path.lineTo(
-        positions[i].dx,
-        positions[i].dy,
-      );
+      path.lineTo(positions[i].dx, positions[i].dy);
     }
 
     // 진행률에 따른 PathMetric 계산
-    final pathMetric = path
-        .computeMetrics()
-        .first;
+    final pathMetric = path.computeMetrics().first;
     final extractPath = pathMetric.extractPath(
       0.0,
       pathMetric.length * progress,
@@ -593,21 +488,11 @@ class WinningLinePainter extends CustomPainter {
     // 끝점에 별 효과
     if (progress > 0.8) {
       final endPosition = positions.last;
-      _drawWinStar(
-        canvas,
-        endPosition,
-        color,
-        (progress - 0.8) / 0.2,
-      );
+      _drawWinStar(canvas, endPosition, color, (progress - 0.8) / 0.2);
     }
   }
 
-  void _drawWinStar(
-    Canvas canvas,
-    Offset center,
-    Color color,
-    double alpha,
-  ) {
+  void _drawWinStar(Canvas canvas, Offset center, Color color, double alpha) {
     final starPaint = Paint()
       ..color = color.withOpacity(alpha)
       ..style = PaintingStyle.fill;
@@ -619,12 +504,8 @@ class WinningLinePainter extends CustomPainter {
     for (int i = 0; i < 10; i++) {
       final angle = (i * math.pi) / 5;
       final r = i % 2 == 0 ? radius : innerRadius;
-      final x =
-          center.dx +
-          r * math.cos(angle - math.pi / 2);
-      final y =
-          center.dy +
-          r * math.sin(angle - math.pi / 2);
+      final x = center.dx + r * math.cos(angle - math.pi / 2);
+      final y = center.dy + r * math.sin(angle - math.pi / 2);
 
       if (i == 0) {
         path.moveTo(x, y);
@@ -638,9 +519,7 @@ class WinningLinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(
-    covariant CustomPainter oldDelegate,
-  ) {
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return oldDelegate is! WinningLinePainter ||
         oldDelegate.progress != progress;
   }
