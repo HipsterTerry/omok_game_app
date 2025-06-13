@@ -124,3 +124,261 @@
 ---
 
 > **개발자 노트**: 이번 업데이트로 완벽한 오목 게임의 기초가 완성되었습니다. 모든 UI 오류가 해결되고, 일관된 디자인 시스템이 구축되어 프로덕션 준비가 완료되었습니다. 🎯 
+
+## [v2.0.0] - 2024-12-19 🎨 캐릭터 이미지 통합 및 UI 대폭 개선
+
+### ✨ 새로운 기능 (Added)
+
+#### 🎨 캐릭터 이미지 시스템
+- **12간지 동물 PNG 이미지 통합**
+  - `assets/image/` 폴더에 모든 캐릭터 이미지 추가
+  - rat.png, ox.png, tiger.png, rabbit.png, dragon.png, snake.png
+  - horse.png, goat.png, monkey.png, rooster.png, dog.png, pig.png
+  - home_logo.png (호랑이+토끼 하이파이브 이미지)
+
+#### 🏠 홈화면 로고 시스템
+- **캐릭터 로고와 타이틀 Stack 배치**
+  - 호랑이+토끼 캐릭터 이미지를 상단에 배치
+  - "Omok Arena" 타이틀을 이미지 하단에 겹치게 배치
+  - 캐릭터의 바둑돌이 타이틀 'k'에 거의 닿도록 조정
+
+#### 🎯 캐릭터 선택 화면 개선
+- **상단 4개 캐릭터 애니메이션**
+  - 쥐, 양, 용, 토끼 순서로 Bounce 애니메이션 적용
+  - 각각 0ms, 200ms, 400ms, 600ms 딜레이로 순차 등장
+  - 48x48 크기로 최적화된 이미지 표시
+
+- **캐릭터 카드 이미지 적용**
+  - 모든 캐릭터 카드에서 Material Icons 대신 PNG 이미지 사용
+  - 32x32 크기로 카드 내 최적 배치
+  - 선택시 흰색 블렌드 효과 (colorBlendMode: modulate)
+
+#### ⏰ 타이머 경고 시스템
+- **30초 타이머 빨간색 깜빡임 효과**
+  - 10초 이하 남으면 자동으로 빨간색 깜빡임 시작
+  - AnimationController를 통한 부드러운 색상 전환
+  - 다중 그림자와 글로우 효과로 시각적 경고 강화
+
+### 🔄 변경사항 (Changed)
+
+#### 🎨 UI/UX 개선
+- **홈화면 레이아웃 최적화**
+  - 타이틀과 플레이 모드 선택 사이 간격 제거 (12px → 0px)
+  - 플레이 모드 제목 하단 간격 축소 (16px → 4px)
+  - 게임 버튼들 사이 간격 축소 (6px → 2px)
+  - 버튼과 하단 메뉴 사이 간격 축소 (8px → 3px)
+  - 버전 정보 위 간격 확대 (4px → 12px)
+
+- **타이틀 폰트 크기 확대**
+  - 작은 화면: 32px → 42px (31% 증가)
+  - 큰 화면: 40px → 52px (30% 증가)
+
+- **캐릭터 이미지 크기 조정**
+  - 작은 화면: 450x225 (2.5배 확대)
+  - 큰 화면: 550x275 (2.5배 확대)
+
+#### 🎯 캐릭터 선택 변경
+- **상단 캐릭터 교체**
+  - 호랑이(tiger) → 양(goat)으로 변경
+  - 이모지 대체: 🐯 → 🐐
+  - 더 다양한 캐릭터 노출을 위한 조정
+
+#### 🎮 게임 카운트다운 단순화
+- **복잡한 UI 제거**
+  - 배경 컨테이너와 장식 요소 모두 제거
+  - "3, 2, 1, Start"만 큰 글씨로 표시
+  - 숫자: 200px, Start: 100px 크기
+  - Cafe24Ohsquare 폰트로 일관성 유지
+
+#### 💫 버튼 및 다이얼로그 스타일 강화
+- **스킬 정보 버튼**
+  - 그라데이션 배경 추가
+  - 테두리 강화 (Color(0xFF51D4EB), 3px)
+  - 다중 그림자 효과 적용
+  - 텍스트 대비 개선
+
+- **스킬 사용 버튼**
+  - 텍스트 라벨 완전 제거
+  - 아이콘 크기 확대 (42px → 55px)
+  - 티어별 글로우 효과 강화
+  - 다중 그림자 레이어 적용
+
+- **스킬 상세 다이얼로그**
+  - 배경색 변경 (Colors.black.withOpacity(0.9))
+  - 아무 곳이나 탭하면 닫힘 기능 추가
+
+#### 🏠 홈화면 상단 버튼 통일
+- **버튼 크기 및 스타일 통일**
+  - 모든 버튼을 90x75 크기로 통일
+  - 버튼 간격 16px로 일관성 유지
+  - 테두리 강화 (3px)
+  - 그림자 효과 개선
+  - FittedBox로 오버플로우 방지
+
+### 🛠️ 기술적 개선 (Technical)
+
+#### 📁 파일 구조 개선
+- **이미지 경로 통합**
+  - `_getCharacterImagePath()` 함수 추가
+  - 모든 캐릭터 이미지 경로를 중앙 관리
+  - 이미지 로딩 실패시 fallback 시스템 구축
+
+#### 🎨 애니메이션 시스템
+- **CuteTimerWidget StatefulWidget 변환**
+  - AnimationController 추가
+  - TickerProviderStateMixin 구현
+  - 색상 전환을 위한 Color.lerp 사용
+  - 다중 그림자 레이어 구현
+
+#### 📱 반응형 개선
+- **isSmallScreen 조건 활용**
+  - 모든 UI 요소의 크기를 화면 크기에 따라 조정
+  - 이미지, 폰트, 간격 모두 반응형 적용
+  - 작은 화면과 큰 화면 모두 최적화
+
+### 🐛 버그 수정 (Fixed)
+
+#### 🖼️ 이미지 로딩 안정성
+- **errorBuilder 추가**
+  - 모든 Image.asset에 errorBuilder 구현
+  - 이미지 로딩 실패시 이모지 또는 Material Icons로 대체
+  - 앱 크래시 방지 및 사용자 경험 개선
+
+#### 📱 레이아웃 오버플로우 해결
+- **FittedBox 적용**
+  - 홈화면 상단 버튼들에 FittedBox 적용
+  - 텍스트 오버플로우 방지
+  - 다양한 화면 크기에서 안정적 표시
+
+### 📋 코드 변경사항 상세
+
+#### lib/screens/home_screen.dart
+```dart
+// Stack을 사용한 캐릭터 로고와 타이틀 겹치기
+Container(
+  height: isSmallScreen ? 240 : 280,
+  child: Stack(
+    alignment: Alignment.center,
+    children: [
+      // 캐릭터 이미지 (위쪽)
+      Positioned(
+        top: 0,
+        child: Image.asset(
+          'assets/image/home_logo.png',
+          width: isSmallScreen ? 450 : 550,
+          height: isSmallScreen ? 225 : 275,
+          // ...
+        ),
+      ),
+      // 게임 제목 (아래쪽으로 이동해서 캐릭터와 겹치게)
+      Positioned(
+        bottom: 0,
+        child: Text(
+          'Omok Arena',
+          style: TextStyle(
+            fontSize: isSmallScreen ? 42 : 52,
+            // ...
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+```
+
+#### lib/screens/character_selection_screen.dart
+```dart
+// 상단 4개 캐릭터 이미지 Bounce 애니메이션
+Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    _buildBounceIcon('assets/image/rat.png', 0),
+    _buildBounceIcon('assets/image/goat.png', 200),  // tiger → goat 변경
+    _buildBounceIcon('assets/image/dragon.png', 400),
+    _buildBounceIcon('assets/image/rabbit.png', 600),
+  ],
+),
+
+// 캐릭터 이미지 경로 함수 추가
+String _getCharacterImagePath(CharacterType type) {
+  switch (type) {
+    case CharacterType.rat: return 'assets/image/rat.png';
+    case CharacterType.ox: return 'assets/image/ox.png';
+    // ... 12간지 모든 캐릭터
+  }
+}
+```
+
+#### lib/widgets/cute_timer_widget.dart
+```dart
+// StatefulWidget으로 변경하여 깜빡임 애니메이션 추가
+class _CuteTimerWidgetState extends State<CuteTimerWidget>
+    with TickerProviderStateMixin {
+  late AnimationController _blinkController;
+
+  @override
+  void didUpdateWidget(CuteTimerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // 10초 이하이고 현재 플레이어 턴일 때 깜빡임 시작
+    if (widget.timeLeft <= 10 && widget.isCurrentPlayer) {
+      if (!_blinkController.isAnimating) {
+        _blinkController.repeat(reverse: true);
+      }
+    } else {
+      _blinkController.stop();
+      _blinkController.reset();
+    }
+  }
+}
+```
+
+### 📦 Assets 추가
+
+#### assets/image/
+- home_logo.png (1.5MB) - 호랑이+토끼 하이파이브 이미지
+- rat.png (1.5MB) - 쥐 캐릭터
+- ox.png (1.7MB) - 소 캐릭터
+- tiger.png (1.5MB) - 호랑이 캐릭터
+- rabbit.png (1.5MB) - 토끼 캐릭터
+- dragon.png (1.8MB) - 용 캐릭터
+- snake.png (1.6MB) - 뱀 캐릭터
+- horse.png (1.7MB) - 말 캐릭터
+- goat.png (1.4MB) - 양 캐릭터
+- monkey.png (1.8MB) - 원숭이 캐릭터
+- rooster.png (1.7MB) - 닭 캐릭터
+- dog.png (1.8MB) - 개 캐릭터
+- pig.png (1.5MB) - 돼지 캐릭터
+
+### 🎯 다음 버전 계획
+
+#### v2.1.0 예정 기능
+- [ ] 캐릭터 이미지 최적화 (파일 크기 축소)
+- [ ] 추가 애니메이션 효과
+- [ ] 사운드 효과 개선
+- [ ] 성능 최적화
+
+---
+
+## [v1.0.0] - 2024-12-18 🎮 초기 릴리즈
+
+### ✨ 초기 기능
+- 🎮 기본 오목 게임 기능 구현
+- 🐲 12간지 캐릭터 시스템 구현
+- ⚡ 스킬 시스템 구현
+- 🎲 캐릭터 뽑기 시스템 구현
+- 🎨 키치 테마 UI/UX 적용
+- ⏰ 30초 타이머 시스템
+- 🤖 AI 대전 기능
+- 👥 로컬 2인 플레이
+- 📱 반응형 디자인
+
+---
+
+**📝 변경사항 범례:**
+- ✨ 새로운 기능 (Added)
+- 🔄 변경사항 (Changed)  
+- 🐛 버그 수정 (Fixed)
+- 🗑️ 제거된 기능 (Removed)
+- 🛠️ 기술적 개선 (Technical)
+- 📦 의존성 변경 (Dependencies) 

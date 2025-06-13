@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/game_state.dart';
 import '../logic/omok_game_logic.dart';
-import '../widgets/game_board_widget.dart';
+import '../logic/advanced_renju_rule_evaluator.dart';
+import '../widgets/simple_renju_wrapper.dart';
+import '../widgets/game_countdown_overlay.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -13,6 +15,8 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late GameState _gameState;
+  bool _showCountdown = true;
+  bool _gameStarted = false;
 
   @override
   void initState() {
@@ -21,7 +25,10 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _onTileTap(int row, int col) {
-    if (_gameState.status != GameStatus.playing) {
+    // 카운트다운 중이거나 게임이 시작되지 않았으면 차단
+    if (_showCountdown ||
+        !_gameStarted ||
+        _gameState.status != GameStatus.playing) {
       return;
     }
 
@@ -37,6 +44,13 @@ class _GameScreenState extends State<GameScreen> {
     if (_gameState.status != GameStatus.playing) {
       _showGameResult();
     }
+  }
+
+  void _onCountdownComplete() {
+    setState(() {
+      _showCountdown = false;
+      _gameStarted = true;
+    });
   }
 
   void _showGameResult() {
@@ -84,8 +98,13 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _resetGame() {
+    // 렌주룰 캐시 초기화
+    AdvancedRenjuRuleEvaluator.clearCache();
+
     setState(() {
       _gameState = OmokGameLogic.resetGame();
+      _showCountdown = true;
+      _gameStarted = false;
     });
   }
 
@@ -112,107 +131,129 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // 게임 상태 표시
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(
-                context,
-              ).colorScheme.primaryContainer,
-            ),
-            child: Column(
-              children: [
-                Text(
-                  '현재 턴: ${_getCurrentPlayerText()}',
-                  style: Theme.of(
+          Column(
+            children: [
+              // 게임 상태 표시
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(
                     context,
-                  ).textTheme.headlineSmall,
+                  ).colorScheme.primaryContainer,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  '수 순서: ${_gameState.moves.length + 1}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge,
-                ),
-                if (_gameState.status !=
-                    GameStatus.playing)
-                  Container(
-                    margin: const EdgeInsets.only(
-                      top: 8,
+                child: Column(
+                  children: [
+                    Text(
+                      '현재 턴: ${_getCurrentPlayerText()}',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineSmall,
                     ),
-                    padding:
-                        const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                    const SizedBox(height: 8),
+                    Text(
+                      '수 순서: ${_gameState.moves.length + 1}',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge,
+                    ),
+                    if (_gameState.status !=
+                        GameStatus.playing)
+                      Container(
+                        margin:
+                            const EdgeInsets.only(
+                              top: 8,
+                            ),
+                        padding:
+                            const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius:
+                              BorderRadius.circular(
+                                20,
+                              ),
                         ),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius:
-                          BorderRadius.circular(
-                            20,
+                        child: Text(
+                          _gameState.status ==
+                                  GameStatus
+                                      .blackWin
+                              ? '흑돌 승리!'
+                              : _gameState
+                                        .status ==
+                                    GameStatus
+                                        .whiteWin
+                              ? '백돌 승리!'
+                              : '무승부!',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight:
+                                FontWeight.bold,
                           ),
-                    ),
-                    child: Text(
-                      _gameState.status ==
-                              GameStatus.blackWin
-                          ? '흑돌 승리!'
-                          : _gameState.status ==
-                                GameStatus
-                                    .whiteWin
-                          ? '백돌 승리!'
-                          : '무승부!',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight:
-                            FontWeight.bold,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              // 게임 보드
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.all(
+                            16,
+                          ),
+                      child: SimpleRenjuWrapper(
+                        gameState: _gameState,
+                        onTileTap: _onTileTap,
                       ),
                     ),
                   ),
-              ],
-            ),
-          ),
-
-          // 게임 보드
-          Expanded(
-            child: Center(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(
-                    16,
-                  ),
-                  child: GameBoardWidget(
-                    gameState: _gameState,
-                    onTileTap: _onTileTap,
-                  ),
                 ),
               ),
-            ),
+
+              // 하단 버튼들
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment
+                          .spaceEvenly,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _resetGame,
+                      icon: const Icon(
+                        Icons.refresh,
+                      ),
+                      label: const Text('새 게임'),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () =>
+                          Navigator.of(
+                            context,
+                          ).pop(),
+                      icon: const Icon(
+                        Icons.home,
+                      ),
+                      label: const Text('홈으로'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
 
-          // 하단 버튼들
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _resetGame,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('새 게임'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () =>
-                      Navigator.of(context).pop(),
-                  icon: const Icon(Icons.home),
-                  label: const Text('홈으로'),
-                ),
-              ],
-            ),
+          // 카운트다운 오버레이
+          GameCountdownOverlay(
+            showCountdown: _showCountdown,
+            onCountdownComplete:
+                _onCountdownComplete,
           ),
         ],
       ),

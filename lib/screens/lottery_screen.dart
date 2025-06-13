@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import '../models/lottery_system.dart';
 import '../widgets/scratch_card_widget.dart';
 import '../widgets/reward_popup_widget.dart';
+import '../widgets/enhanced_visual_effects.dart';
 
 class LotteryScreen extends StatefulWidget {
   const LotteryScreen({Key? key})
@@ -446,200 +447,212 @@ class _LotteryScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF7E3),
+      backgroundColor: const Color(0xFFDFFBFF),
       appBar: AppBar(
         title: const Text(
           '🎁 캐릭터 뽑기',
           style: TextStyle(
             fontFamily: 'Cafe24Ohsquare',
-            color: Color(0xFF2D2D2D),
+            color: Color(0xFF5C47CE),
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color(0xFFFFD966),
+        backgroundColor: const Color(0xFF89E0F7),
         elevation: 0,
         iconTheme: const IconThemeData(
-          color: Color(0xFF2D2D2D),
+          color: Color(0xFF5C47CE),
         ),
         centerTitle: true,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.purple[100]!,
-              Colors.pink[50]!,
-              Colors.orange[50]!,
-            ],
+      body: SoftBlurBackground(
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFFDFFBFF),
+                Color(0xFFF4FEFF),
+                Color(0xFFFAF9FB),
+              ],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // 헤더
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () =>
-                          Navigator.of(
-                            context,
-                          ).pop(),
-                      icon: const Icon(
-                        Icons.arrow_back,
+          child: SafeArea(
+            child: Column(
+              children: [
+                // 헤더
+                Container(
+                  padding: const EdgeInsets.all(
+                    20,
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () =>
+                            Navigator.of(
+                              context,
+                            ).pop(),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor:
+                              Colors.white,
+                          padding:
+                              const EdgeInsets.all(
+                                12,
+                              ),
+                        ),
                       ),
-                      style: IconButton.styleFrom(
-                        backgroundColor:
-                            Colors.white,
+                      const SizedBox(width: 16),
+                      const Expanded(
+                        child: Text(
+                          '🎰 복권 센터',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight:
+                                FontWeight.bold,
+                            color: Colors.purple,
+                          ),
+                        ),
+                      ),
+                      Container(
                         padding:
-                            const EdgeInsets.all(
+                            const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                        decoration: BoxDecoration(
+                          color: Colors.amber,
+                          borderRadius:
+                              BorderRadius.circular(
+                                20,
+                              ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.amber
+                                  .withOpacity(
+                                    0.3,
+                                  ),
+                              blurRadius: 8,
+                              offset:
+                                  const Offset(
+                                    0,
+                                    4,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize:
+                              MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons
+                                  .monetization_on,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(
+                              width: 4,
+                            ),
+                            Text(
+                              '${playerData.totalCoins}',
+                              style:
+                                  const TextStyle(
+                                    color: Colors
+                                        .white,
+                                    fontWeight:
+                                        FontWeight
+                                            .bold,
+                                    fontSize: 16,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // 무료 복권 버튼
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                  child: ElevatedButton.icon(
+                    onPressed:
+                        playerData
+                            .canGetFreeTicket()
+                        ? _getFreeTicket
+                        : null,
+                    icon: const Icon(
+                      Icons.card_giftcard,
+                    ),
+                    label: Text(
+                      playerData
+                              .canGetFreeTicket()
+                          ? '무료 복권 받기!'
+                          : '24시간 후 사용 가능',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          playerData
+                              .canGetFreeTicket()
+                          ? Colors.green
+                          : Colors.grey,
+                      foregroundColor:
+                          Colors.white,
+                      padding:
+                          const EdgeInsets.symmetric(
+                            vertical: 16,
+                          ),
+                      minimumSize: const Size(
+                        double.infinity,
+                        0,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(
                               12,
                             ),
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: Text(
-                        '🎰 복권 센터',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight:
-                              FontWeight.bold,
-                          color: Colors.purple,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // 복권 목록
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ...LotteryService.getAvailableTickets()
+                            .map(
+                              (ticket) =>
+                                  _buildTicketCard(
+                                    ticket,
+                                  ),
+                            )
+                            .toList(),
+
+                        const SizedBox(
+                          height: 20,
                         ),
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                      decoration: BoxDecoration(
-                        color: Colors.amber,
-                        borderRadius:
-                            BorderRadius.circular(
-                              20,
-                            ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.amber
-                                .withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(
-                              0,
-                              4,
-                            ),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize:
-                            MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.monetization_on,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(
-                            width: 4,
-                          ),
-                          Text(
-                            '${playerData.totalCoins}',
-                            style:
-                                const TextStyle(
-                                  color: Colors
-                                      .white,
-                                  fontWeight:
-                                      FontWeight
-                                          .bold,
-                                  fontSize: 16,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
 
-              // 무료 복권 버튼
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
-                child: ElevatedButton.icon(
-                  onPressed:
-                      playerData
-                          .canGetFreeTicket()
-                      ? _getFreeTicket
-                      : null,
-                  icon: const Icon(
-                    Icons.card_giftcard,
-                  ),
-                  label: Text(
-                    playerData.canGetFreeTicket()
-                        ? '무료 복권 받기!'
-                        : '24시간 후 사용 가능',
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        playerData
-                            .canGetFreeTicket()
-                        ? Colors.green
-                        : Colors.grey,
-                    foregroundColor: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(
-                          vertical: 16,
-                        ),
-                    minimumSize: const Size(
-                      double.infinity,
-                      0,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(
-                            12,
-                          ),
+                        // 보상 기록
+                        _buildRewardHistory(),
+
+                        const SizedBox(
+                          height: 100,
+                        ), // 하단 여백
+                      ],
                     ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // 복권 목록
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      ...LotteryService.getAvailableTickets()
-                          .map(
-                            (ticket) =>
-                                _buildTicketCard(
-                                  ticket,
-                                ),
-                          )
-                          .toList(),
-
-                      const SizedBox(height: 20),
-
-                      // 보상 기록
-                      _buildRewardHistory(),
-
-                      const SizedBox(
-                        height: 100,
-                      ), // 하단 여백
-                    ],
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

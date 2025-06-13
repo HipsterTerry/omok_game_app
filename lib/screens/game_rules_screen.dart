@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../theme/omok_arena_theme.dart';
+import '../widgets/enhanced_visual_effects.dart';
 
 class GameRulesScreen extends StatefulWidget {
   const GameRulesScreen({super.key});
@@ -31,30 +33,32 @@ class _GameRulesScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF7E3),
+      backgroundColor: const Color(0xFFDFFBFF),
       appBar: AppBar(
         title: const Text(
-          '오목 게임 방법',
+          '🎮 오목 게임 방법',
           style: TextStyle(
             fontFamily: 'Cafe24Ohsquare',
-            color: Color(0xFF2D2D2D),
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF5C47CE),
           ),
         ),
-        backgroundColor: const Color(0xFFFFD966),
+        backgroundColor: const Color(0xFF89E0F7),
         elevation: 0,
         iconTheme: const IconThemeData(
-          color: Color(0xFF2D2D2D),
+          color: Color(0xFF5C47CE),
         ),
         bottom: TabBar(
           controller: _tabController,
-          labelColor: const Color(0xFF2D2D2D),
+          labelColor: const Color(0xFF5C47CE),
           unselectedLabelColor: const Color(
-            0xFF2D2D2D,
+            0xFF5C47CE,
           ).withOpacity(0.6),
-          indicatorColor: const Color(0xFFFFA3A3),
+          indicatorColor: const Color(0xFF51D4EB),
           labelStyle: const TextStyle(
             fontFamily: 'SUIT',
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
           tabs: const [
             Tab(
@@ -376,19 +380,8 @@ class _GameRulesScreenState
     String content,
     Color color,
   ) {
-    return Container(
+    return CloudContainer(
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment:
             CrossAxisAlignment.start,
@@ -397,11 +390,11 @@ class _GameRulesScreenState
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color,
+              color: color.withOpacity(0.8),
               borderRadius:
                   const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
                   ),
             ),
             child: Text(
@@ -410,6 +403,7 @@ class _GameRulesScreenState
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'SUIT',
               ),
             ),
           ),
@@ -420,6 +414,8 @@ class _GameRulesScreenState
               style: const TextStyle(
                 fontSize: 14,
                 height: 1.5,
+                color: Color(0xFF5C47CE),
+                fontFamily: 'Pretendard',
               ),
             ),
           ),
@@ -437,17 +433,17 @@ class _GameRulesScreenState
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFFF4FEFF),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: color,
+          color: const Color(0xFF51D4EB),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.white.withOpacity(0.8),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -461,6 +457,7 @@ class _GameRulesScreenState
               color: color,
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              fontFamily: 'SUIT',
             ),
           ),
           const SizedBox(height: 8),
@@ -469,6 +466,8 @@ class _GameRulesScreenState
             style: const TextStyle(
               fontSize: 14,
               height: 1.4,
+              color: Color(0xFF5C47CE),
+              fontFamily: 'Pretendard',
             ),
           ),
         ],

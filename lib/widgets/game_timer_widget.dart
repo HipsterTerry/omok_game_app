@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
+// 🎨 v2.0.0: 듀얼 타이머 시스템 (전체 5분 + 1수 30초)
+// 10초 이하 남으면 펄스 애니메이션으로 시각적 경고 제공
 class GameTimerWidget extends StatefulWidget {
   final bool isCurrentPlayer;
   final int initialTime; // 초 단위
@@ -493,7 +495,9 @@ class RotatingRingPainter extends CustomPainter {
   }
 }
 
-class CuteTimerWidget extends StatelessWidget {
+// 🎨 v2.0.0: StatefulWidget으로 변경하여 깜빡임 애니메이션 추가
+// 10초 이하 남으면 빨간색 깜빡임 효과로 시각적 경고 제공
+class CuteTimerWidget extends StatefulWidget {
   final bool isCurrentPlayer;
   final int remainingTime;
   final String playerName;
@@ -508,86 +512,234 @@ class CuteTimerWidget extends StatelessWidget {
   });
 
   @override
+  State<CuteTimerWidget> createState() =>
+      _CuteTimerWidgetState();
+}
+
+class _CuteTimerWidgetState
+    extends State<CuteTimerWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _blinkController;
+  late Animation<double> _blinkAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _blinkController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _blinkAnimation =
+        Tween<double>(
+          begin: 0.3,
+          end: 1.0,
+        ).animate(
+          CurvedAnimation(
+            parent: _blinkController,
+            curve: Curves.easeInOut,
+          ),
+        );
+  }
+
+  @override
+  void didUpdateWidget(
+    CuteTimerWidget oldWidget,
+  ) {
+    super.didUpdateWidget(oldWidget);
+    final isLowTime = widget.remainingTime <= 10;
+    final wasLowTime =
+        oldWidget.remainingTime <= 10;
+
+    if (isLowTime && widget.isCurrentPlayer) {
+      if (!wasLowTime ||
+          !_blinkController.isAnimating) {
+        _blinkController.repeat(reverse: true);
+      }
+    } else {
+      _blinkController.stop();
+      _blinkController.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    _blinkController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isLowTime = remainingTime <= 10;
+    final isLowTime = widget.remainingTime <= 10;
+    final shouldBlink =
+        isLowTime && widget.isCurrentPlayer;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            themeColor.withOpacity(0.8),
-            themeColor.withOpacity(0.6),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: themeColor.withOpacity(0.3),
-            blurRadius: isCurrentPlayer ? 10 : 5,
-            offset: const Offset(0, 3),
+    return AnimatedBuilder(
+      animation: _blinkAnimation,
+      builder: (context, child) {
+        final blinkValue = shouldBlink
+            ? _blinkAnimation.value
+            : 1.0;
+        final containerColor = shouldBlink
+            ? Color.lerp(
+                Colors.red.withOpacity(0.8),
+                Colors.red,
+                blinkValue,
+              )!
+            : widget.themeColor;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // 귀여운 아이콘
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(
-                0.9,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: shouldBlink
+                  ? [
+                      containerColor.withOpacity(
+                        0.9 * blinkValue,
+                      ),
+                      containerColor.withOpacity(
+                        0.7 * blinkValue,
+                      ),
+                    ]
+                  : [
+                      widget.themeColor
+                          .withOpacity(0.8),
+                      widget.themeColor
+                          .withOpacity(0.6),
+                    ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(
+              20,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: shouldBlink
+                    ? Colors.red.withOpacity(
+                        0.4 * blinkValue,
+                      )
+                    : widget.themeColor
+                          .withOpacity(0.3),
+                blurRadius: widget.isCurrentPlayer
+                    ? 10
+                    : 5,
+                offset: const Offset(0, 3),
               ),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              isLowTime
-                  ? Icons.timer
-                  : Icons.access_time,
-              color: isLowTime
-                  ? Colors.red
-                  : themeColor,
-              size: 16,
-            ),
+              if (shouldBlink)
+                BoxShadow(
+                  color: Colors.red.withOpacity(
+                    0.2 * blinkValue,
+                  ),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 0),
+                ),
+            ],
           ),
-
-          const SizedBox(width: 8),
-
-          // 플레이어 이름과 시간
-          Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                playerName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+              // 귀여운 아이콘
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(
+                    0.9,
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: shouldBlink
+                      ? [
+                          BoxShadow(
+                            color: Colors.red
+                                .withOpacity(
+                                  0.3 *
+                                      blinkValue,
+                                ),
+                            blurRadius: 5,
+                            offset: const Offset(
+                              0,
+                              0,
+                            ),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Icon(
+                  isLowTime
+                      ? Icons.timer
+                      : Icons.access_time,
+                  color: isLowTime
+                      ? (shouldBlink
+                            ? Color.lerp(
+                                Colors
+                                    .red
+                                    .shade700,
+                                Colors
+                                    .red
+                                    .shade900,
+                                blinkValue,
+                              )
+                            : Colors.red)
+                      : widget.themeColor,
+                  size: 16,
                 ),
               ),
-              Text(
-                '${remainingTime}초',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: isLowTime ? 16 : 14,
-                  fontWeight: isLowTime
-                      ? FontWeight.bold
-                      : FontWeight.w500,
-                ),
+
+              const SizedBox(width: 8),
+
+              // 플레이어 이름과 시간
+              Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.playerName,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '${widget.remainingTime}초',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isLowTime
+                          ? 16
+                          : 14,
+                      fontWeight: isLowTime
+                          ? FontWeight.bold
+                          : FontWeight.w500,
+                      shadows: shouldBlink
+                          ? [
+                              Shadow(
+                                color: Colors.red
+                                    .withOpacity(
+                                      0.5 *
+                                          blinkValue,
+                                    ),
+                                blurRadius: 3,
+                                offset:
+                                    const Offset(
+                                      0,
+                                      0,
+                                    ),
+                              ),
+                            ]
+                          : null,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

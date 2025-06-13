@@ -7,13 +7,17 @@ import '../models/game_state.dart';
 import '../logic/omok_game_logic.dart';
 import '../logic/ai_player.dart';
 import '../widgets/enhanced_game_board_widget.dart';
+import '../widgets/enhanced_game_board_wrapper.dart';
 import '../widgets/game_timer_widget.dart';
 import '../widgets/game_hud_widget.dart';
+import '../widgets/game_countdown_overlay.dart';
+import '../widgets/player_assignment_overlay.dart';
 import '../widgets/skill_activation_widget.dart';
 import '../widgets/animated_stone_widget.dart';
 import '../widgets/skill_effect_animations.dart';
 import '../services/sound_manager.dart';
 import '../logic/renju_rule_checker.dart';
+import '../logic/advanced_renju_rule_evaluator.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -45,6 +49,8 @@ class _EnhancedGameScreenState
   AIPlayer? _aiPlayer;
   final SoundManager _soundManager =
       SoundManager();
+  bool _showCountdown = true;
+  bool _gameStarted = false;
 
   // 애니메이션 관련
   late AnimationController
@@ -60,6 +66,14 @@ class _EnhancedGameScreenState
   int _turnTimeRemaining = 30; // 1수당 30초
   bool _isPendingUndoRequest = false;
 
+  // 랜덤 플레이어 배정 관련 (흑돌은 항상 먼저, 누가 흑돌인지만 랜덤)
+  bool _isPlayerBlack =
+      true; // 플레이어가 흑돌인지 여부 (AI 게임용)
+  bool _isPlayer1Black =
+      true; // 플레이어1이 흑돌인지 여부 (2인 게임용)
+  bool _isPlayerAssignmentShown =
+      false; // 플레이어 배정 표시 여부
+
   @override
   void initState() {
     super.initState();
@@ -73,22 +87,33 @@ class _EnhancedGameScreenState
         );
 
     _initializeGame();
-    _placeFirstStone(); // 13x13 중앙에 첫 돌 배치
+    // 첫 돌 배치는 카운트다운 완료 후에 실행
 
     // AI 게임인 경우 AI 플레이어 초기화
     if (widget.isAIGame &&
         widget.aiDifficulty != null) {
+      // 랜덤으로 플레이어가 흑돌인지 백돌인지 결정
+      _isPlayerBlack = math.Random().nextBool();
+
+      // AI는 플레이어가 아닌 색을 담당
+      final aiPlayerType = _isPlayerBlack
+          ? PlayerType.white
+          : PlayerType.black;
+
       _aiPlayer = AIPlayer(
         difficulty: widget.aiDifficulty!,
-        aiPlayerType: PlayerType.white, // AI는 백돌
+        aiPlayerType: aiPlayerType,
       );
+    } else {
+      // 2인 게임인 경우 플레이어1이 흑돌인지 랜덤 결정
+      _isPlayer1Black = math.Random().nextBool();
     }
 
     // 배경음악 시작
     _soundManager.playBackgroundMusic();
     _soundManager.playGameStart();
 
-    _startTurnTimer();
+    // 타이머는 카운트다운 완료 후에 시작
   }
 
   void _initializeGame() {
@@ -108,11 +133,13 @@ class _EnhancedGameScreenState
       boardSize: widget.boardSize.size,
       blackPlayerState: blackPlayerState,
       whitePlayerState: whitePlayerState,
+      currentPlayer:
+          PlayerType.black, // 흑돌이 항상 먼저 시작
     );
   }
 
   void _placeFirstStone() {
-    // 모든 보드 크기에서 중앙 화점에 흑돌 배치
+    // 모든 보드 크기에서 중앙 화점에 흑돌 배치 (항상 흑돌이 먼저)
     int centerRow, centerCol;
 
     switch (widget.boardSize.size) {
@@ -135,6 +162,7 @@ class _EnhancedGameScreenState
     }
 
     setState(() {
+      // 항상 흑돌을 중앙에 배치
       _gameState.board[centerRow][centerCol] =
           PlayerType.black;
 
@@ -149,7 +177,7 @@ class _EnhancedGameScreenState
       _gameState = _gameState.copyWith(
         board: _gameState.board,
         currentPlayer:
-            PlayerType.white, // 백돌 차례로 변경
+            PlayerType.white, // 다음은 백돌 차례
         moves: newMoves,
         lastMove: newPosition,
         turnCount: 1,
@@ -158,14 +186,18 @@ class _EnhancedGameScreenState
   }
 
   void _onTileTap(int row, int col) {
-    if (_gameState.status != GameStatus.playing) {
+    // 카운트다운 중이거나 게임이 시작되지 않았으면 차단
+    if (_showCountdown ||
+        !_gameStarted ||
+        _gameState.status != GameStatus.playing) {
       return;
     }
 
     // AI 턴인 경우 사용자 입력 무시
     if (widget.isAIGame &&
+        _aiPlayer != null &&
         _gameState.currentPlayer ==
-            PlayerType.white) {
+            _aiPlayer!.aiPlayerType) {
       return;
     }
 
@@ -173,18 +205,29 @@ class _EnhancedGameScreenState
       return;
     }
 
-    // 렌주 룰 검증 (흑돌만)
-    if (!RenjuRuleChecker.isValidMove(
-      _gameState.board,
-      row,
-      col,
-      _gameState.currentPlayer,
-    )) {
-      _showRenjuRuleDialog();
-      return;
-    }
+    // 기존 렌주룰 체크는 새로운 AdvancedRenjuRuleEvaluator로 대체됨
+    // (EnhancedGameBoardWrapper에서 처리)
 
     _makeMove(row, col);
+  }
+
+  void _onPlayerAssignmentComplete() {
+    setState(() {
+      _isPlayerAssignmentShown = true;
+    });
+  }
+
+  void _onCountdownComplete() {
+    setState(() {
+      _showCountdown = false;
+      _gameStarted = true;
+    });
+
+    // 카운트다운 완료 후 첫 돌 배치
+    _placeFirstStone();
+
+    // 카운트다운 완료 후 타이머 시작
+    _startTurnTimer();
   }
 
   void _makeMove(int row, int col) async {
@@ -258,8 +301,9 @@ class _EnhancedGameScreenState
     if (_gameState.status != GameStatus.playing) {
       _handleGameEnd();
     } else if (widget.isAIGame &&
+        _aiPlayer != null &&
         _gameState.currentPlayer ==
-            PlayerType.white) {
+            _aiPlayer!.aiPlayerType) {
       // AI 턴
       _handleAITurn();
     }
@@ -272,7 +316,7 @@ class _EnhancedGameScreenState
 
     // 현재 플레이어가 AI인지 확인
     if (_gameState.currentPlayer !=
-        PlayerType.white)
+        _aiPlayer!.aiPlayerType)
       return;
 
     // 짧은 지연으로 자연스러운 느낌
@@ -299,7 +343,7 @@ class _EnhancedGameScreenState
     if (aiMove != null &&
         _gameState.status == GameStatus.playing &&
         _gameState.currentPlayer ==
-            PlayerType.white) {
+            _aiPlayer!.aiPlayerType) {
       _makeMove(aiMove.row, aiMove.col);
     }
   }
@@ -753,120 +797,165 @@ class _EnhancedGameScreenState
   }
 
   void _resetGame() {
+    // 기존 타이머들 정지
+    _gameTimer?.cancel();
+    _turnTimer?.cancel();
+
+    // 렌주룰 캐시 초기화
+    AdvancedRenjuRuleEvaluator.clearCache();
+
+    // AI 게임인 경우 AI 플레이어 재초기화
+    if (widget.isAIGame &&
+        widget.aiDifficulty != null) {
+      // 새로운 랜덤 플레이어 배정
+      _isPlayerBlack = math.Random().nextBool();
+
+      final aiPlayerType = _isPlayerBlack
+          ? PlayerType.white
+          : PlayerType.black;
+
+      _aiPlayer = AIPlayer(
+        difficulty: widget.aiDifficulty!,
+        aiPlayerType: aiPlayerType,
+      );
+    } else {
+      // 2인 게임인 경우 새로운 랜덤 플레이어1 배정
+      _isPlayer1Black = math.Random().nextBool();
+    }
+
     setState(() {
+      // 게임 상태 완전 초기화
       _gameState = EnhancedGameState(
         boardSize: widget.boardSize.size,
-        blackPlayerState: _gameState
-            .blackPlayerState
-            .copyWith(
-              skillUsed: false,
-              timeRemaining: _blackTotalTime,
-            ),
-        whitePlayerState: _gameState
-            .whitePlayerState
-            .copyWith(
-              skillUsed: false,
-              timeRemaining: _whiteTotalTime,
-            ),
+        blackPlayerState: PlayerGameState(
+          character: widget.blackCharacter,
+          availableItems: {},
+          timeRemaining: _blackTotalTime,
+        ),
+        whitePlayerState: PlayerGameState(
+          character: widget.whiteCharacter,
+          availableItems: {},
+          timeRemaining: _whiteTotalTime,
+        ),
+        currentPlayer:
+            PlayerType.black, // 흑돌이 항상 먼저 시작
       );
+
+      // 타이머 관련 변수들 초기화
+      _turnTimeRemaining = 30;
+      _showCountdown = true;
+      _gameStarted = false;
+      _lastPlacedStone = null;
+      _isShowingSkillEffect = false;
+      _isPendingUndoRequest = false;
+      _isPlayerAssignmentShown = false;
     });
+
+    // 애니메이션 초기화
+    _stoneAnimationController.reset();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFFDF7E3,
-      ), // 새로운 배경색
+      backgroundColor: const Color(0xFFDFFBFF),
       appBar: AppBar(
-        backgroundColor: const Color(
-          0xFFFFD966,
-        ), // 새로운 버튼 색상
+        backgroundColor: const Color(0xFF89E0F7),
         elevation: 0,
-        toolbarHeight: 80,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
+        toolbarHeight: 100,
+        centerTitle: true,
+        leading: Padding(
+          padding: const EdgeInsets.only(
+            left: 8,
+            top: 8,
           ),
-          onPressed: () =>
-              Navigator.of(context).pop(),
+          child: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Color(0xFF5C47CE),
+            ),
+            onPressed: () =>
+                Navigator.of(context).pop(),
+          ),
         ),
         title: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 4,
-          ),
+          padding: const EdgeInsets.only(top: 12),
           child: Row(
             mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+                MainAxisAlignment.center,
             children: [
-              // 수 카운터 (왼쪽)
+              // 수 카운터
               Container(
-                width: 80,
-                height: 60,
-                padding:
-                    const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
+                width: 90,
+                height: 75,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.purple[700]!,
-                      Colors.purple[500]!,
+                      const Color(0xFF89E0F7),
+                      const Color(0xFF51D4EB),
                     ],
                   ),
                   borderRadius:
                       BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white,
-                    width: 2,
+                    color: const Color(
+                      0xFF5C47CE,
+                    ),
+                    width: 3,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.purple
-                          .withOpacity(0.4),
-                      blurRadius: 8,
-                      spreadRadius: 1,
+                      color: const Color(
+                        0xFF51D4EB,
+                      ).withOpacity(0.5),
+                      blurRadius: 12,
+                      spreadRadius: 2,
                     ),
                   ],
                 ),
                 child: Column(
                   mainAxisAlignment:
                       MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      '${_gameState.turnCount}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight:
-                            FontWeight.bold,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        '${_gameState.turnCount}',
+                        style: const TextStyle(
+                          color: Color(
+                            0xFF5C47CE,
+                          ),
+                          fontSize: 22,
+                          fontWeight:
+                              FontWeight.w900,
+                          fontFamily: 'SUIT',
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       '수',
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Color(0xFF5C47CE),
                         fontSize: 12,
                         fontWeight:
                             FontWeight.bold,
+                        fontFamily: 'SUIT',
                       ),
                     ),
                   ],
                 ),
               ),
 
-              // 30초 카운터 (가운데, 메인)
+              const SizedBox(width: 16),
+
+              // 30초 카운터 (메인)
               Container(
-                width: 80,
-                height: 60,
-                padding:
-                    const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
+                width: 90,
+                height: 75,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors:
@@ -884,7 +973,7 @@ class _EnhancedGameScreenState
                       BorderRadius.circular(20),
                   border: Border.all(
                     color: Colors.white,
-                    width: 2,
+                    width: 3,
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -893,25 +982,30 @@ class _EnhancedGameScreenState
                                       10
                                   ? Colors.red
                                   : Colors.orange)
-                              .withOpacity(0.6),
-                      blurRadius: 12,
-                      spreadRadius: 2,
+                              .withOpacity(0.7),
+                      blurRadius: 16,
+                      spreadRadius: 3,
                     ),
                   ],
                 ),
                 child: Column(
                   mainAxisAlignment:
                       MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      '${_turnTimeRemaining}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight:
-                            FontWeight.bold,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        '${_turnTimeRemaining}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight:
+                              FontWeight.w900,
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       '초',
                       style: const TextStyle(
@@ -925,34 +1019,60 @@ class _EnhancedGameScreenState
                 ),
               ),
 
-              // 게임 설정 아이콘 (오른쪽)
+              const SizedBox(width: 16),
+
+              // 게임 설정 아이콘
               Container(
-                width: 80,
-                height: 60,
+                width: 90,
+                height: 75,
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.grey[700],
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFFF4FEFF),
+                      const Color(0xFFFAF9FB),
+                    ],
+                  ),
                   borderRadius:
                       BorderRadius.circular(20),
                   border: Border.all(
-                    color: Colors.white,
-                    width: 2,
+                    color: const Color(
+                      0xFF51D4EB,
+                    ),
+                    width: 3,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white
+                          .withOpacity(0.9),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   mainAxisAlignment:
                       MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.settings,
-                      color: Colors.white,
+                      color: const Color(
+                        0xFF5C47CE,
+                      ),
                       size: 24,
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       '설정',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
+                        color: const Color(
+                          0xFF5C47CE,
+                        ),
+                        fontSize: 12,
+                        fontFamily: 'SUIT',
+                        fontWeight:
+                            FontWeight.bold,
                       ),
                     ),
                   ],
@@ -962,203 +1082,257 @@ class _EnhancedGameScreenState
           ),
         ),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // 🔸 플레이어 타이머 영역 (검은 여백)
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(
-                  0.8,
-                ),
-                border: Border(
-                  bottom: BorderSide(
-                    color: Colors.grey[700]!,
-                    width: 1,
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  // 흑돌 타이머
-                  Expanded(
-                    child: _buildPlayerTimer(
-                      PlayerType.black,
-                      _blackTotalTime,
-                    ),
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  // 백돌 타이머
-                  Expanded(
-                    child: _buildPlayerTimer(
-                      PlayerType.white,
-                      _whiteTotalTime,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // 🔸 턴 표시 영역
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors:
-                      _gameState.currentPlayer ==
-                          PlayerType.black
-                      ? [
-                          Colors.grey[800]!,
-                          Colors.grey[700]!,
-                        ]
-                      : [
-                          Colors.blue[700]!,
-                          Colors.blue[600]!,
-                        ],
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.circle,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${_gameState.currentPlayer == PlayerType.black ? "흑돌" : "백돌"}의 차례',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (_gameState.currentPlayer ==
-                          PlayerType.black
-                      ? _gameState
-                                .blackPlayerState
-                                .character !=
-                            null
-                      : _gameState
-                                .whitePlayerState
-                                .character !=
-                            null) ...[
-                    const SizedBox(width: 8),
-                    Icon(
-                      _getCharacterIcon(
-                        (_gameState.currentPlayer ==
-                                    PlayerType
-                                        .black
-                                ? _gameState
-                                      .blackPlayerState
-                                      .character!
-                                : _gameState
-                                      .whitePlayerState
-                                      .character!)
-                            .type,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              children: [
+                // 🔸 플레이어 타이머 영역 - 키치 테마
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                      color: Colors.white,
-                      size: 16,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(
+                          0xFFF4FEFF,
+                        ).withOpacity(0.9),
+                        const Color(
+                          0xFFDFFBFF,
+                        ).withOpacity(0.9),
+                      ],
                     ),
-                  ],
-                ],
-              ),
-            ),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: const Color(
+                          0xFF51D4EB,
+                        ),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // 흑돌 타이머
+                      Expanded(
+                        child: _buildPlayerTimer(
+                          PlayerType.black,
+                          _blackTotalTime,
+                        ),
+                      ),
 
-            // 🎮 메인 게임 보드 (화면의 대부분 차지)
-            Expanded(
-              flex: 10, // 더 많은 공간을 보드에 할당
-              child: Container(
-                padding: const EdgeInsets.all(
-                  4,
-                ), // 최소 패딩
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    // 화면의 거의 전체를 보드로 사용
-                    final maxSize =
-                        math.min(
-                          constraints.maxWidth,
-                          constraints.maxHeight,
-                        ) *
-                        0.98;
+                      const SizedBox(width: 16),
 
-                    return Center(
-                      child: Stack(
-                        children: [
-                          // 메인 게임 보드
-                          EnhancedGameBoardWidget(
-                            gameState: _gameState,
-                            boardSizeType:
-                                widget.boardSize,
-                            onTileTap: _onTileTap,
-                            boardSize: maxSize,
-                            showCoordinates:
-                                false,
+                      // 백돌 타이머
+                      Expanded(
+                        child: _buildPlayerTimer(
+                          PlayerType.white,
+                          _whiteTotalTime,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // 🔸 턴 표시 영역
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors:
+                          _gameState
+                                  .currentPlayer ==
+                              PlayerType.black
+                          ? [
+                              Colors.grey[800]!,
+                              Colors.grey[700]!,
+                            ]
+                          : [
+                              Colors.blue[700]!,
+                              Colors.blue[600]!,
+                            ],
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.circle,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${_gameState.currentPlayer == PlayerType.black ? "흑돌" : "백돌"}의 차례',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+                      ),
+                      if (_gameState
+                                  .currentPlayer ==
+                              PlayerType.black
+                          ? _gameState
+                                    .blackPlayerState
+                                    .character !=
+                                null
+                          : _gameState
+                                    .whitePlayerState
+                                    .character !=
+                                null) ...[
+                        const SizedBox(width: 8),
+                        Icon(
+                          _getCharacterIcon(
+                            (_gameState.currentPlayer ==
+                                        PlayerType
+                                            .black
+                                    ? _gameState
+                                          .blackPlayerState
+                                          .character!
+                                    : _gameState
+                                          .whitePlayerState
+                                          .character!)
+                                .type,
                           ),
-
-                          // 오목판에는 스킬버튼 제거 (하단으로 이동)
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-
-            // 🎯 게임 정보 및 컨트롤 (더 작게)
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(
-                  0.9,
-                ),
-                borderRadius:
-                    const BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black
-                        .withOpacity(0.5),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ],
+                    ],
                   ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // 스킬 버튼과 정보
-                  if (_gameState
-                              .blackPlayerState
-                              .character !=
-                          null ||
-                      _gameState
-                              .whitePlayerState
-                              .character !=
-                          null)
-                    _buildBottomSkillSection(),
+                ),
 
-                  const SizedBox(height: 8),
+                // 🎮 메인 게임 보드 (화면의 대부분 차지)
+                Expanded(
+                  flex: 10, // 더 많은 공간을 보드에 할당
+                  child: Container(
+                    padding: const EdgeInsets.all(
+                      4,
+                    ), // 최소 패딩
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        // 화면의 거의 전체를 보드로 사용
+                        final maxSize =
+                            math.min(
+                              constraints
+                                  .maxWidth,
+                              constraints
+                                  .maxHeight,
+                            ) *
+                            0.98;
 
-                  // 게임 컨트롤
-                  _buildBasicGameControls(),
-                ],
-              ),
+                        return Center(
+                          child: Stack(
+                            children: [
+                              // 메인 게임 보드
+                              EnhancedGameBoardWrapper(
+                                gameState:
+                                    _gameState,
+                                boardSizeType:
+                                    widget
+                                        .boardSize,
+                                onTileTap:
+                                    _onTileTap,
+                                boardSize:
+                                    maxSize,
+                                showCoordinates:
+                                    false,
+                                aiDifficulty: widget
+                                    .aiDifficulty,
+                              ),
+
+                              // 오목판에는 스킬버튼 제거 (하단으로 이동)
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                // 🎯 게임 정보 및 컨트롤 (더 작게)
+                Container(
+                  padding: const EdgeInsets.all(
+                    8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black
+                        .withOpacity(0.9),
+                    borderRadius:
+                        const BorderRadius.vertical(
+                          top: Radius.circular(
+                            20,
+                          ),
+                        ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black
+                            .withOpacity(0.5),
+                        blurRadius: 10,
+                        offset: const Offset(
+                          0,
+                          -2,
+                        ),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize:
+                        MainAxisSize.min,
+                    children: [
+                      // 스킬 버튼과 정보
+                      if (_gameState
+                                  .blackPlayerState
+                                  .character !=
+                              null ||
+                          _gameState
+                                  .whitePlayerState
+                                  .character !=
+                              null)
+                        _buildBottomSkillSection(),
+
+                      const SizedBox(height: 8),
+
+                      // 게임 컨트롤
+                      _buildBasicGameControls(),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+
+          // 플레이어 배정 오버레이 (가장 먼저 표시)
+          if (!_isPlayerAssignmentShown)
+            PlayerAssignmentOverlay(
+              firstPlayer:
+                  PlayerType.black, // 흑돌이 항상 먼저
+              isPlayerBlack: widget.isAIGame
+                  ? _isPlayerBlack
+                  : _isPlayer1Black,
+              isAIGame: widget.isAIGame,
+              onComplete:
+                  _onPlayerAssignmentComplete,
+            ),
+
+          // 카운트다운 오버레이
+          if (_isPlayerAssignmentShown)
+            GameCountdownOverlay(
+              showCountdown: _showCountdown,
+              onCountdownComplete:
+                  _onCountdownComplete,
+            ),
+        ],
       ),
     );
   }
@@ -1568,15 +1742,39 @@ class _EnhancedGameScreenState
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 3,
+                      horizontal: 8,
+                      vertical: 6,
                     ),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(
-                    0.4,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(
+                        0.8,
+                      ),
+                      Colors.black.withOpacity(
+                        0.6,
+                      ),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                   borderRadius:
-                      BorderRadius.circular(6),
+                      BorderRadius.circular(8),
+                  border: Border.all(
+                    color: _getSkillTypeColor(
+                      character.skill.type,
+                    ).withOpacity(0.7),
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _getSkillTypeColor(
+                        character.skill.type,
+                      ).withOpacity(0.4),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
+                  ],
                 ),
                 child: Row(
                   mainAxisAlignment:
@@ -1589,32 +1787,44 @@ class _EnhancedGameScreenState
                       color: _getSkillTypeColor(
                         character.skill.type,
                       ),
-                      size: 12,
+                      size: 16,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 6),
                     Flexible(
                       child: Text(
                         character.skill.name,
                         style: TextStyle(
-                          color:
-                              _getSkillTypeColor(
-                                character
-                                    .skill
-                                    .type,
-                              ),
-                          fontSize: 10,
+                          color: Colors.white,
+                          fontSize: 12,
                           fontWeight:
                               FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              color:
+                                  _getSkillTypeColor(
+                                    character
+                                        .skill
+                                        .type,
+                                  ).withOpacity(
+                                    0.8,
+                                  ),
+                              blurRadius: 4,
+                              offset: Offset(
+                                0,
+                                0,
+                              ),
+                            ),
+                          ],
                         ),
                         textAlign:
                             TextAlign.center,
                       ),
                     ),
-                    const SizedBox(width: 2),
+                    const SizedBox(width: 4),
                     Icon(
                       Icons.info_outline,
-                      color: Colors.grey[400],
-                      size: 10,
+                      color: Colors.white,
+                      size: 14,
                     ),
                   ],
                 ),
@@ -2793,176 +3003,245 @@ class _EnhancedGameScreenState
   ) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A2E),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Row(
-          children: [
-            Icon(
-              _getCharacterIcon(character.type),
-              color: character.tierColor,
-              size: 28,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              character.koreanName,
-              style: TextStyle(
-                color: character.tierColor,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: [
-            // 티어 정보
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: character.tierColor,
-                borderRadius:
-                    BorderRadius.circular(12),
-              ),
-              child: Text(
-                character.tierName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+      barrierColor: Colors.black.withOpacity(0.8),
+      builder: (context) => GestureDetector(
+        onTap: () => Navigator.of(context).pop(),
+        child: Material(
+          color: Colors.transparent,
+          child: Center(
+            child: GestureDetector(
+              onTap: () {}, // 내부 탭은 전파 방지
+              child: AlertDialog(
+                backgroundColor: Colors.black
+                    .withOpacity(0.9),
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(20),
+                  side: BorderSide(
+                    color: character.tierColor
+                        .withOpacity(0.8),
+                    width: 2,
+                  ),
                 ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // 스킬 정보
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    _getSkillTypeColor(
-                      character.skill.type,
-                    ).withOpacity(0.3),
-                    _getSkillTypeColor(
-                      character.skill.type,
-                    ).withOpacity(0.1),
+                title: Row(
+                  children: [
+                    Icon(
+                      _getCharacterIcon(
+                        character.type,
+                      ),
+                      color: character.tierColor,
+                      size: 28,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      character.koreanName,
+                      style: TextStyle(
+                        color:
+                            character.tierColor,
+                        fontSize: 20,
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
-                borderRadius:
-                    BorderRadius.circular(12),
-                border: Border.all(
-                  color: _getSkillTypeColor(
-                    character.skill.type,
-                  ),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        _getSkillIcon(
-                          character.skill.type,
-                        ),
-                        color: _getSkillTypeColor(
-                          character.skill.type,
-                        ),
-                        size: 24,
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                    // 티어 정보
+                    Container(
+                      padding:
+                          const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                      decoration: BoxDecoration(
+                        color:
+                            character.tierColor,
+                        borderRadius:
+                            BorderRadius.circular(
+                              12,
+                            ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        character.skill.name,
-                        style: TextStyle(
+                      child: Text(
+                        character.tierName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // 스킬 정보
+                    Container(
+                      padding:
+                          const EdgeInsets.all(
+                            16,
+                          ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            _getSkillTypeColor(
+                              character
+                                  .skill
+                                  .type,
+                            ).withOpacity(0.3),
+                            _getSkillTypeColor(
+                              character
+                                  .skill
+                                  .type,
+                            ).withOpacity(0.1),
+                          ],
+                        ),
+                        borderRadius:
+                            BorderRadius.circular(
+                              12,
+                            ),
+                        border: Border.all(
                           color:
                               _getSkillTypeColor(
                                 character
                                     .skill
                                     .type,
                               ),
-                          fontSize: 18,
-                          fontWeight:
-                              FontWeight.bold,
+                          width: 1,
                         ),
                       ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Text(
-                    '종류: ${_getSkillTypeName(character.skill.type)}',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                    decoration: BoxDecoration(
-                      color: Colors.amber[300]!
-                          .withOpacity(0.2),
-                      borderRadius:
-                          BorderRadius.circular(
-                            8,
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment
+                                .start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                _getSkillIcon(
+                                  character
+                                      .skill
+                                      .type,
+                                ),
+                                color:
+                                    _getSkillTypeColor(
+                                      character
+                                          .skill
+                                          .type,
+                                    ),
+                                size: 24,
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                character
+                                    .skill
+                                    .name,
+                                style: TextStyle(
+                                  color:
+                                      _getSkillTypeColor(
+                                        character
+                                            .skill
+                                            .type,
+                                      ),
+                                  fontSize: 18,
+                                  fontWeight:
+                                      FontWeight
+                                          .bold,
+                                ),
+                              ),
+                            ],
                           ),
+
+                          const SizedBox(
+                            height: 8,
+                          ),
+
+                          Text(
+                            '종류: ${_getSkillTypeName(character.skill.type)}',
+                            style:
+                                const TextStyle(
+                                  color: Colors
+                                      .white70,
+                                  fontSize: 14,
+                                ),
+                          ),
+
+                          const SizedBox(
+                            height: 8,
+                          ),
+
+                          Container(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                            decoration: BoxDecoration(
+                              color: Colors
+                                  .amber[300]!
+                                  .withOpacity(
+                                    0.2,
+                                  ),
+                              borderRadius:
+                                  BorderRadius.circular(
+                                    8,
+                                  ),
+                            ),
+                            child: const Text(
+                              '⚡ 스킬 사용 가능 ⚡',
+                              style: TextStyle(
+                                color:
+                                    Colors.white,
+                                fontSize: 12,
+                                fontWeight:
+                                    FontWeight
+                                        .bold,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(
+                            height: 8,
+                          ),
+
+                          Text(
+                            character
+                                .skill
+                                .description,
+                            style:
+                                const TextStyle(
+                                  color: Colors
+                                      .white,
+                                  fontSize: 14,
+                                ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(
+                      context,
+                    ).pop(),
                     child: const Text(
-                      '⚡ 스킬 사용 가능 ⚡',
+                      '확인',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 12,
-                        fontWeight:
-                            FontWeight.bold,
                       ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Text(
-                    character.skill.description,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.of(context).pop(),
-            child: const Text(
-              '확인',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -3317,21 +3596,44 @@ class _EnhancedGameScreenState
         vertical: 8,
       ),
       decoration: BoxDecoration(
-        color: isCurrentTurn
-            ? (isBlack
-                  ? Colors.grey[700]
-                  : Colors.blue[600])
-            : Colors.grey[800],
-        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: isCurrentTurn
+              ? [
+                  const Color(0xFF89E0F7),
+                  const Color(0xFF51D4EB),
+                ]
+              : [
+                  const Color(
+                    0xFFF4FEFF,
+                  ).withOpacity(0.7),
+                  const Color(
+                    0xFFFAF9FB,
+                  ).withOpacity(0.7),
+                ],
+        ),
+        borderRadius: BorderRadius.circular(16),
         border: isCurrentTurn
             ? Border.all(
-                color: Colors.yellow,
+                color: const Color(0xFF5C47CE),
                 width: 2,
               )
             : Border.all(
-                color: Colors.grey[600]!,
+                color: const Color(
+                  0xFF51D4EB,
+                ).withOpacity(0.5),
                 width: 1,
               ),
+        boxShadow: [
+          BoxShadow(
+            color: isCurrentTurn
+                ? const Color(
+                    0xFF51D4EB,
+                  ).withOpacity(0.3)
+                : Colors.white.withOpacity(0.5),
+            blurRadius: isCurrentTurn ? 8 : 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment:
@@ -3347,7 +3649,7 @@ class _EnhancedGameScreenState
                   Icon(
                     Icons.circle,
                     color: isBlack
-                        ? Colors.white
+                        ? Colors.black
                         : Colors.white,
                     size: 14,
                   ),
@@ -3355,16 +3657,19 @@ class _EnhancedGameScreenState
                   Text(
                     isBlack ? '흑돌' : '백돌',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFF5C47CE),
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'SUIT',
                     ),
                   ),
                   if (isCurrentTurn) ...[
                     const SizedBox(width: 4),
                     Icon(
                       Icons.play_arrow,
-                      color: Colors.yellow,
+                      color: const Color(
+                        0xFF5C47CE,
+                      ),
                       size: 14,
                     ),
                   ],
@@ -3378,10 +3683,11 @@ class _EnhancedGameScreenState
                 '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
                 style: TextStyle(
                   color: timeRemaining <= 30
-                      ? Colors.red[300]
-                      : Colors.white,
+                      ? Colors.red[600]
+                      : const Color(0xFF5C47CE),
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'SUIT',
                 ),
               ),
             ],
@@ -3420,17 +3726,26 @@ class _EnhancedGameScreenState
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[900]!.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            const Color(
+              0xFFF4FEFF,
+            ).withOpacity(0.95),
+            const Color(
+              0xFFDFFBFF,
+            ).withOpacity(0.95),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Colors.grey[600]!,
-          width: 1,
+          color: const Color(0xFF51D4EB),
+          width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
+            color: Colors.white.withOpacity(0.8),
+            blurRadius: 12,
+            offset: const Offset(0, -4),
           ),
         ],
       ),
@@ -3543,87 +3858,108 @@ class _EnhancedGameScreenState
           gradient: LinearGradient(
             colors: canUse
                 ? [
+                    character.tierColor,
                     character.tierColor
-                        .withOpacity(0.9),
-                    character.tierColor
-                        .withOpacity(0.7),
-                    character.tierColor
-                        .withOpacity(0.9),
+                        .withOpacity(0.8),
+                    character.tierColor,
                   ]
                 : [
+                    Colors.grey.withOpacity(0.7),
                     Colors.grey.withOpacity(0.5),
-                    Colors.grey.withOpacity(0.3),
+                    Colors.grey.withOpacity(0.7),
                   ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(50),
           border: Border.all(
-            color: isCurrentPlayer
+            color: canUse
                 ? Colors.white
-                : Colors.grey,
-            width: isCurrentPlayer ? 4 : 2,
+                : Colors.grey.withOpacity(0.6),
+            width: canUse ? 5 : 3,
           ),
           boxShadow: canUse
               ? [
                   BoxShadow(
                     color: character.tierColor
-                        .withOpacity(0.7),
-                    blurRadius: 20,
-                    spreadRadius: 4,
+                        .withOpacity(0.8),
+                    blurRadius: 25,
+                    spreadRadius: 6,
                   ),
                   BoxShadow(
                     color: Colors.white
+                        .withOpacity(0.5),
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  ),
+                  BoxShadow(
+                    color: Colors.black
                         .withOpacity(0.3),
                     blurRadius: 8,
-                    spreadRadius: 1,
+                    offset: Offset(0, 4),
                   ),
                 ]
               : [
                   BoxShadow(
                     color: Colors.black
-                        .withOpacity(0.2),
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
+                        .withOpacity(0.4),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
                   ),
                 ],
         ),
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
-          children: [
-            Icon(
+        child: Center(
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: canUse
+                  ? [
+                      BoxShadow(
+                        color: Colors.white
+                            .withOpacity(0.8),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      ),
+                      BoxShadow(
+                        color: character.tierColor
+                            .withOpacity(0.6),
+                        blurRadius: 20,
+                        spreadRadius: 4,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Icon(
               _getSkillIcon(character.skill.type),
               color: canUse
                   ? Colors.white
-                  : Colors.grey[400],
-              size: 36,
+                  : Colors.grey[500],
+              size: 55,
+              shadows: canUse
+                  ? [
+                      Shadow(
+                        color: Colors.black
+                            .withOpacity(0.8),
+                        blurRadius: 6,
+                        offset: Offset(0, 3),
+                      ),
+                      Shadow(
+                        color: character.tierColor
+                            .withOpacity(0.9),
+                        blurRadius: 10,
+                        offset: Offset(0, 0),
+                      ),
+                    ]
+                  : [
+                      Shadow(
+                        color: Colors.black
+                            .withOpacity(0.3),
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
             ),
-            const SizedBox(height: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 3,
-              ),
-              decoration: BoxDecoration(
-                color: canUse
-                    ? Colors.white.withOpacity(
-                        0.2,
-                      )
-                    : Colors.transparent,
-                borderRadius:
-                    BorderRadius.circular(12),
-              ),
-              child: Text(
-                canUse ? '💫발동💫' : '⏳대기⏳',
-                style: TextStyle(
-                  color: canUse
-                      ? Colors.white
-                      : Colors.grey[400],
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

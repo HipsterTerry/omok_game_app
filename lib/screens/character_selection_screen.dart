@@ -6,6 +6,7 @@ import '../services/character_service.dart';
 import '../logic/ai_player.dart';
 import 'enhanced_game_screen.dart';
 import '../models/game_state.dart';
+import '../widgets/enhanced_visual_effects.dart';
 
 class CharacterSelectionScreen
     extends StatefulWidget {
@@ -51,21 +52,21 @@ class _CharacterSelectionScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF7E3),
+      backgroundColor: const Color(0xFFDFFBFF),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFD966),
+        backgroundColor: const Color(0xFF89E0F7),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,
-            color: Color(0xFF2D2D2D),
+            color: Color(0xFF5C47CE),
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          '캐릭터 선택',
+          '🎭 캐릭터 선택',
           style: TextStyle(
-            color: Color(0xFF2D2D2D),
+            color: Color(0xFF5C47CE),
             fontWeight: FontWeight.bold,
             fontFamily: 'Cafe24Ohsquare',
           ),
@@ -101,15 +102,28 @@ class _CharacterSelectionScreenState
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          // 🎯 귀여운 아이콘들
+          // 🎨 v2.0.0: 귀여운 캐릭터 이미지들 (PNG 이미지로 교체)
+          // 쥐, 양, 용, 토끼 순서로 Bounce 애니메이션 적용 (호랑이 → 양 교체)
           Row(
             mainAxisAlignment:
                 MainAxisAlignment.center,
             children: [
-              _buildBounceIcon('🐭', 0),
-              _buildBounceIcon('🐯', 200),
-              _buildBounceIcon('🐲', 400),
-              _buildBounceIcon('🐰', 600),
+              _buildBounceIcon(
+                'assets/image/rat.png',
+                0,
+              ),
+              _buildBounceIcon(
+                'assets/image/goat.png', // v2.0.0: tiger → goat 교체
+                200,
+              ),
+              _buildBounceIcon(
+                'assets/image/dragon.png',
+                400,
+              ),
+              _buildBounceIcon(
+                'assets/image/rabbit.png',
+                600,
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -118,12 +132,9 @@ class _CharacterSelectionScreenState
                 ? '두 플레이어 모두 12지신 캐릭터를 선택하세요!'
                 : '기본 흑백돌로 클래식하게 플레이하세요!',
             style: const TextStyle(
-              color: Color(
-                0xFF2D2D2D,
-              ), // 메인 텍스트 색상
+              color: Color(0xFF5C47CE),
               fontSize: 16,
-              fontFamily:
-                  'Pretendard', // 서브 텍스트 폰트
+              fontFamily: 'Pretendard',
             ),
             textAlign: TextAlign.center,
           ),
@@ -133,7 +144,7 @@ class _CharacterSelectionScreenState
   }
 
   Widget _buildBounceIcon(
-    String emoji,
+    String imagePath,
     int delay,
   ) {
     return TweenAnimationBuilder<double>(
@@ -144,9 +155,31 @@ class _CharacterSelectionScreenState
       builder: (context, value, child) {
         return Transform.scale(
           scale: 0.8 + (value * 0.4),
-          child: Text(
-            emoji,
-            style: const TextStyle(fontSize: 32),
+          child: Image.asset(
+            imagePath,
+            width: 48,
+            height: 48,
+            fit: BoxFit.contain,
+            errorBuilder:
+                (context, error, stackTrace) {
+                  // 이미지 로딩 실패시 이모지로 대체
+                  String emoji =
+                      imagePath.contains('rat')
+                      ? '🐭'
+                      : imagePath.contains('goat')
+                      ? '🐐'
+                      : imagePath.contains(
+                          'dragon',
+                        )
+                      ? '🐲'
+                      : '🐰';
+                  return Text(
+                    emoji,
+                    style: const TextStyle(
+                      fontSize: 32,
+                    ),
+                  );
+                },
           ),
         );
       },
@@ -160,17 +193,17 @@ class _CharacterSelectionScreenState
       ),
       decoration: BoxDecoration(
         color: const Color(
-          0xFFA3D8F4,
-        ).withOpacity(0.3), // 보조 포인트 색상
+          0xFF51D4EB,
+        ).withOpacity(0.3),
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: const Color(0xFFA3D8F4),
+          color: const Color(0xFF51D4EB),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
             color: const Color(
-              0xFFA3D8F4,
+              0xFF51D4EB,
             ).withOpacity(0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
@@ -303,9 +336,9 @@ class _CharacterSelectionScreenState
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(
-                    0.5,
-                  ),
+                  color: const Color(
+                    0xFF5C47CE,
+                  ).withOpacity(0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -318,8 +351,14 @@ class _CharacterSelectionScreenState
                   width: 40,
                   height: 40,
                   decoration: const BoxDecoration(
-                    color: Colors.black87,
+                    color: Colors.black,
                     shape: BoxShape.circle,
+                    border: Border.fromBorderSide(
+                      BorderSide(
+                        color: Color(0xFF5C47CE),
+                        width: 2,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 20),
@@ -329,6 +368,12 @@ class _CharacterSelectionScreenState
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
+                    border: Border.fromBorderSide(
+                      BorderSide(
+                        color: Color(0xFF5C47CE),
+                        width: 2,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -338,17 +383,21 @@ class _CharacterSelectionScreenState
           const Text(
             '🎯 클래식 오목',
             style: TextStyle(
-              color: Colors.white,
+              color: Color(0xFF5C47CE),
               fontSize: 24,
               fontWeight: FontWeight.bold,
+              fontFamily: 'SUIT',
             ),
           ),
           const SizedBox(height: 10),
           Text(
             '전통적인 흑백돌로\n순수한 실력 대결!',
             style: TextStyle(
-              color: Colors.grey[400],
+              color: const Color(
+                0xFF5C47CE,
+              ).withOpacity(0.7),
               fontSize: 16,
+              fontFamily: 'Pretendard',
             ),
             textAlign: TextAlign.center,
           ),
@@ -378,13 +427,17 @@ class _CharacterSelectionScreenState
       ),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF16213E),
-        borderRadius: BorderRadius.circular(16),
+        color: const Color(0xFFF4FEFF),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFF51D4EB),
+          width: 2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            color: Colors.white.withOpacity(0.8),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -396,7 +449,7 @@ class _CharacterSelectionScreenState
               PlayerType.black,
               _blackPlayerCharacter,
               '흑돌 플레이어',
-              Colors.grey[700]!,
+              Colors.black,
             ),
           ),
 
@@ -406,7 +459,7 @@ class _CharacterSelectionScreenState
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.purple,
+              color: const Color(0xFF51D4EB),
               shape: BoxShape.circle,
             ),
             child: const Text(
@@ -415,6 +468,7 @@ class _CharacterSelectionScreenState
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
+                fontFamily: 'SUIT',
               ),
             ),
           ),
@@ -470,9 +524,10 @@ class _CharacterSelectionScreenState
               Text(
                 playerName,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF5C47CE),
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'SUIT',
                 ),
               ),
             ],
@@ -482,10 +537,27 @@ class _CharacterSelectionScreenState
 
           // 캐릭터 정보
           if (character != null) ...[
-            Icon(
-              _getCharacterIcon(character.type),
-              color: character.tierColor,
-              size: 24,
+            Container(
+              width: 32,
+              height: 32,
+              child: Image.asset(
+                _getCharacterImagePath(
+                  character.type,
+                ),
+                fit: BoxFit.contain,
+                errorBuilder:
+                    (context, error, stackTrace) {
+                      // 이미지 로딩 실패시 기존 아이콘으로 대체
+                      return Icon(
+                        _getCharacterIcon(
+                          character.type,
+                        ),
+                        color:
+                            character.tierColor,
+                        size: 24,
+                      );
+                    },
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -633,15 +705,41 @@ class _CharacterSelectionScreenState
                     const SizedBox(height: 4),
                   ],
 
-                  // 캐릭터 아이콘
-                  Icon(
-                    _getCharacterIcon(
-                      character.type,
+                  // 캐릭터 이미지
+                  Container(
+                    width: 32,
+                    height: 32,
+                    child: Image.asset(
+                      _getCharacterImagePath(
+                        character.type,
+                      ),
+                      fit: BoxFit.contain,
+                      color: isSelected
+                          ? Colors.white
+                                .withOpacity(0.9)
+                          : null,
+                      colorBlendMode: isSelected
+                          ? BlendMode.modulate
+                          : null,
+                      errorBuilder:
+                          (
+                            context,
+                            error,
+                            stackTrace,
+                          ) {
+                            // 이미지 로딩 실패시 기존 아이콘으로 대체
+                            return Icon(
+                              _getCharacterIcon(
+                                character.type,
+                              ),
+                              color: isSelected
+                                  ? Colors.white
+                                  : character
+                                        .tierColor,
+                              size: 24,
+                            );
+                          },
                     ),
-                    color: isSelected
-                        ? Colors.white
-                        : character.tierColor,
-                    size: 24,
                   ),
 
                   const SizedBox(height: 4),
@@ -743,38 +841,22 @@ class _CharacterSelectionScreenState
 
     return Container(
       padding: const EdgeInsets.all(20),
-      child: SizedBox(
+      child: VolumetricPlayButton(
+        text: _useCharacterStone
+            ? (_blackPlayerCharacter != null &&
+                      _whitePlayerCharacter !=
+                          null
+                  ? '🚀 게임 시작!'
+                  : '두 플레이어 모두 캐릭터를 선택하세요')
+            : '🚀 게임 시작!',
+        onPressed: canStart ? _startGame : () {},
+        backgroundColor: canStart
+            ? const Color(0xFF89E0F7)
+            : const Color(
+                0xFF8BBEDC,
+              ).withOpacity(0.5),
         width: double.infinity,
         height: 56,
-        child: ElevatedButton(
-          onPressed: canStart ? _startGame : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: canStart
-                ? Colors.green
-                : Colors.grey,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                16,
-              ),
-            ),
-            elevation: canStart ? 8 : 2,
-          ),
-          child: Text(
-            _useCharacterStone
-                ? (_blackPlayerCharacter !=
-                              null &&
-                          _whitePlayerCharacter !=
-                              null
-                      ? '🚀 게임 시작!'
-                      : '두 플레이어 모두 캐릭터를 선택하세요')
-                : '🚀 게임 시작!',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -825,6 +907,37 @@ class _CharacterSelectionScreenState
         return '🐕';
       case CharacterType.pig:
         return '🐷';
+    }
+  }
+
+  String _getCharacterImagePath(
+    CharacterType type,
+  ) {
+    switch (type) {
+      case CharacterType.rat:
+        return 'assets/image/rat.png';
+      case CharacterType.ox:
+        return 'assets/image/ox.png';
+      case CharacterType.tiger:
+        return 'assets/image/tiger.png';
+      case CharacterType.rabbit:
+        return 'assets/image/rabbit.png';
+      case CharacterType.dragon:
+        return 'assets/image/dragon.png';
+      case CharacterType.snake:
+        return 'assets/image/snake.png';
+      case CharacterType.horse:
+        return 'assets/image/horse.png';
+      case CharacterType.goat:
+        return 'assets/image/goat.png';
+      case CharacterType.monkey:
+        return 'assets/image/monkey.png';
+      case CharacterType.rooster:
+        return 'assets/image/rooster.png';
+      case CharacterType.dog:
+        return 'assets/image/dog.png';
+      case CharacterType.pig:
+        return 'assets/image/pig.png';
     }
   }
 

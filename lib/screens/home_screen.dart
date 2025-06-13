@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'character_selection_screen.dart';
 import 'lottery_screen.dart';
 import 'game_rules_screen.dart';
+
 import '../models/player_profile.dart';
 import '../logic/ai_player.dart';
+import '../widgets/enhanced_visual_effects.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -19,7 +21,9 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFFFDF7E3), // 새로운 배경색
+          color: Color(
+            0xFFDFFBFF,
+          ), // 키치 테마 배경색 적용
         ),
         child: SafeArea(
           child: LayoutBuilder(
@@ -45,414 +49,240 @@ class HomeScreen extends StatelessWidget {
                             MainAxisAlignment
                                 .center,
                         children: [
-                          // 게임 로고/제목
+                          // 🎨 v2.0.0: 게임 로고 + 타이틀 스택 (겹치기)
+                          // 호랑이+토끼 캐릭터 이미지와 "Omok Arena" 타이틀을 Stack으로 겹치게 배치
+                          // 캐릭터의 바둑돌이 타이틀 'k'에 거의 닿을 정도로 밀착 배치
                           Container(
-                            padding:
-                                const EdgeInsets.all(
-                                  16,
+                            height: isSmallScreen
+                                ? 240
+                                : 280,
+                            child: Stack(
+                              alignment: Alignment
+                                  .center,
+                              children: [
+                                // 캐릭터 이미지 (위쪽)
+                                Positioned(
+                                  top: 0,
+                                  child: Image.asset(
+                                    'assets/image/home_logo.png',
+                                    width:
+                                        isSmallScreen
+                                        ? 450
+                                        : 550,
+                                    height:
+                                        isSmallScreen
+                                        ? 225
+                                        : 275,
+                                    fit: BoxFit
+                                        .contain,
+                                    errorBuilder:
+                                        (
+                                          context,
+                                          error,
+                                          stackTrace,
+                                        ) {
+                                          return Container(
+                                            padding: const EdgeInsets.all(
+                                              16,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: const Color(
+                                                0xFF89E0F7,
+                                              ),
+                                              shape:
+                                                  BoxShape.circle,
+                                              border: Border.all(
+                                                color: const Color(
+                                                  0xFF8BBEDC,
+                                                ),
+                                                width: 2,
+                                              ),
+                                            ),
+                                            child: Icon(
+                                              Icons.grid_on,
+                                              size:
+                                                  isSmallScreen
+                                                  ? 48
+                                                  : 64,
+                                              color: const Color(
+                                                0xFF5C47CE,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                  ),
                                 ),
-                            decoration: BoxDecoration(
-                              color: const Color(
-                                0xFFFFD966,
-                              ), // 새로운 버튼 색상
-                              shape:
-                                  BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors
-                                      .black
-                                      .withOpacity(
-                                        0.15,
+
+                                // 게임 제목 (아래쪽으로 이동해서 캐릭터와 겹치게)
+                                Positioned(
+                                  bottom: 0,
+                                  child: Text(
+                                    'Omok Arena',
+                                    style: TextStyle(
+                                      fontSize:
+                                          isSmallScreen
+                                          ? 42
+                                          : 52,
+                                      fontWeight:
+                                          FontWeight
+                                              .bold,
+                                      fontFamily:
+                                          'Cafe24Ohsquare',
+                                      color: const Color(
+                                        0xFF5C47CE,
                                       ),
-                                  blurRadius: 20,
-                                  offset:
-                                      const Offset(
-                                        0,
-                                        8,
-                                      ),
+                                      shadows: [
+                                        Shadow(
+                                          offset:
+                                              const Offset(
+                                                2,
+                                                2,
+                                              ),
+                                          blurRadius:
+                                              4,
+                                          color: const Color(
+                                            0xFF51D4EB,
+                                          ).withOpacity(0.3),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                            child: Icon(
-                              Icons.grid_on,
-                              size: isSmallScreen
-                                  ? 48
-                                  : 64,
-                              color: const Color(
-                                0xFF2D2D2D,
-                              ),
-                            ),
                           ),
 
-                          const SizedBox(
-                            height: 16,
-                          ),
-
-                          // 게임 제목
-                          Text(
-                            'Omok Arena',
-                            style: TextStyle(
-                              fontSize:
-                                  isSmallScreen
-                                  ? 36
-                                  : 48,
-                              fontWeight:
-                                  FontWeight.bold,
-                              fontFamily:
-                                  'Cafe24Ohsquare', // 타이틀 폰트
-                              color: const Color(
-                                0xFF2D2D2D,
-                              ),
-                              shadows: [
-                                Shadow(
-                                  offset:
-                                      const Offset(
-                                        2,
-                                        2,
-                                      ),
-                                  blurRadius: 4,
-                                  color:
-                                      const Color(
-                                        0xFFFFA3A3,
-                                      ).withOpacity(
-                                        0.3,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(
-                            height: 16,
-                          ),
-
-                          // 플레이 모드 선택 제목 (게임 설명 대체)
-                          Container(
-                            padding:
-                                const EdgeInsets.all(
-                                  12,
-                                ),
+                          // 플레이 모드 선택 제목 - Cloud BG 효과 적용 (간소화)
+                          CloudContainer(
                             margin:
                                 const EdgeInsets.only(
-                                  bottom: 12,
+                                  bottom: 4,
                                 ),
-                            decoration: BoxDecoration(
-                              color:
-                                  const Color(
-                                    0xFFA3D8F4,
-                                  ).withOpacity(
-                                    0.3,
-                                  ), // 보조 포인트 색상
-                              borderRadius:
-                                  BorderRadius.circular(
-                                    12,
-                                  ),
-                              border: Border.all(
-                                color:
-                                    const Color(
-                                      0xFFA3D8F4,
-                                    ),
-                                width: 1,
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                            child: Text(
+                              '🎮 플레이 모드 선택',
+                              style: TextStyle(
+                                color: const Color(
+                                  0xFF5C47CE, // 키치 테마 텍스트 색상
+                                ),
+                                fontSize:
+                                    isSmallScreen
+                                    ? 16
+                                    : 18,
+                                fontWeight:
+                                    FontWeight
+                                        .bold,
+                                fontFamily:
+                                    'SUIT', // 기본 텍스트 폰트
                               ),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  '🎮 플레이 모드 선택',
-                                  style: TextStyle(
-                                    color: const Color(
-                                      0xFF2D2D2D,
-                                    ),
-                                    fontSize:
-                                        isSmallScreen
-                                        ? 16
-                                        : 18,
-                                    fontWeight:
-                                        FontWeight
-                                            .bold,
-                                    fontFamily:
-                                        'SUIT', // 기본 텍스트 폰트
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 6,
-                                ),
-                                Text(
-                                  '13x13 / 17x17 / 21x21 보드\n렌주룰 적용 • 1수당 30초 제한 • 스킬 시스템',
-                                  style: TextStyle(
-                                    color:
-                                        const Color(
-                                          0xFF2D2D2D,
-                                        ).withOpacity(
-                                          0.8,
-                                        ),
-                                    fontSize:
-                                        isSmallScreen
-                                        ? 11
-                                        : 13,
-                                    height: 1.3,
-                                    fontFamily:
-                                        'Pretendard', // 서브 텍스트 폰트
-                                  ),
-                                  textAlign:
-                                      TextAlign
-                                          .center,
-                                ),
-                              ],
+                              textAlign: TextAlign
+                                  .center,
                             ),
                           ),
 
-                          // 게임 모드 선택 버튼들
+                          // 게임 모드 선택 버튼들 (3개 버튼 비율 조정)
                           Column(
                             children: [
-                              // 2인 플레이 버튼 (로컬 멀티플레이어)
-                              SizedBox(
+                              // 온라인 플레이 버튼 - 새로 추가 (퍼플 계열)
+                              VolumetricPlayButton(
+                                onPressed: () {
+                                  // TODO: 온라인 플레이 기능 구현
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        '온라인 플레이 기능 개발 중입니다!',
+                                      ),
+                                      duration:
+                                          Duration(
+                                            seconds:
+                                                2,
+                                          ),
+                                    ),
+                                  );
+                                },
+                                text:
+                                    '🌐 온라인 플레이',
                                 width: double
                                     .infinity,
                                 height:
                                     isSmallScreen
-                                    ? 60
-                                    : 72,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    _showBoardSizeDialog(
-                                      context,
-                                      isAI: false,
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color(
-                                          0xFFFFD966,
-                                        ), // 버튼 배경색
-                                    foregroundColor:
-                                        const Color(
-                                          0xFF2D2D2D,
-                                        ), // 메인 텍스트 색상
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            12,
-                                          ),
-                                    ),
-                                    elevation: 6,
-                                    shadowColor:
-                                        Colors
-                                            .black
-                                            .withOpacity(
-                                              0.2,
-                                            ),
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal:
-                                              12,
-                                          vertical:
-                                              8,
-                                        ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    children: [
-                                      Icon(
-                                        Icons
-                                            .people,
-                                        size:
-                                            isSmallScreen
-                                            ? 24
-                                            : 28,
-                                        color: const Color(
-                                          0xFF2D2D2D,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Flexible(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '2인 플레이 (로컬)',
-                                              style: TextStyle(
-                                                fontSize: isSmallScreen
-                                                    ? 14
-                                                    : 16,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'SUIT',
-                                                color: const Color(
-                                                  0xFF2D2D2D,
-                                                ),
-                                              ),
-                                              maxLines:
-                                                  1,
-                                              overflow:
-                                                  TextOverflow.ellipsis,
-                                            ),
-                                            Text(
-                                              '한 화면에서 두 명이 플레이',
-                                              style: TextStyle(
-                                                fontSize: isSmallScreen
-                                                    ? 10
-                                                    : 12,
-                                                fontFamily: 'Pretendard',
-                                                color:
-                                                    const Color(
-                                                      0xFF2D2D2D,
-                                                    ).withOpacity(
-                                                      0.7,
-                                                    ),
-                                              ),
-                                              maxLines:
-                                                  1,
-                                              overflow:
-                                                  TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                    ? 56
+                                    : 66,
+                                backgroundColor:
+                                    const Color(
+                                      0xFF7B68EE,
+                                    ), // 미디엄 슬레이트 블루
                               ),
 
                               const SizedBox(
-                                height: 12,
+                                height: 2,
                               ),
 
-                              // 1인 플레이 버튼 (AI 대전)
-                              SizedBox(
+                              // 2인 플레이 버튼 - 입체적 효과 적용 (블루 계열)
+                              VolumetricPlayButton(
+                                onPressed: () {
+                                  _showBoardSizeDialog(
+                                    context,
+                                    isAI: false,
+                                  );
+                                },
+                                text:
+                                    '👥 2인 플레이 (로컬)',
                                 width: double
                                     .infinity,
                                 height:
                                     isSmallScreen
-                                    ? 60
-                                    : 72,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    _showBoardSizeDialog(
-                                      context,
-                                      isAI: true,
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color(
-                                          0xFFFFA3A3,
-                                        ), // 액센트 포인트 색상
-                                    foregroundColor:
-                                        const Color(
-                                          0xFF2D2D2D,
-                                        ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            12,
-                                          ),
-                                    ),
-                                    elevation: 6,
-                                    shadowColor:
-                                        Colors
-                                            .black
-                                            .withOpacity(
-                                              0.2,
-                                            ),
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal:
-                                              12,
-                                          vertical:
-                                              8,
-                                        ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    children: [
-                                      Icon(
-                                        Icons
-                                            .smart_toy,
-                                        size:
-                                            isSmallScreen
-                                            ? 24
-                                            : 28,
-                                        color: const Color(
-                                          0xFF2D2D2D,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Flexible(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '1인 플레이 (AI 대전)',
-                                              style: TextStyle(
-                                                fontSize: isSmallScreen
-                                                    ? 14
-                                                    : 16,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'SUIT',
-                                                color: const Color(
-                                                  0xFF2D2D2D,
-                                                ),
-                                              ),
-                                              maxLines:
-                                                  1,
-                                              overflow:
-                                                  TextOverflow.ellipsis,
-                                            ),
-                                            Text(
-                                              'AI와 대전하기 (개발 중)',
-                                              style: TextStyle(
-                                                fontSize: isSmallScreen
-                                                    ? 10
-                                                    : 12,
-                                                fontFamily: 'Pretendard',
-                                                color:
-                                                    const Color(
-                                                      0xFF2D2D2D,
-                                                    ).withOpacity(
-                                                      0.7,
-                                                    ),
-                                              ),
-                                              maxLines:
-                                                  1,
-                                              overflow:
-                                                  TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                    ? 56
+                                    : 66,
+                                backgroundColor:
+                                    const Color(
+                                      0xFF4169E1,
+                                    ), // 로열 블루
                               ),
 
                               const SizedBox(
-                                height: 16,
+                                height: 2,
                               ),
 
-                              // 추가 메뉴 버튼들
+                              // 1인 플레이 버튼 - 입체적 효과 적용 (다크 퍼플 계열)
+                              VolumetricPlayButton(
+                                onPressed: () {
+                                  _showBoardSizeDialog(
+                                    context,
+                                    isAI: true,
+                                  );
+                                },
+                                text:
+                                    '🤖 1인 플레이 (AI 대전)',
+                                width: double
+                                    .infinity,
+                                height:
+                                    isSmallScreen
+                                    ? 56
+                                    : 66,
+                                backgroundColor:
+                                    const Color(
+                                      0xFF483D8B,
+                                    ), // 다크 슬레이트 블루
+                              ),
+
+                              const SizedBox(
+                                height: 3,
+                              ),
+
+                              // 추가 메뉴 버튼들 - Overflow 해결
                               Row(
                                 children: [
                                   // 게임 규칙 버튼
                                   Expanded(
-                                    child: SizedBox(
-                                      height:
-                                          isSmallScreen
-                                          ? 40
-                                          : 48,
+                                    child: Container(
+                                      height: 30,
                                       child: ElevatedButton(
                                         onPressed: () {
                                           Navigator.push(
@@ -466,58 +296,48 @@ class HomeScreen extends StatelessWidget {
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(
-                                            0xFFA3D8F4,
-                                          ).withOpacity(0.8),
-                                          foregroundColor:
-                                              const Color(
-                                                0xFF2D2D2D,
-                                              ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
                                           padding: const EdgeInsets.symmetric(
                                             horizontal:
-                                                4,
+                                                8,
                                             vertical:
-                                                4,
+                                                2,
                                           ),
+                                          minimumSize:
+                                              Size(
+                                                0,
+                                                30,
+                                              ),
                                         ),
-                                        child: Column(
+                                        child: Row(
+                                          mainAxisSize:
+                                              MainAxisSize.min,
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
                                             Icon(
                                               Icons.info_outline,
                                               size:
-                                                  isSmallScreen
-                                                  ? 14
-                                                  : 16,
+                                                  12,
                                               color: const Color(
-                                                0xFF2D2D2D,
+                                                0xFF5C47CE,
                                               ),
                                             ),
                                             const SizedBox(
-                                              height:
-                                                  2,
+                                              width:
+                                                  4,
                                             ),
                                             Flexible(
                                               child: Text(
                                                 '게임 규칙',
                                                 style: TextStyle(
-                                                  fontSize: isSmallScreen
-                                                      ? 9
-                                                      : 11,
+                                                  fontSize: 10,
                                                   fontFamily: 'SUIT',
                                                   color: const Color(
-                                                    0xFF2D2D2D,
+                                                    0xFF5C47CE,
                                                   ),
                                                 ),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.center,
                                               ),
                                             ),
                                           ],
@@ -527,16 +347,13 @@ class HomeScreen extends StatelessWidget {
                                   ),
 
                                   const SizedBox(
-                                    width: 12,
+                                    width: 8,
                                   ),
 
-                                  // 캐릭터 도감 버튼
+                                  // 캐릭터 뽑기 버튼
                                   Expanded(
-                                    child: SizedBox(
-                                      height:
-                                          isSmallScreen
-                                          ? 40
-                                          : 48,
+                                    child: Container(
+                                      height: 30,
                                       child: ElevatedButton(
                                         onPressed: () {
                                           Navigator.push(
@@ -550,58 +367,48 @@ class HomeScreen extends StatelessWidget {
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(
-                                            0xFFA3D8F4,
-                                          ).withOpacity(0.8),
-                                          foregroundColor:
-                                              const Color(
-                                                0xFF2D2D2D,
-                                              ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
                                           padding: const EdgeInsets.symmetric(
                                             horizontal:
-                                                4,
+                                                8,
                                             vertical:
-                                                4,
+                                                2,
                                           ),
+                                          minimumSize:
+                                              Size(
+                                                0,
+                                                30,
+                                              ),
                                         ),
-                                        child: Column(
+                                        child: Row(
+                                          mainAxisSize:
+                                              MainAxisSize.min,
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
                                             Icon(
                                               Icons.casino,
                                               size:
-                                                  isSmallScreen
-                                                  ? 14
-                                                  : 16,
+                                                  12,
                                               color: const Color(
-                                                0xFF2D2D2D,
+                                                0xFF5C47CE,
                                               ),
                                             ),
                                             const SizedBox(
-                                              height:
-                                                  2,
+                                              width:
+                                                  4,
                                             ),
                                             Flexible(
                                               child: Text(
                                                 '캐릭터 뽑기',
                                                 style: TextStyle(
-                                                  fontSize: isSmallScreen
-                                                      ? 9
-                                                      : 11,
+                                                  fontSize: 10,
                                                   fontFamily: 'SUIT',
                                                   color: const Color(
-                                                    0xFF2D2D2D,
+                                                    0xFF5C47CE,
                                                   ),
                                                 ),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.center,
                                               ),
                                             ),
                                           ],
@@ -615,17 +422,15 @@ class HomeScreen extends StatelessWidget {
                           ),
 
                           const SizedBox(
-                            height: 24,
+                            height: 12,
                           ),
 
-                          // 버전 정보
-                          Text(
-                            'Omok Arena v1.0.0',
+                          // 버전 정보 - 키치 테마 적용
+                          AccentText(
+                            text:
+                                'Omok Arena v1.0.0',
                             style: TextStyle(
-                              color: const Color(
-                                0xFF2D2D2D,
-                              ).withOpacity(0.5),
-                              fontSize: 12,
+                              fontSize: 8,
                               fontFamily:
                                   'Pretendard',
                             ),
@@ -651,19 +456,19 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFFFDF7E3),
+        backgroundColor: const Color(0xFFF4FEFF),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
           side: const BorderSide(
-            color: Color(0xFFA3D8F4),
+            color: Color(0xFF51D4EB),
             width: 2,
           ),
         ),
         title: Text(
-          '보드 크기 선택',
+          '🎯 보드 크기 선택',
           style: TextStyle(
             fontFamily: 'Cafe24Ohsquare',
-            color: const Color(0xFF2D2D2D),
+            color: const Color(0xFF5C47CE),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -675,7 +480,7 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Pretendard',
                 color: const Color(
-                  0xFF2D2D2D,
+                  0xFF5C47CE,
                 ).withOpacity(0.8),
               ),
             ),
@@ -683,14 +488,14 @@ class HomeScreen extends StatelessWidget {
             ...BoardSize.values.map(
               (size) => Card(
                 color: const Color(
-                  0xFFFFD966,
+                  0xFF89E0F7,
                 ).withOpacity(0.3),
                 shape: RoundedRectangleBorder(
                   borderRadius:
-                      BorderRadius.circular(12),
+                      BorderRadius.circular(16),
                   side: const BorderSide(
-                    color: Color(0xFFFFD966),
-                    width: 1,
+                    color: Color(0xFF51D4EB),
+                    width: 2,
                   ),
                 ),
                 child: ListTile(
@@ -704,7 +509,7 @@ class HomeScreen extends StatelessWidget {
                     size.description,
                     style: const TextStyle(
                       fontFamily: 'SUIT',
-                      color: Color(0xFF2D2D2D),
+                      color: Color(0xFF5C47CE),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -713,7 +518,7 @@ class HomeScreen extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: 'Pretendard',
                       color: const Color(
-                        0xFF2D2D2D,
+                        0xFF5C47CE,
                       ).withOpacity(0.7),
                     ),
                   ),
@@ -735,14 +540,14 @@ class HomeScreen extends StatelessWidget {
           TextButton(
             style: TextButton.styleFrom(
               backgroundColor: const Color(
-                0xFFFFA3A3,
-              ).withOpacity(0.8),
+                0xFF89E0F7,
+              ),
               foregroundColor: const Color(
-                0xFF2D2D2D,
+                0xFF5C47CE,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius:
-                    BorderRadius.circular(8),
+                    BorderRadius.circular(12),
               ),
             ),
             onPressed: () =>
@@ -788,11 +593,32 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('AI 난이도 선택'),
+        backgroundColor: const Color(0xFFF4FEFF),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(
+            color: Color(0xFF51D4EB),
+            width: 2,
+          ),
+        ),
+        title: const Text(
+          '🤖 AI 난이도 선택',
+          style: TextStyle(
+            fontFamily: 'Cafe24Ohsquare',
+            color: Color(0xFF5C47CE),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('AI 난이도를 선택하세요:'),
+            const Text(
+              'AI 난이도를 선택하세요:',
+              style: TextStyle(
+                fontFamily: 'Pretendard',
+                color: Color(0xFF5C47CE),
+              ),
+            ),
             const SizedBox(height: 16),
             _buildDifficultyCard(
               context,
@@ -821,9 +647,27 @@ class HomeScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: const Color(
+                0xFF89E0F7,
+              ),
+              foregroundColor: const Color(
+                0xFF5C47CE,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(12),
+              ),
+            ),
             onPressed: () =>
                 Navigator.of(context).pop(),
-            child: const Text('취소'),
+            child: const Text(
+              '취소',
+              style: TextStyle(
+                fontFamily: 'SUIT',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -838,13 +682,38 @@ class HomeScreen extends StatelessWidget {
     Color color,
   ) {
     return Card(
+      color: const Color(
+        0xFF89E0F7,
+      ).withOpacity(0.3),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(
+          color: Color(0xFF51D4EB),
+          width: 2,
+        ),
+      ),
       child: ListTile(
         leading: Icon(
           Icons.smart_toy,
           color: color,
         ),
-        title: Text(title),
-        subtitle: Text(description),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontFamily: 'SUIT',
+            color: Color(0xFF5C47CE),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          description,
+          style: TextStyle(
+            fontFamily: 'Pretendard',
+            color: const Color(
+              0xFF5C47CE,
+            ).withOpacity(0.7),
+          ),
+        ),
         onTap: () {
           Navigator.of(context).pop();
           _startGame(
