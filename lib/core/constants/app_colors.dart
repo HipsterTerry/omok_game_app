@@ -9,17 +9,34 @@ class AppColors {
     0xFFDFFBFF,
   ); // 민트빛 파스텔 배경
   static const Color primary = Color(
-    0xFF89E0F7,
-  ); // 버튼 배경색
+    0xFF5C47CE,
+  ); // 전체 텍스트 색상 (기존 primaryText를 primary로 통합)
   static const Color primaryText = Color(
     0xFF5C47CE,
-  ); // 전체 텍스트 색상
+  ); // 전체 텍스트 색상 (하위 호환성)
   static const Color primaryContainer = Color(
     0xFF8BBEDC,
   ); // 버튼 테두리
   static const Color secondary = Color(
+    0xFF89E0F7,
+  ); // 버튼 배경색 (기존 primary를 secondary로 변경)
+  static const Color secondaryContainer = Color(
+    0xFF8BBEDC,
+  ); // 보조 컨테이너 색상
+  static const Color tertiary = Color(
     0xFF51D4EB,
   ); // 강조 테두리
+
+  // 🎨 게임 모드 버튼 색상
+  static const Color accent1 = Color(
+    0xFF7B68EE,
+  ); // 온라인 플레이 버튼 (미디엄 슬레이트 블루)
+  static const Color accent2 = Color(
+    0xFF4169E1,
+  ); // 2인 플레이 버튼 (로열 블루)
+  static const Color accent3 = Color(
+    0xFF483D8B,
+  ); // 1인 플레이 버튼 (다크 슬레이트 블루)
 
   // 🎨 UI 컨테이너 색상
   static const Color surfaceHigh = Color(

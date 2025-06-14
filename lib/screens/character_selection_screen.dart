@@ -7,6 +7,7 @@ import '../logic/ai_player.dart';
 import 'enhanced_game_screen.dart';
 import '../models/game_state.dart';
 import '../widgets/enhanced_visual_effects.dart';
+import '../core/constants/index.dart';
 
 class CharacterSelectionScreen
     extends StatefulWidget {
@@ -52,21 +53,21 @@ class _CharacterSelectionScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFDFFBFF),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF89E0F7),
+        backgroundColor: AppColors.secondary,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: Color(0xFF5C47CE),
+            color: AppColors.primary,
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           '🎭 캐릭터 선택',
           style: TextStyle(
-            color: Color(0xFF5C47CE),
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
             fontFamily: 'Cafe24Ohsquare',
           ),
@@ -131,8 +132,8 @@ class _CharacterSelectionScreenState
             _useCharacterStone
                 ? '두 플레이어 모두 12지신 캐릭터를 선택하세요!'
                 : '기본 흑백돌로 클래식하게 플레이하세요!',
-            style: const TextStyle(
-              color: Color(0xFF5C47CE),
+            style: TextStyle(
+              color: AppColors.primary,
               fontSize: 16,
               fontFamily: 'Pretendard',
             ),
@@ -192,12 +193,12 @@ class _CharacterSelectionScreenState
         horizontal: 20,
       ),
       decoration: BoxDecoration(
-        color: const Color(
-          0xFF51D4EB,
-        ).withOpacity(0.3),
+        color: AppColors.tertiary.withOpacity(
+          0.3,
+        ),
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: const Color(0xFF51D4EB),
+          color: AppColors.tertiary,
           width: 2,
         ),
         boxShadow: [

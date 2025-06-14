@@ -4,6 +4,7 @@ import '../models/lottery_system.dart';
 import '../widgets/scratch_card_widget.dart';
 import '../widgets/reward_popup_widget.dart';
 import '../widgets/enhanced_visual_effects.dart';
+import '../core/constants/index.dart';
 
 class LotteryScreen extends StatefulWidget {
   const LotteryScreen({Key? key})
@@ -447,33 +448,33 @@ class _LotteryScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFDFFBFF),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           '🎁 캐릭터 뽑기',
           style: TextStyle(
             fontFamily: 'Cafe24Ohsquare',
-            color: Color(0xFF5C47CE),
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color(0xFF89E0F7),
+        backgroundColor: AppColors.secondary,
         elevation: 0,
-        iconTheme: const IconThemeData(
-          color: Color(0xFF5C47CE),
+        iconTheme: IconThemeData(
+          color: AppColors.primary,
         ),
         centerTitle: true,
       ),
       body: SoftBlurBackground(
         child: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFFDFFBFF),
-                Color(0xFFF4FEFF),
-                Color(0xFFFAF9FB),
+                AppColors.background,
+                AppColors.surfaceHigh,
+                AppColors.surface,
               ],
             ),
           ),

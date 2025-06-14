@@ -6,6 +6,7 @@ import 'game_rules_screen.dart';
 import '../models/player_profile.dart';
 import '../logic/ai_player.dart';
 import '../widgets/enhanced_visual_effects.dart';
+import '../core/constants/index.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -20,10 +21,9 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          color: Color(
-            0xFFDFFBFF,
-          ), // 키치 테마 배경색 적용
+        decoration: BoxDecoration(
+          color: AppColors
+              .background, // 키치 테마 배경색 적용
         ),
         child: SafeArea(
           child: LayoutBuilder(
@@ -86,15 +86,12 @@ class HomeScreen extends StatelessWidget {
                                               16,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: const Color(
-                                                0xFF89E0F7,
-                                              ),
+                                              color:
+                                                  AppColors.secondary,
                                               shape:
                                                   BoxShape.circle,
                                               border: Border.all(
-                                                color: const Color(
-                                                  0xFF8BBEDC,
-                                                ),
+                                                color: AppColors.secondaryContainer,
                                                 width: 2,
                                               ),
                                             ),
@@ -104,9 +101,8 @@ class HomeScreen extends StatelessWidget {
                                                   isSmallScreen
                                                   ? 48
                                                   : 64,
-                                              color: const Color(
-                                                0xFF5C47CE,
-                                              ),
+                                              color:
+                                                  AppColors.primary,
                                             ),
                                           );
                                         },
@@ -128,9 +124,8 @@ class HomeScreen extends StatelessWidget {
                                               .bold,
                                       fontFamily:
                                           'Cafe24Ohsquare',
-                                      color: const Color(
-                                        0xFF5C47CE,
-                                      ),
+                                      color: AppColors
+                                          .primary,
                                       shadows: [
                                         Shadow(
                                           offset:
@@ -140,9 +135,11 @@ class HomeScreen extends StatelessWidget {
                                               ),
                                           blurRadius:
                                               4,
-                                          color: const Color(
-                                            0xFF51D4EB,
-                                          ).withOpacity(0.3),
+                                          color: AppColors
+                                              .tertiary
+                                              .withOpacity(
+                                                0.3,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -166,9 +163,8 @@ class HomeScreen extends StatelessWidget {
                             child: Text(
                               '🎮 플레이 모드 선택',
                               style: TextStyle(
-                                color: const Color(
-                                  0xFF5C47CE, // 키치 테마 텍스트 색상
-                                ),
+                                color: AppColors
+                                    .primary, // 키치 테마 텍스트 색상
                                 fontSize:
                                     isSmallScreen
                                     ? 16
@@ -215,9 +211,8 @@ class HomeScreen extends StatelessWidget {
                                     ? 56
                                     : 66,
                                 backgroundColor:
-                                    const Color(
-                                      0xFF7B68EE,
-                                    ), // 미디엄 슬레이트 블루
+                                    AppColors
+                                        .accent1, // 미디엄 슬레이트 블루
                               ),
 
                               const SizedBox(
@@ -241,9 +236,8 @@ class HomeScreen extends StatelessWidget {
                                     ? 56
                                     : 66,
                                 backgroundColor:
-                                    const Color(
-                                      0xFF4169E1,
-                                    ), // 로열 블루
+                                    AppColors
+                                        .accent2, // 로열 블루
                               ),
 
                               const SizedBox(
@@ -267,9 +261,8 @@ class HomeScreen extends StatelessWidget {
                                     ? 56
                                     : 66,
                                 backgroundColor:
-                                    const Color(
-                                      0xFF483D8B,
-                                    ), // 다크 슬레이트 블루
+                                    AppColors
+                                        .accent3, // 다크 슬레이트 블루
                               ),
 
                               const SizedBox(
@@ -318,9 +311,8 @@ class HomeScreen extends StatelessWidget {
                                               Icons.info_outline,
                                               size:
                                                   12,
-                                              color: const Color(
-                                                0xFF5C47CE,
-                                              ),
+                                              color:
+                                                  AppColors.primary,
                                             ),
                                             const SizedBox(
                                               width:
@@ -332,9 +324,7 @@ class HomeScreen extends StatelessWidget {
                                                 style: TextStyle(
                                                   fontSize: 10,
                                                   fontFamily: 'SUIT',
-                                                  color: const Color(
-                                                    0xFF5C47CE,
-                                                  ),
+                                                  color: AppColors.primary,
                                                 ),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
@@ -389,9 +379,8 @@ class HomeScreen extends StatelessWidget {
                                               Icons.casino,
                                               size:
                                                   12,
-                                              color: const Color(
-                                                0xFF5C47CE,
-                                              ),
+                                              color:
+                                                  AppColors.primary,
                                             ),
                                             const SizedBox(
                                               width:
@@ -403,9 +392,7 @@ class HomeScreen extends StatelessWidget {
                                                 style: TextStyle(
                                                   fontSize: 10,
                                                   fontFamily: 'SUIT',
-                                                  color: const Color(
-                                                    0xFF5C47CE,
-                                                  ),
+                                                  color: AppColors.primary,
                                                 ),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
@@ -456,11 +443,11 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFFF4FEFF),
+        backgroundColor: AppColors.surfaceHigh,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(
-            color: Color(0xFF51D4EB),
+          side: BorderSide(
+            color: AppColors.tertiary,
             width: 2,
           ),
         ),
@@ -468,7 +455,7 @@ class HomeScreen extends StatelessWidget {
           '🎯 보드 크기 선택',
           style: TextStyle(
             fontFamily: 'Cafe24Ohsquare',
-            color: const Color(0xFF5C47CE),
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -479,22 +466,20 @@ class HomeScreen extends StatelessWidget {
               '게임할 보드 크기를 선택하세요:',
               style: TextStyle(
                 fontFamily: 'Pretendard',
-                color: const Color(
-                  0xFF5C47CE,
-                ).withOpacity(0.8),
+                color: AppColors.primary
+                    .withOpacity(0.8),
               ),
             ),
             const SizedBox(height: 16),
             ...BoardSize.values.map(
               (size) => Card(
-                color: const Color(
-                  0xFF89E0F7,
-                ).withOpacity(0.3),
+                color: AppColors.secondary
+                    .withOpacity(0.3),
                 shape: RoundedRectangleBorder(
                   borderRadius:
                       BorderRadius.circular(16),
-                  side: const BorderSide(
-                    color: Color(0xFF51D4EB),
+                  side: BorderSide(
+                    color: AppColors.tertiary,
                     width: 2,
                   ),
                 ),
@@ -507,9 +492,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                   title: Text(
                     size.description,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'SUIT',
-                      color: Color(0xFF5C47CE),
+                      color: AppColors.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -517,9 +502,8 @@ class HomeScreen extends StatelessWidget {
                     '${size.size}x${size.size} 보드',
                     style: TextStyle(
                       fontFamily: 'Pretendard',
-                      color: const Color(
-                        0xFF5C47CE,
-                      ).withOpacity(0.7),
+                      color: AppColors.primary
+                          .withOpacity(0.7),
                     ),
                   ),
                   onTap: () {
@@ -539,12 +523,9 @@ class HomeScreen extends StatelessWidget {
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              backgroundColor: const Color(
-                0xFF89E0F7,
-              ),
-              foregroundColor: const Color(
-                0xFF5C47CE,
-              ),
+              backgroundColor:
+                  AppColors.secondary,
+              foregroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(
                 borderRadius:
                     BorderRadius.circular(12),
@@ -593,30 +574,30 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFFF4FEFF),
+        backgroundColor: AppColors.surfaceHigh,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(
-            color: Color(0xFF51D4EB),
+          side: BorderSide(
+            color: AppColors.tertiary,
             width: 2,
           ),
         ),
-        title: const Text(
+        title: Text(
           '🤖 AI 난이도 선택',
           style: TextStyle(
             fontFamily: 'Cafe24Ohsquare',
-            color: Color(0xFF5C47CE),
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'AI 난이도를 선택하세요:',
               style: TextStyle(
                 fontFamily: 'Pretendard',
-                color: Color(0xFF5C47CE),
+                color: AppColors.primary,
               ),
             ),
             const SizedBox(height: 16),
@@ -648,12 +629,9 @@ class HomeScreen extends StatelessWidget {
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              backgroundColor: const Color(
-                0xFF89E0F7,
-              ),
-              foregroundColor: const Color(
-                0xFF5C47CE,
-              ),
+              backgroundColor:
+                  AppColors.secondary,
+              foregroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(
                 borderRadius:
                     BorderRadius.circular(12),
@@ -682,13 +660,11 @@ class HomeScreen extends StatelessWidget {
     Color color,
   ) {
     return Card(
-      color: const Color(
-        0xFF89E0F7,
-      ).withOpacity(0.3),
+      color: AppColors.secondary.withOpacity(0.3),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(
-          color: Color(0xFF51D4EB),
+        side: BorderSide(
+          color: AppColors.tertiary,
           width: 2,
         ),
       ),
@@ -699,9 +675,9 @@ class HomeScreen extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'SUIT',
-            color: Color(0xFF5C47CE),
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -709,9 +685,9 @@ class HomeScreen extends StatelessWidget {
           description,
           style: TextStyle(
             fontFamily: 'Pretendard',
-            color: const Color(
-              0xFF5C47CE,
-            ).withOpacity(0.7),
+            color: AppColors.primary.withOpacity(
+              0.7,
+            ),
           ),
         ),
         onTap: () {
