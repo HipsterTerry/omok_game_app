@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/constants/app_colors.dart';
 import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -92,9 +93,8 @@ class _SplashScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFDFFBFF,
-      ), // 기존 테마 배경색
+      backgroundColor:
+          AppColors.background, // 기존 테마 배경색
       body: Center(
         child: AnimatedBuilder(
           animation: _fadeAnimation,
@@ -116,9 +116,9 @@ class _SplashScreenState
                           ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(
-                            0xFF8BBEDC,
-                          ).withOpacity(0.3),
+                          color: AppColors
+                              .primaryContainer
+                              .withOpacity(0.3),
                           blurRadius: 20,
                           offset: const Offset(
                             0,
@@ -140,16 +140,16 @@ class _SplashScreenState
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  const Color(
-                                    0xFF89E0F7,
-                                  ).withOpacity(
-                                    0.8,
-                                  ),
-                                  const Color(
-                                    0xFF51D4EB,
-                                  ).withOpacity(
-                                    0.6,
-                                  ),
+                                  AppColors
+                                      .primary
+                                      .withOpacity(
+                                        0.8,
+                                      ),
+                                  AppColors
+                                      .secondary
+                                      .withOpacity(
+                                        0.6,
+                                      ),
                                 ],
                                 begin: Alignment
                                     .topLeft,
@@ -185,14 +185,13 @@ class _SplashScreenState
                           'Cafe24Ohsquare',
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: const Color(
-                        0xFF5C47CE,
-                      ),
+                      color:
+                          AppColors.primaryText,
                       shadows: [
                         Shadow(
-                          color: const Color(
-                            0xFF8BBEDC,
-                          ).withOpacity(0.5),
+                          color: AppColors
+                              .primaryContainer
+                              .withOpacity(0.5),
                           offset: const Offset(
                             2,
                             2,
@@ -211,9 +210,8 @@ class _SplashScreenState
                     style: TextStyle(
                       fontFamily: 'SUIT',
                       fontSize: 16,
-                      color: const Color(
-                        0xFF5C47CE,
-                      ).withOpacity(0.7),
+                      color: AppColors.primaryText
+                          .withOpacity(0.7),
                     ),
                   ),
 
@@ -228,11 +226,7 @@ class _SplashScreenState
                       valueColor:
                           AlwaysStoppedAnimation<
                             Color
-                          >(
-                            const Color(
-                              0xFF89E0F7,
-                            ),
-                          ),
+                          >(AppColors.primary),
                     ),
                   ),
                 ],
