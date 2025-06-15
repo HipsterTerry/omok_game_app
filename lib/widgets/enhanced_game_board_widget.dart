@@ -48,49 +48,90 @@ class _EnhancedGameBoardWidgetState
     final size =
         widget.boardSize ?? availableSize;
 
+    // 2.5D 스타일을 위한 그림자와 Transform 적용
     return Container(
-      width: size,
-      height: size,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
+          // 강화된 그림자 효과 (좌상단 Light Source)
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            color: Colors.black.withOpacity(0.3),
+            offset: const Offset(8, 12),
+            blurRadius: 16,
+            spreadRadius: 2,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            offset: const Offset(4, 6),
+            blurRadius: 8,
+            spreadRadius: 1,
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: MouseRegion(
-          onHover: (event) =>
-              _handleHover(event, size),
-          onExit: (_) => setState(
-            () => _hoverPosition = null,
+      child: Transform(
+        // 2.5D 시점 적용: 위에서 비스듬히 내려다보는 형태
+        transform: Matrix4.identity()
+          ..setEntry(3, 2, 0.001) // 원근감
+          ..rotateX(0.45), // X축 기준 기울기
+        alignment: Alignment.center,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              12,
+            ),
+            // 바둑판 자체의 색상과 질감
+            color: Colors.brown[100],
           ),
-          child: GestureDetector(
-            onTapDown: (details) =>
-                _handleTapDown(details, size),
-            onTapUp: (_) => setState(
-              () => _isPressed = false,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(
+              12,
             ),
-            onTapCancel: () => setState(
-              () => _isPressed = false,
-            ),
-            // 모바일 터치 개선: 더 정확한 터치 감지
-            behavior: HitTestBehavior.opaque,
-            child: CustomPaint(
-              size: Size(size, size),
-              painter: EnhancedOmokBoardPainter(
-                gameState: widget.gameState,
-                boardSizeType:
-                    widget.boardSizeType,
-                showCoordinates:
-                    widget.showCoordinates,
-                hoverPosition: _hoverPosition,
-                isPressed: _isPressed,
-              ),
+            child: Stack(
+              children: [
+                // 기존 바둑판 레이어
+                MouseRegion(
+                  onHover: (event) =>
+                      _handleHover(event, size),
+                  onExit: (_) => setState(
+                    () => _hoverPosition = null,
+                  ),
+                  child: GestureDetector(
+                    onTapDown: (details) =>
+                        _handleTapDown(
+                          details,
+                          size,
+                        ),
+                    onTapUp: (_) => setState(
+                      () => _isPressed = false,
+                    ),
+                    onTapCancel: () => setState(
+                      () => _isPressed = false,
+                    ),
+                    // 모바일 터치 개선: 더 정확한 터치 감지
+                    behavior:
+                        HitTestBehavior.opaque,
+                    child: CustomPaint(
+                      size: Size(size, size),
+                      painter:
+                          EnhancedOmokBoardPainter(
+                            gameState:
+                                widget.gameState,
+                            boardSizeType: widget
+                                .boardSizeType,
+                            showCoordinates: widget
+                                .showCoordinates,
+                            hoverPosition:
+                                _hoverPosition,
+                            isPressed: _isPressed,
+                          ),
+                    ),
+                  ),
+                ),
+                // 추후 캐릭터 이미지 레이어가 여기에 추가될 예정
+                // Positioned 위젯들로 각 돌 위치에 캐릭터 PNG 배치 가능
+              ],
             ),
           ),
         ),
