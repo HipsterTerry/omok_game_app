@@ -53,26 +53,34 @@ class _EnhancedGameBoardWidgetState
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          // 강화된 그림자 효과 (좌상단 Light Source)
+          // 강화된 그림자 효과 (내 쪽에서 상대방을 바라보는 시점에 맞춘 그림자)
           BoxShadow(
             color: Colors.black.withOpacity(0.3),
-            offset: const Offset(8, 12),
+            offset: const Offset(
+              0,
+              -8,
+            ), // 그림자가 뒤쪽(위쪽)으로 떨어짐
             blurRadius: 16,
             spreadRadius: 2,
           ),
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            offset: const Offset(4, 6),
+            offset: const Offset(
+              0,
+              -4,
+            ), // 보조 그림자도 위쪽으로
             blurRadius: 8,
             spreadRadius: 1,
           ),
         ],
       ),
       child: Transform(
-        // 2.5D 시점 적용: 위에서 비스듬히 내려다보는 형태
+        // 2.5D 시점 적용: 내 쪽에서 상대방을 바라보는 형태 (가까운 쪽이 크고 먼 쪽이 작게)
         transform: Matrix4.identity()
           ..setEntry(3, 2, 0.001) // 원근감
-          ..rotateX(0.45), // X축 기준 기울기
+          ..rotateX(
+            -0.3,
+          ), // X축 기준 기울기 (음수로 변경하여 시점 반전)
         alignment: Alignment.center,
         child: Container(
           width: size,
