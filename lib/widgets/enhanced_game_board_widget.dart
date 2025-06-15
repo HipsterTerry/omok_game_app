@@ -53,34 +53,38 @@ class _EnhancedGameBoardWidgetState
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          // 강화된 그림자 효과 (내 쪽에서 상대방을 바라보는 시점에 맞춘 그림자)
+          // 강화된 그림자 효과 (바둑판이 더 누운 시점에 맞춘 강한 입체감)
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withOpacity(0.4),
+            offset: const Offset(
+              0,
+              -15,
+            ), // 그림자가 더 멀리 뒤쪽으로 떨어짐
+            blurRadius: 25,
+            spreadRadius: 3,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
             offset: const Offset(
               0,
               -8,
-            ), // 그림자가 뒤쪽(위쪽)으로 떨어짐
-            blurRadius: 16,
+            ), // 보조 그림자도 더 강하게
+            blurRadius: 15,
             spreadRadius: 2,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            offset: const Offset(
-              0,
-              -4,
-            ), // 보조 그림자도 위쪽으로
-            blurRadius: 8,
-            spreadRadius: 1,
           ),
         ],
       ),
       child: Transform(
-        // 2.5D 시점 적용: 내 쪽에서 상대방을 바라보는 형태 (가까운 쪽이 크고 먼 쪽이 작게)
+        // 2.5D 시점 적용: 바둑판이 상대쪽으로 더 누워서 강한 원근감과 입체감 제공
         transform: Matrix4.identity()
-          ..setEntry(3, 2, 0.001) // 원근감
+          ..setEntry(
+            3,
+            2,
+            0.003,
+          ) // 원근감 대폭 강화 (0.001 → 0.003)
           ..rotateX(
-            -0.3,
-          ), // X축 기준 기울기 (음수로 변경하여 시점 반전)
+            -0.8,
+          ), // X축 기준 기울기 대폭 강화 (-0.3 → -0.8)
         alignment: Alignment.center,
         child: Container(
           width: size,
