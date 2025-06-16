@@ -193,13 +193,47 @@ class _EnhancedGameBoardWidgetState
                 height: boardSize,
                 decoration: BoxDecoration(
                   borderRadius:
-                      BorderRadius.circular(12),
-                  // 바둑판 자체의 색상과 질감
-                  color: Colors.brown[100],
+                      BorderRadius.circular(16),
+                  // 🎨 체스판 스타일 나무 배경색
+                  color: const Color(0xFFF7ECE1),
+                  // 🎯 입체적인 깊이 효과
+                  boxShadow: [
+                    // 주 그림자 - 깊이감
+                    BoxShadow(
+                      color: Colors.black
+                          .withOpacity(0.25),
+                      offset: const Offset(0, 8),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
+                    // 접촉 그림자 - 바닥과의 접촉감
+                    BoxShadow(
+                      color: Colors.black
+                          .withOpacity(0.15),
+                      offset: const Offset(0, 4),
+                      blurRadius: 12,
+                      spreadRadius: 0,
+                    ),
+                    // 상단 하이라이트 - 입체감
+                    BoxShadow(
+                      color: Colors.white
+                          .withOpacity(0.3),
+                      offset: const Offset(0, -2),
+                      blurRadius: 8,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                  // 🎨 나무 질감을 위한 미세한 테두리
+                  border: Border.all(
+                    color: const Color(
+                      0xFFE8D5B7,
+                    ),
+                    width: 1.5,
+                  ),
                 ),
                 child: ClipRRect(
                   borderRadius:
-                      BorderRadius.circular(12),
+                      BorderRadius.circular(16),
                   child: Stack(
                     children: [
                       // 기존 바둑판 레이어
@@ -406,8 +440,8 @@ class _EnhancedGameBoardWidgetState
                   (cellSize * 0.85 / 2), // 중앙 정렬
               child: Image.asset(
                 stone == PlayerType.black
-                    ? 'assets/images/stone_black_glossy.png'
-                    : 'assets/images/stone_white_glossy.png',
+                    ? 'assets/images/stone_black.png'
+                    : 'assets/images/stone_white.png',
                 width: cellSize * 0.85,
                 height: cellSize * 0.85,
                 fit: BoxFit.contain,
