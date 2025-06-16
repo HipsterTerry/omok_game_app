@@ -56,16 +56,10 @@ class OmokGameLogic {
   static bool isBoardFull(
     List<List<PlayerType?>> board,
   ) {
-    for (
-      int row = 0;
-      row < GameState.boardSize;
-      row++
-    ) {
-      for (
-        int col = 0;
-        col < GameState.boardSize;
-        col++
-      ) {
+    final boardSize = board.length; // 동적 보드 크기 사용
+
+    for (int row = 0; row < boardSize; row++) {
+      for (int col = 0; col < boardSize; col++) {
         if (board[row][col] == null) {
           return false;
         }
@@ -82,6 +76,8 @@ class OmokGameLogic {
     final player =
         board[lastMove.row][lastMove.col];
     if (player == null) return null;
+
+    final boardSize = board.length; // 동적 보드 크기 사용
 
     // 8방향 검사 (가로, 세로, 대각선)
     final directions = [
@@ -100,6 +96,7 @@ class OmokGameLogic {
             player,
             direction[0],
             direction[1],
+            boardSize,
           ) +
           countDirection(
             board,
@@ -107,9 +104,18 @@ class OmokGameLogic {
             player,
             -direction[0],
             -direction[1],
+            boardSize,
           );
 
+      // 디버깅용 로그
+      print(
+        '🎯 승리 판정: 위치(${lastMove.row},${lastMove.col}) 방향[${direction[0]},${direction[1]}] 플레이어:$player 연속:$count개',
+      );
+
       if (count >= winCondition) {
+        print(
+          '✅ 승리! $player이 $count연속으로 승리했습니다!',
+        );
         return player;
       }
     }
@@ -123,15 +129,16 @@ class OmokGameLogic {
     PlayerType player,
     int deltaRow,
     int deltaCol,
+    int boardSize,
   ) {
     int count = 0;
     int row = start.row + deltaRow;
     int col = start.col + deltaCol;
 
     while (row >= 0 &&
-        row < GameState.boardSize &&
+        row < boardSize &&
         col >= 0 &&
-        col < GameState.boardSize &&
+        col < boardSize &&
         board[row][col] == player) {
       count++;
       row += deltaRow;
@@ -150,17 +157,11 @@ class OmokGameLogic {
   static String boardToString(
     List<List<PlayerType?>> board,
   ) {
+    final boardSize = board.length; // 동적 보드 크기 사용
     StringBuffer buffer = StringBuffer();
-    for (
-      int row = 0;
-      row < GameState.boardSize;
-      row++
-    ) {
-      for (
-        int col = 0;
-        col < GameState.boardSize;
-        col++
-      ) {
+
+    for (int row = 0; row < boardSize; row++) {
+      for (int col = 0; col < boardSize; col++) {
         final cell = board[row][col];
         if (cell == null) {
           buffer.write('.');
