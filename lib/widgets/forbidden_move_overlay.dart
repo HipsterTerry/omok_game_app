@@ -52,55 +52,61 @@ class ForbiddenMoveOverlay
       print('🚫 금지 위치: (${pos.row}, ${pos.col})');
     }
 
-    // IgnorePointer로 터치 이벤트를 하위 위젯으로 통과시킴
+    // 🎯 바둑판과 동일한 2.5D Transform 적용
     return IgnorePointer(
-      child: SizedBox(
-        width: boardSize,
-        height: boardSize,
-        child: Stack(
-          children: forbiddenPositions.map((
-            position,
-          ) {
-            final x =
-                (position.col + 1) * cellSize;
-            final y =
-                (position.row + 1) * cellSize;
+      child: Transform(
+        // 바둑판과 정확히 동일한 Transform 적용
+        transform: Matrix4.identity()
+          ..setEntry(3, 2, 0.003) // 원근감 대폭 강화
+          ..rotateX(-0.5), // X축 기준 회전 (바둑판과 동일)
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: boardSize,
+          height: boardSize,
+          child: Stack(
+            children: forbiddenPositions.map((
+              position,
+            ) {
+              final x =
+                  (position.col + 1) * cellSize;
+              final y =
+                  (position.row + 1) * cellSize;
 
-            return Positioned(
-              left: x - 14, // 중앙 정렬
-              top: y - 14,
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(
-                    0.3,
-                  ),
-                  borderRadius:
-                      BorderRadius.circular(14),
-                  border: Border.all(
+              return Positioned(
+                left: x - 14, // 중앙 정렬
+                top: y - 14,
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
                     color: Colors.red.withOpacity(
-                      0.9,
+                      0.3,
                     ),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
+                    borderRadius:
+                        BorderRadius.circular(14),
+                    border: Border.all(
                       color: Colors.red
-                          .withOpacity(0.3),
-                      blurRadius: 6,
-                      spreadRadius: 2,
+                          .withOpacity(0.9),
+                      width: 2,
                     ),
-                  ],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.red
+                            .withOpacity(0.3),
+                        blurRadius: 6,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.clear,
+                    size: 20,
+                    color: Colors.red.shade700,
+                  ),
                 ),
-                child: Icon(
-                  Icons.clear,
-                  size: 20,
-                  color: Colors.red.shade700,
-                ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );

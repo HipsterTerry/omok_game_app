@@ -5,7 +5,8 @@ import '../models/character.dart';
 import '../models/game_state.dart';
 import '../models/player_profile.dart';
 
-class EnhancedOmokBoardPainter extends CustomPainter {
+class EnhancedOmokBoardPainter
+    extends CustomPainter {
   final EnhancedGameState gameState;
   late final double stoneRadius;
   final bool showCoordinates;
@@ -22,7 +23,9 @@ class EnhancedOmokBoardPainter extends CustomPainter {
   }) {
     // 동적으로 돌 크기 계산 (보드 크기에 비례)
     final boardSize = gameState.boardSize;
-    stoneRadius = (400.0 / (boardSize + 1)) * 0.4; // 보드 크기에 맞는 돌 크기
+    stoneRadius =
+        (400.0 / (boardSize + 1)) *
+        0.4; // 보드 크기에 맞는 돌 크기
   }
 
   @override
@@ -42,18 +45,28 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     _drawThemedWoodenBackground(canvas, size);
 
     // 2. 바둑판 선 그리기
-    _drawBoardLines(canvas, boardRect, cellSize, boardSize);
+    _drawBoardLines(
+      canvas,
+      boardRect,
+      cellSize,
+      boardSize,
+    );
 
     // 3. 화점(별점) 그리기
     _drawStarPoints(canvas, cellSize, boardSize);
 
     // 4. 좌표 표시 (옵션)
     if (showCoordinates) {
-      _drawCoordinates(canvas, boardRect, cellSize, boardSize);
+      _drawCoordinates(
+        canvas,
+        boardRect,
+        cellSize,
+        boardSize,
+      );
     }
 
-    // 5. 바둑돌과 캐릭터 그리기
-    _drawStones(canvas, cellSize, boardSize);
+    // 5. 바둑돌과 캐릭터 그리기 - PNG 이미지로 대체됨
+    // _drawStones(canvas, cellSize, boardSize);
 
     // 6. 마지막 수 표시
     _drawLastMoveIndicator(canvas, cellSize);
@@ -69,7 +82,10 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     }
   }
 
-  void _drawThemedWoodenBackground(Canvas canvas, Size size) {
+  void _drawThemedWoodenBackground(
+    Canvas canvas,
+    Size size,
+  ) {
     List<Color> woodColors;
     double grainOpacity;
 
@@ -84,7 +100,8 @@ class EnhancedOmokBoardPainter extends CustomPainter {
         ];
         grainOpacity = 0.08;
         break;
-      case BoardSize.medium: // 중급 (16x16) - 클래식 중간 톤
+      case BoardSize
+          .medium: // 중급 (16x16) - 클래식 중간 톤
         woodColors = [
           const Color(0xFFDEB887), // BurlyWood
           const Color(0xFFD2B48C), // Tan
@@ -93,7 +110,8 @@ class EnhancedOmokBoardPainter extends CustomPainter {
         ];
         grainOpacity = 0.12;
         break;
-      case BoardSize.large: // 고급 (19x19) - 어두운 고급 목재
+      case BoardSize
+          .large: // 고급 (19x19) - 어두운 고급 목재
         woodColors = [
           const Color(0xFFCD853F), // Peru
           const Color(0xFFA0522D), // Sienna
@@ -113,16 +131,30 @@ class EnhancedOmokBoardPainter extends CustomPainter {
 
     final backgroundPaint = Paint()
       ..shader = woodGradient.createShader(
-        Rect.fromLTWH(0, 0, size.width, size.height),
+        Rect.fromLTWH(
+          0,
+          0,
+          size.width,
+          size.height,
+        ),
       );
 
     canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
+      Rect.fromLTWH(
+        0,
+        0,
+        size.width,
+        size.height,
+      ),
       backgroundPaint,
     );
 
     // 테마별 나무 결 패턴
-    _drawThemedWoodGrain(canvas, size, grainOpacity);
+    _drawThemedWoodGrain(
+      canvas,
+      size,
+      grainOpacity,
+    );
 
     // 고급 보드에는 전통 문양 추가
     if (boardSizeType == BoardSize.large) {
@@ -130,20 +162,34 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     }
   }
 
-  void _drawThemedWoodGrain(Canvas canvas, Size size, double opacity) {
+  void _drawThemedWoodGrain(
+    Canvas canvas,
+    Size size,
+    double opacity,
+  ) {
     final grainPaint = Paint()
-      ..color = const Color(0xFFDEB887).withOpacity(opacity)
+      ..color = const Color(
+        0xFFDEB887,
+      ).withOpacity(opacity)
       ..strokeWidth = 0.5;
 
-    final random = math.Random(42); // 시드 고정으로 일관된 패턴
+    final random = math.Random(
+      42,
+    ); // 시드 고정으로 일관된 패턴
 
     for (int i = 0; i < 20; i++) {
       final y = size.height * i / 20;
       final path = Path();
       path.moveTo(0, y);
 
-      for (double x = 0; x <= size.width; x += 10) {
-        final yOffset = math.sin(x * 0.02) * 3 + random.nextDouble() * 2;
+      for (
+        double x = 0;
+        x <= size.width;
+        x += 10
+      ) {
+        final yOffset =
+            math.sin(x * 0.02) * 3 +
+            random.nextDouble() * 2;
         path.lineTo(x, y + yOffset);
       }
 
@@ -151,30 +197,52 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     }
   }
 
-  void _drawTraditionalPattern(Canvas canvas, Size size) {
+  void _drawTraditionalPattern(
+    Canvas canvas,
+    Size size,
+  ) {
     final patternPaint = Paint()
-      ..color = const Color(0xFF8B4513).withOpacity(0.08)
+      ..color = const Color(
+        0xFF8B4513,
+      ).withOpacity(0.08)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
     final centerX = size.width / 2;
     final centerY = size.height / 2;
-    final radius = math.min(size.width, size.height) * 0.4;
+    final radius =
+        math.min(size.width, size.height) * 0.4;
 
     // 전통 한국 문양 (간단한 원형 패턴)
     for (int i = 1; i <= 3; i++) {
-      canvas.drawCircle(Offset(centerX, centerY), radius * i / 3, patternPaint);
+      canvas.drawCircle(
+        Offset(centerX, centerY),
+        radius * i / 3,
+        patternPaint,
+      );
     }
 
     // 대각선 패턴
     for (int i = 0; i < 8; i++) {
       final angle = i * math.pi / 4;
-      final startX = centerX + math.cos(angle) * radius * 0.3;
-      final startY = centerY + math.sin(angle) * radius * 0.3;
-      final endX = centerX + math.cos(angle) * radius * 0.7;
-      final endY = centerY + math.sin(angle) * radius * 0.7;
+      final startX =
+          centerX +
+          math.cos(angle) * radius * 0.3;
+      final startY =
+          centerY +
+          math.sin(angle) * radius * 0.3;
+      final endX =
+          centerX +
+          math.cos(angle) * radius * 0.7;
+      final endY =
+          centerY +
+          math.sin(angle) * radius * 0.7;
 
-      canvas.drawLine(Offset(startX, startY), Offset(endX, endY), patternPaint);
+      canvas.drawLine(
+        Offset(startX, startY),
+        Offset(endX, endY),
+        patternPaint,
+      );
     }
   }
 
@@ -251,7 +319,11 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     _drawGridShadow(canvas, cellSize, boardSize);
   }
 
-  void _drawGridShadow(Canvas canvas, double cellSize, int boardSize) {
+  void _drawGridShadow(
+    Canvas canvas,
+    double cellSize,
+    int boardSize,
+  ) {
     final shadowPaint = Paint()
       ..color = Colors.black.withOpacity(0.05)
       ..strokeWidth = 1.5
@@ -263,7 +335,10 @@ class EnhancedOmokBoardPainter extends CustomPainter {
       final x = cellSize * (i + 1);
       canvas.drawLine(
         Offset(x + 0.5, cellSize + 0.5),
-        Offset(x + 0.5, cellSize * boardSize + 0.5),
+        Offset(
+          x + 0.5,
+          cellSize * boardSize + 0.5,
+        ),
         shadowPaint,
       );
 
@@ -271,13 +346,20 @@ class EnhancedOmokBoardPainter extends CustomPainter {
       final y = cellSize * (i + 1);
       canvas.drawLine(
         Offset(cellSize + 0.5, y + 0.5),
-        Offset(cellSize * boardSize + 0.5, y + 0.5),
+        Offset(
+          cellSize * boardSize + 0.5,
+          y + 0.5,
+        ),
         shadowPaint,
       );
     }
   }
 
-  void _drawStarPoints(Canvas canvas, double cellSize, int boardSize) {
+  void _drawStarPoints(
+    Canvas canvas,
+    double cellSize,
+    int boardSize,
+  ) {
     final starPaint = Paint()
       ..color = Colors.black87
       ..style = PaintingStyle.fill;
@@ -321,7 +403,10 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     }
 
     // 화점 크기를 보드 크기에 따라 조정 (더 큰 크기)
-    final starRadius = (cellSize * 0.15).clamp(4.0, 8.0);
+    final starRadius = (cellSize * 0.15).clamp(
+      4.0,
+      8.0,
+    );
 
     for (final point in starPoints) {
       // 정확한 격자점 위치 계산
@@ -330,11 +415,19 @@ class EnhancedOmokBoardPainter extends CustomPainter {
 
       // 중앙 화점은 더 크게 표시
       final isCenterPoint =
-          (boardSize == 13 && point[0] == 6 && point[1] == 6) ||
-          (boardSize == 17 && point[0] == 8 && point[1] == 8) ||
-          (boardSize == 21 && point[0] == 10 && point[1] == 10);
+          (boardSize == 13 &&
+              point[0] == 6 &&
+              point[1] == 6) ||
+          (boardSize == 17 &&
+              point[0] == 8 &&
+              point[1] == 8) ||
+          (boardSize == 21 &&
+              point[0] == 10 &&
+              point[1] == 10);
 
-      final currentRadius = isCenterPoint ? starRadius * 1.5 : starRadius;
+      final currentRadius = isCenterPoint
+          ? starRadius * 1.5
+          : starRadius;
 
       // 화점 그림자 그리기 (입체감)
       final shadowPaint = Paint()
@@ -358,10 +451,17 @@ class EnhancedOmokBoardPainter extends CustomPainter {
 
       final gradientPaint = Paint()
         ..shader = starGradient.createShader(
-          Rect.fromCircle(center: Offset(x, y), radius: currentRadius),
+          Rect.fromCircle(
+            center: Offset(x, y),
+            radius: currentRadius,
+          ),
         );
 
-      canvas.drawCircle(Offset(x, y), currentRadius, gradientPaint);
+      canvas.drawCircle(
+        Offset(x, y),
+        currentRadius,
+        gradientPaint,
+      );
 
       // 중앙 화점에 특별한 강조 효과
       if (isCenterPoint) {
@@ -382,7 +482,11 @@ class EnhancedOmokBoardPainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2.0;
 
-        canvas.drawCircle(Offset(x, y), currentRadius + 3, centerRingPaint);
+        canvas.drawCircle(
+          Offset(x, y),
+          currentRadius + 3,
+          centerRingPaint,
+        );
 
         // 보조 링 (더 미묘하게)
         final secondaryRingPaint = Paint()
@@ -390,7 +494,11 @@ class EnhancedOmokBoardPainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.0;
 
-        canvas.drawCircle(Offset(x, y), currentRadius + 5, secondaryRingPaint);
+        canvas.drawCircle(
+          Offset(x, y),
+          currentRadius + 5,
+          secondaryRingPaint,
+        );
       }
 
       // 일반 화점에도 미묘한 외곽선
@@ -400,7 +508,11 @@ class EnhancedOmokBoardPainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.0;
 
-        canvas.drawCircle(Offset(x, y), currentRadius + 1, outlinePaint);
+        canvas.drawCircle(
+          Offset(x, y),
+          currentRadius + 1,
+          outlinePaint,
+        );
       }
     }
   }
@@ -420,30 +532,52 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     // 숫자 좌표 (왼쪽)
     for (int i = 0; i < boardSize; i++) {
       final textPainter = TextPainter(
-        text: TextSpan(text: '${boardSize - i}', style: textStyle),
+        text: TextSpan(
+          text: '${boardSize - i}',
+          style: textStyle,
+        ),
         textDirection: TextDirection.ltr,
       );
       textPainter.layout();
 
-      final y = boardRect.top + i * cellSize - textPainter.height / 2;
-      textPainter.paint(canvas, Offset(boardRect.left - 25, y));
+      final y =
+          boardRect.top +
+          i * cellSize -
+          textPainter.height / 2;
+      textPainter.paint(
+        canvas,
+        Offset(boardRect.left - 25, y),
+      );
     }
 
     // 알파벳 좌표 (하단)
     const letters = 'ABCDEFGHIJKLMNOPQRS';
     for (int i = 0; i < boardSize; i++) {
       final textPainter = TextPainter(
-        text: TextSpan(text: letters[i], style: textStyle),
+        text: TextSpan(
+          text: letters[i],
+          style: textStyle,
+        ),
         textDirection: TextDirection.ltr,
       );
       textPainter.layout();
 
-      final x = boardRect.left + i * cellSize - textPainter.width / 2;
-      textPainter.paint(canvas, Offset(x, boardRect.bottom + 10));
+      final x =
+          boardRect.left +
+          i * cellSize -
+          textPainter.width / 2;
+      textPainter.paint(
+        canvas,
+        Offset(x, boardRect.bottom + 10),
+      );
     }
   }
 
-  void _drawStones(Canvas canvas, double cellSize, int boardSize) {
+  void _drawStones(
+    Canvas canvas,
+    double cellSize,
+    int boardSize,
+  ) {
     for (int row = 0; row < boardSize; row++) {
       for (int col = 0; col < boardSize; col++) {
         final stone = gameState.board[row][col];
@@ -471,8 +605,8 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     int row,
     int col,
   ) {
-    // 동적 돌 크기 계산
-    final stoneRadius = (400.0 / (gameState.boardSize + 1)) * 0.4;
+    // 🎯 오목돌 크기 적절히 조정
+    final stoneRadius = cellSize * 0.42;
 
     // 마지막에 놓인 돌인지 확인
     final isLastMove =
@@ -480,97 +614,243 @@ class EnhancedOmokBoardPainter extends CustomPainter {
         gameState.lastMove!.row == row &&
         gameState.lastMove!.col == col;
 
-    // 그림자 그리기 (입체감)
-    final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.3)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
+    // 🎯 간소화된 그림자 시스템 (2단계만)
+    // 1단계: 주 그림자 (더 작고 자연스럽게)
+    final mainShadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.4)
+      ..maskFilter = const MaskFilter.blur(
+        BlurStyle.normal,
+        6,
+      );
 
-    canvas.drawCircle(
-      Offset(x + 2, y + 2), // 그림자 오프셋
-      stoneRadius + 1,
-      shadowPaint,
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(x + 3, y + 4),
+        width: stoneRadius * 1.8,
+        height: stoneRadius * 1.4,
+      ),
+      mainShadowPaint,
+    );
+
+    // 2단계: 접촉 그림자 (돌이 바둑판에 닿는 부분)
+    final contactShadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.2)
+      ..maskFilter = const MaskFilter.blur(
+        BlurStyle.normal,
+        2,
+      );
+
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(x + 1, y + 1),
+        width: stoneRadius * 1.6,
+        height: stoneRadius * 1.2,
+      ),
+      contactShadowPaint,
     );
 
     if (player == PlayerType.black) {
-      // 흑돌 - 깊은 검정색 + 광택
+      // 🖤 흑돌 - 대폭 강화된 진한 검정색과 명확한 대비
+
+      // 베이스 돌 (완전한 검정색)
+      final basePaint = Paint()
+        ..color = const Color(0xFF000000);
+      canvas.drawCircle(
+        Offset(x, y),
+        stoneRadius,
+        basePaint,
+      );
+
+      // 🌟 검은돌 전용 그라데이션 (더 진하고 명확하게)
       final blackGradient = RadialGradient(
         center: const Alignment(-0.3, -0.3),
-        radius: 0.8,
+        radius: 1.0,
         colors: [
-          Colors.grey[600]!, // 하이라이트
-          Colors.black87, // 기본색
-          Colors.black, // 깊은 그림자
+          Colors.grey[500]!, // 하이라이트 (검은돌에 맞게 조정)
+          Colors.grey[700]!, // 중간 하이라이트
+          Colors.grey[900]!, // 어두운 중간 톤
+          const Color(0xFF0A0A0A), // 매우 어두운 부분
+          const Color(0xFF000000), // 완전한 검정 테두리
         ],
-        stops: const [0.0, 0.7, 1.0],
+        stops: const [0.0, 0.2, 0.5, 0.8, 1.0],
       );
 
       final blackPaint = Paint()
         ..shader = blackGradient.createShader(
-          Rect.fromCircle(center: Offset(x, y), radius: stoneRadius),
+          Rect.fromCircle(
+            center: Offset(x, y),
+            radius: stoneRadius,
+          ),
         );
 
-      canvas.drawCircle(Offset(x, y), stoneRadius, blackPaint);
+      canvas.drawCircle(
+        Offset(x, y),
+        stoneRadius,
+        blackPaint,
+      );
 
-      // 광택 효과
-      final highlightPaint = Paint()
-        ..color = Colors.white.withOpacity(0.2)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1);
+      // 🔥 검은돌 하이라이트 (절제된 밝기)
+      final blackHighlightPaint = Paint()
+        ..color = Colors.grey[400]!.withOpacity(
+          0.6,
+        )
+        ..maskFilter = const MaskFilter.blur(
+          BlurStyle.normal,
+          2,
+        );
 
       canvas.drawCircle(
-        Offset(x - stoneRadius * 0.3, y - stoneRadius * 0.3),
+        Offset(
+          x - stoneRadius * 0.4,
+          y - stoneRadius * 0.4,
+        ),
         stoneRadius * 0.3,
-        highlightPaint,
+        blackHighlightPaint,
+      );
+
+      // ✨ 검은돌 핀포인트 하이라이트
+      final blackPinpointPaint = Paint()
+        ..color = Colors.grey[300]!.withOpacity(
+          0.8,
+        );
+
+      canvas.drawCircle(
+        Offset(
+          x - stoneRadius * 0.5,
+          y - stoneRadius * 0.5,
+        ),
+        stoneRadius * 0.1,
+        blackPinpointPaint,
       );
     } else {
-      // 백돌 - 진주색 + 광택
+      // 🤍 백돌 - 대폭 강화된 순수 흰색과 명확한 대비
+
+      // 베이스 돌 (완전한 흰색)
+      final basePaint = Paint()
+        ..color = const Color(0xFFFFFFFF);
+      canvas.drawCircle(
+        Offset(x, y),
+        stoneRadius,
+        basePaint,
+      );
+
+      // 🌟 흰돌 전용 그라데이션 (더 밝고 명확하게)
       final whiteGradient = RadialGradient(
         center: const Alignment(-0.3, -0.3),
-        radius: 0.8,
+        radius: 1.0,
         colors: [
-          Colors.white, // 하이라이트
-          Colors.grey[100]!, // 기본색
-          Colors.grey[300]!, // 테두리
+          const Color(0xFFFFFFFF), // 완전한 흰색 하이라이트
+          const Color(0xFFFAFAFA), // 거의 흰색
+          const Color(0xFFF0F0F0), // 연한 회색
+          const Color(0xFFE0E0E0), // 중간 회색
+          const Color(0xFFD0D0D0), // 테두리 회색
         ],
-        stops: const [0.0, 0.8, 1.0],
+        stops: const [0.0, 0.2, 0.5, 0.8, 1.0],
       );
 
       final whitePaint = Paint()
         ..shader = whiteGradient.createShader(
-          Rect.fromCircle(center: Offset(x, y), radius: stoneRadius),
+          Rect.fromCircle(
+            center: Offset(x, y),
+            radius: stoneRadius,
+          ),
         );
 
-      canvas.drawCircle(Offset(x, y), stoneRadius, whitePaint);
+      canvas.drawCircle(
+        Offset(x, y),
+        stoneRadius,
+        whitePaint,
+      );
 
-      // 테두리 강조
-      final borderPaint = Paint()
+      // 🔥 흰돌 하이라이트 (강한 밝기)
+      final whiteHighlightPaint = Paint()
+        ..color = Colors.white.withOpacity(0.9)
+        ..maskFilter = const MaskFilter.blur(
+          BlurStyle.normal,
+          2,
+        );
+
+      canvas.drawCircle(
+        Offset(
+          x - stoneRadius * 0.4,
+          y - stoneRadius * 0.4,
+        ),
+        stoneRadius * 0.3,
+        whiteHighlightPaint,
+      );
+
+      // ✨ 흰돌 핀포인트 하이라이트
+      final whitePinpointPaint = Paint()
+        ..color = Colors.white;
+
+      canvas.drawCircle(
+        Offset(
+          x - stoneRadius * 0.5,
+          y - stoneRadius * 0.5,
+        ),
+        stoneRadius * 0.1,
+        whitePinpointPaint,
+      );
+
+      // 🔲 흰돌 테두리 강화 (검은돌과 구분을 위해)
+      final whiteBorderPaint = Paint()
         ..color = Colors.grey[400]!
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0;
 
-      canvas.drawCircle(Offset(x, y), stoneRadius, borderPaint);
+      canvas.drawCircle(
+        Offset(x, y),
+        stoneRadius,
+        whiteBorderPaint,
+      );
     }
 
     // 마지막 수 표시 - 강화된 효과
     if (isLastMove) {
       // 외곽 링 애니메이션 효과
-      final ringPaint = Paint()
-        ..color = (player == PlayerType.black ? Colors.white : Colors.red)
-            .withOpacity(0.8)
+      final outerRingPaint = Paint()
+        ..color =
+            (player == PlayerType.black
+                    ? Colors.white
+                    : Colors.red)
+                .withOpacity(0.9)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 3.0;
+        ..strokeWidth = 3.0
+        ..maskFilter = const MaskFilter.blur(
+          BlurStyle.normal,
+          1,
+        );
 
-      canvas.drawCircle(Offset(x, y), stoneRadius + 5, ringPaint);
+      canvas.drawCircle(
+        Offset(x, y),
+        stoneRadius + 6,
+        outerRingPaint,
+      );
 
       // 내부 점 표시
       final dotPaint = Paint()
-        ..color = player == PlayerType.black ? Colors.white : Colors.red
+        ..color = player == PlayerType.black
+            ? Colors.white
+            : Colors.red
         ..style = PaintingStyle.fill;
 
-      canvas.drawCircle(Offset(x, y), 3.0, dotPaint);
+      canvas.drawCircle(
+        Offset(x, y),
+        3.0,
+        dotPaint,
+      );
     }
 
     // 캐릭터 효과 표시
-    _drawCharacterEffect(canvas, x, y, player, stoneRadius, row, col);
+    _drawCharacterEffect(
+      canvas,
+      x,
+      y,
+      player,
+      stoneRadius,
+      row,
+      col,
+    );
   }
 
   void _drawCharacterEffect(
@@ -590,24 +870,51 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     if (character != null) {
       // 캐릭터 오라 효과
       final auraPaint = Paint()
-        ..color = character.tierColor.withOpacity(0.3)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+        ..color = character.tierColor.withOpacity(
+          0.3,
+        )
+        ..maskFilter = const MaskFilter.blur(
+          BlurStyle.normal,
+          8,
+        );
 
-      canvas.drawCircle(Offset(x, y), stoneRadius + 8, auraPaint);
+      canvas.drawCircle(
+        Offset(x, y),
+        stoneRadius + 8,
+        auraPaint,
+      );
 
       // 등급별 특수 효과
       switch (character.tier) {
         case CharacterTier.heaven:
           // 천급 - 금색 별빛 효과
-          _drawStarEffect(canvas, x, y, stoneRadius, const Color(0xFFFFD700));
+          _drawStarEffect(
+            canvas,
+            x,
+            y,
+            stoneRadius,
+            const Color(0xFFFFD700),
+          );
           break;
         case CharacterTier.earth:
           // 지급 - 은색 원형 효과
-          _drawRingEffect(canvas, x, y, stoneRadius, const Color(0xFFC0C0C0));
+          _drawRingEffect(
+            canvas,
+            x,
+            y,
+            stoneRadius,
+            const Color(0xFFC0C0C0),
+          );
           break;
         case CharacterTier.human:
           // 인급 - 갈색 점선 효과
-          _drawDottedEffect(canvas, x, y, stoneRadius, Colors.brown);
+          _drawDottedEffect(
+            canvas,
+            x,
+            y,
+            stoneRadius,
+            Colors.brown,
+          );
           break;
       }
     }
@@ -629,7 +936,9 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     final path = Path();
     for (int i = 0; i < 12; i++) {
       final angle = (i * math.pi / 6);
-      final r = (i % 2 == 0) ? radius + 6 : radius + 3;
+      final r = (i % 2 == 0)
+          ? radius + 6
+          : radius + 3;
       final px = x + r * math.cos(angle);
       final py = y + r * math.sin(angle);
 
@@ -655,8 +964,16 @@ class EnhancedOmokBoardPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
-    canvas.drawCircle(Offset(x, y), radius + 6, ringPaint);
-    canvas.drawCircle(Offset(x, y), radius + 10, ringPaint);
+    canvas.drawCircle(
+      Offset(x, y),
+      radius + 6,
+      ringPaint,
+    );
+    canvas.drawCircle(
+      Offset(x, y),
+      radius + 10,
+      ringPaint,
+    );
   }
 
   void _drawDottedEffect(
@@ -673,13 +990,22 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     // 8방향으로 점 배치
     for (int i = 0; i < 8; i++) {
       final angle = (i * math.pi / 4);
-      final px = x + (radius + 8) * math.cos(angle);
-      final py = y + (radius + 8) * math.sin(angle);
-      canvas.drawCircle(Offset(px, py), 2.0, dotPaint);
+      final px =
+          x + (radius + 8) * math.cos(angle);
+      final py =
+          y + (radius + 8) * math.sin(angle);
+      canvas.drawCircle(
+        Offset(px, py),
+        2.0,
+        dotPaint,
+      );
     }
   }
 
-  void _drawHoverEffect(Canvas canvas, double cellSize) {
+  void _drawHoverEffect(
+    Canvas canvas,
+    double cellSize,
+  ) {
     if (hoverPosition == null) return;
 
     final x = cellSize * (hoverPosition!.col + 1);
@@ -687,13 +1013,17 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     final center = Offset(x, y);
 
     // 현재 플레이어에 따라 미리보기 돌 색상 결정
-    final isBlackTurn = gameState.currentPlayer == PlayerType.black;
+    final isBlackTurn =
+        gameState.currentPlayer ==
+        PlayerType.black;
 
     // 미리보기 돌 (반투명)
     final previewPaint = Paint()
-      ..color = (isBlackTurn ? Colors.black : Colors.white).withOpacity(
-        isPressed ? 0.7 : 0.4,
-      )
+      ..color =
+          (isBlackTurn
+                  ? Colors.black
+                  : Colors.white)
+              .withOpacity(isPressed ? 0.7 : 0.4)
       ..style = PaintingStyle.fill;
 
     // 미리보기 돌 그림자
@@ -717,7 +1047,9 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     // 흰 돌인 경우 외곽선 추가
     if (!isBlackTurn) {
       final outlinePaint = Paint()
-        ..color = Colors.black.withOpacity(isPressed ? 0.5 : 0.3)
+        ..color = Colors.black.withOpacity(
+          isPressed ? 0.5 : 0.3,
+        )
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5;
 
@@ -730,22 +1062,41 @@ class EnhancedOmokBoardPainter extends CustomPainter {
 
     // 호버 링 효과
     final hoverRingPaint = Paint()
-      ..color = (isBlackTurn ? Colors.white : Colors.black).withOpacity(0.6)
+      ..color =
+          (isBlackTurn
+                  ? Colors.white
+                  : Colors.black)
+              .withOpacity(0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
-    canvas.drawCircle(center, stoneRadius + 4, hoverRingPaint);
+    canvas.drawCircle(
+      center,
+      stoneRadius + 4,
+      hoverRingPaint,
+    );
 
     // 펄스 효과 (더 큰 원)
     final pulsePaint = Paint()
-      ..color = (isBlackTurn ? Colors.white : Colors.black).withOpacity(0.2)
+      ..color =
+          (isBlackTurn
+                  ? Colors.white
+                  : Colors.black)
+              .withOpacity(0.2)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
-    canvas.drawCircle(center, stoneRadius + 8, pulsePaint);
+    canvas.drawCircle(
+      center,
+      stoneRadius + 8,
+      pulsePaint,
+    );
   }
 
-  void _drawLastMoveIndicator(Canvas canvas, double cellSize) {
+  void _drawLastMoveIndicator(
+    Canvas canvas,
+    double cellSize,
+  ) {
     final lastMove = gameState.lastMove;
     if (lastMove == null) return;
 
@@ -755,10 +1106,16 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     final center = Offset(x, y);
 
     // 돌의 색상에 따라 표시 색상 결정
-    final stoneColor = gameState.board[lastMove.row][lastMove.col];
-    final indicatorColor = stoneColor == PlayerType.black
-        ? Colors.white.withOpacity(0.9) // 검은 돌에는 흰색 표시
-        : Colors.red.withOpacity(0.9); // 흰 돌에는 빨간색 표시
+    final stoneColor = gameState
+        .board[lastMove.row][lastMove.col];
+    final indicatorColor =
+        stoneColor == PlayerType.black
+        ? Colors.white.withOpacity(
+            0.9,
+          ) // 검은 돌에는 흰색 표시
+        : Colors.red.withOpacity(
+            0.9,
+          ); // 흰 돌에는 빨간색 표시
 
     // 외곽 그림자 효과
     final shadowPaint = Paint()
@@ -767,7 +1124,10 @@ class EnhancedOmokBoardPainter extends CustomPainter {
       ..strokeWidth = 4.0;
 
     canvas.drawCircle(
-      Offset(center.dx + 1, center.dy + 1), // 그림자 오프셋
+      Offset(
+        center.dx + 1,
+        center.dy + 1,
+      ), // 그림자 오프셋
       stoneRadius + 6,
       shadowPaint,
     );
@@ -778,7 +1138,11 @@ class EnhancedOmokBoardPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.5;
 
-    canvas.drawCircle(center, stoneRadius + 5, mainIndicatorPaint);
+    canvas.drawCircle(
+      center,
+      stoneRadius + 5,
+      mainIndicatorPaint,
+    );
 
     // 내부 보조 링 (더 가는 선)
     final innerRingPaint = Paint()
@@ -786,10 +1150,15 @@ class EnhancedOmokBoardPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
-    canvas.drawCircle(center, stoneRadius + 2, innerRingPaint);
+    canvas.drawCircle(
+      center,
+      stoneRadius + 2,
+      innerRingPaint,
+    );
 
     // 펄스 효과를 위한 외부 링
-    final pulseColor = stoneColor == PlayerType.black
+    final pulseColor =
+        stoneColor == PlayerType.black
         ? Colors.yellow.withOpacity(0.4)
         : Colors.orange.withOpacity(0.4);
 
@@ -798,7 +1167,11 @@ class EnhancedOmokBoardPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5;
 
-    canvas.drawCircle(center, stoneRadius + 9, pulsePaint);
+    canvas.drawCircle(
+      center,
+      stoneRadius + 9,
+      pulsePaint,
+    );
 
     // 더 큰 외부 펄스
     final outerPulsePaint = Paint()
@@ -806,14 +1179,22 @@ class EnhancedOmokBoardPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
-    canvas.drawCircle(center, stoneRadius + 12, outerPulsePaint);
+    canvas.drawCircle(
+      center,
+      stoneRadius + 12,
+      outerPulsePaint,
+    );
 
     // 중앙에 작은 하이라이트 점
     final centerDotPaint = Paint()
       ..color = indicatorColor
       ..style = PaintingStyle.fill;
 
-    canvas.drawCircle(center, 2.0, centerDotPaint);
+    canvas.drawCircle(
+      center,
+      2.0,
+      centerDotPaint,
+    );
 
     // 4방향 강조 선 (십자가 형태)
     final crossPaint = Paint()
@@ -838,12 +1219,17 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     );
   }
 
-  void _drawWinningLine(Canvas canvas, double cellSize) {
+  void _drawWinningLine(
+    Canvas canvas,
+    double cellSize,
+  ) {
     // TODO: 승리 라인 그리기 구현
     // 현재는 단순히 게임 종료 상태만 확인
-    if (gameState.status == GameStatus.playing) return;
+    if (gameState.status == GameStatus.playing)
+      return;
 
-    final winnerColor = gameState.status == GameStatus.blackWin
+    final winnerColor =
+        gameState.status == GameStatus.blackWin
         ? Colors.yellow
         : Colors.blue;
 
@@ -864,7 +1250,11 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     }
   }
 
-  void _drawWinStar(Canvas canvas, Offset center, Color color) {
+  void _drawWinStar(
+    Canvas canvas,
+    Offset center,
+    Color color,
+  ) {
     final starPaint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
@@ -876,8 +1266,12 @@ class EnhancedOmokBoardPainter extends CustomPainter {
     for (int i = 0; i < 10; i++) {
       final angle = (i * math.pi) / 5;
       final r = i % 2 == 0 ? radius : innerRadius;
-      final x = center.dx + r * math.cos(angle - math.pi / 2);
-      final y = center.dy + r * math.sin(angle - math.pi / 2);
+      final x =
+          center.dx +
+          r * math.cos(angle - math.pi / 2);
+      final y =
+          center.dy +
+          r * math.sin(angle - math.pi / 2);
 
       if (i == 0) {
         path.moveTo(x, y);
@@ -891,11 +1285,15 @@ class EnhancedOmokBoardPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    if (oldDelegate is! EnhancedOmokBoardPainter) return true;
+  bool shouldRepaint(
+    covariant CustomPainter oldDelegate,
+  ) {
+    if (oldDelegate is! EnhancedOmokBoardPainter)
+      return true;
 
     return oldDelegate.gameState != gameState ||
-        oldDelegate.hoverPosition != hoverPosition ||
+        oldDelegate.hoverPosition !=
+            hoverPosition ||
         oldDelegate.isPressed != isPressed;
   }
 }

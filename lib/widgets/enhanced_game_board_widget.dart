@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../models/enhanced_game_state.dart';
 import '../models/player_profile.dart';
 import '../models/game_state.dart';
+import '../models/character.dart';
 import 'enhanced_omok_board_painter.dart';
 
 class EnhancedGameBoardWidget
@@ -31,119 +32,236 @@ class _EnhancedGameBoardWidgetState
     extends State<EnhancedGameBoardWidget> {
   Position? _hoverPosition;
   bool _isPressed = false;
+  final ScrollController _scrollController =
+      ScrollController();
+  late TransformationController
+  _transformationController;
 
   @override
-  Widget build(BuildContext context) {
-    // 모바일 환경에 최적화된 보드 크기 설정
+  void initState() {
+    super.initState();
+    _transformationController =
+        TransformationController();
+
+    // 초기 위치를 중앙화점 기준으로 설정
+    WidgetsBinding.instance.addPostFrameCallback((
+      _,
+    ) {
+      _centerOnBoard();
+    });
+  }
+
+  void _centerOnBoard() {
+    // 화면 크기 확인
     final screenSize = MediaQuery.of(
       context,
     ).size;
-    final availableSize =
+
+    // 2.5D 효과를 고려한 바둑판 크기 계산
+    final baseSize =
+        screenSize.width < screenSize.height
+        ? screenSize.width - 20
+        : screenSize.height - 100;
+    final boardSize =
+        (widget.boardSize ?? baseSize) * 1.5;
+
+    // 🎯 중앙화점 위치 계산 (15x15 바둑판의 중앙은 (7,7) - 0-based index)
+    final centerRow =
+        (widget.gameState.boardSize - 1) /
+        2; // 7.0
+    final centerCol =
+        (widget.gameState.boardSize - 1) /
+        2; // 7.0
+    final cellSize =
+        boardSize /
+        (widget.gameState.boardSize + 1);
+
+    // 중앙화점의 실제 픽셀 위치 (1-based로 변환)
+    final centerX =
+        cellSize * (centerCol + 1); // 8번째 셀
+    final centerY =
+        cellSize * (centerRow + 1); // 8번째 셀
+
+    // 화면 중앙 좌표 (왼쪽으로 더 이동)
+    final screenCenterX =
+        screenSize.width *
+        0.4; // 40% 지점으로 이동 (왼쪽으로)
+    final screenCenterY =
+        (screenSize.height * 0.7) /
+        2; // 컨테이너 높이의 중앙
+
+    // 중앙화점을 화면 중앙으로 이동시키는 변환 계산
+    final translateX = screenCenterX - centerX;
+    final translateY = screenCenterY - centerY;
+
+    // 변환 행렬 설정 (중앙화점이 화면의 40% 지점에 위치)
+    final matrix = Matrix4.identity()
+      ..translate(translateX, translateY);
+
+    _transformationController.value = matrix;
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _transformationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // 화면 크기 확인
+    final screenSize = MediaQuery.of(
+      context,
+    ).size;
+
+    // 2.5D 효과를 고려한 더 큰 바둑판 크기 설정
+    final baseSize =
         screenSize.width < screenSize.height
         ? screenSize.width -
-              40 // 세로 모드: 좌우 여백 40px
+              20 // 세로 모드: 최소 여백
         : screenSize.height -
-              200; // 가로 모드: 상하 UI 공간 확보
+              100; // 가로 모드: UI 공간 확보
 
-    final size =
-        widget.boardSize ?? availableSize;
+    // 2.5D 변형으로 인한 크기 증가 고려 (약 1.5배)
+    final boardSize =
+        (widget.boardSize ?? baseSize) * 1.5;
 
-    // 2.5D 스타일을 위한 그림자와 Transform 적용
+    // 스크롤 가능한 컨테이너로 감싸기
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          // 강화된 그림자 효과 (바둑판이 더 누운 시점에 맞춘 강한 입체감)
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            offset: const Offset(
-              0,
-              -15,
-            ), // 그림자가 더 멀리 뒤쪽으로 떨어짐
-            blurRadius: 25,
-            spreadRadius: 3,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            offset: const Offset(
-              0,
-              -8,
-            ), // 보조 그림자도 더 강하게
-            blurRadius: 15,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Transform(
-        // 2.5D 시점 적용: 바둑판이 상대쪽으로 더 누워서 강한 원근감과 입체감 제공
-        transform: Matrix4.identity()
-          ..setEntry(
-            3,
-            2,
-            0.003,
-          ) // 원근감 대폭 강화 (0.001 → 0.003)
-          ..rotateX(
-            -0.8,
-          ), // X축 기준 기울기 대폭 강화 (-0.3 → -0.8)
-        alignment: Alignment.center,
+      width: screenSize.width,
+      height:
+          screenSize.height *
+          0.7, // 화면의 70% 높이 사용
+      child: InteractiveViewer(
+        constrained: false,
+        boundaryMargin: const EdgeInsets.all(20),
+        minScale: 0.5,
+        maxScale: 2.0,
+        transformationController:
+            _transformationController,
         child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              12,
-            ),
-            // 바둑판 자체의 색상과 질감
-            color: Colors.brown[100],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(
-              12,
-            ),
-            child: Stack(
-              children: [
-                // 기존 바둑판 레이어
-                MouseRegion(
-                  onHover: (event) =>
-                      _handleHover(event, size),
-                  onExit: (_) => setState(
-                    () => _hoverPosition = null,
+          // 스크롤 영역을 바둑판보다 크게 설정
+          width: boardSize + 100,
+          height: boardSize + 100,
+          alignment: Alignment.center,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                12,
+              ),
+              boxShadow: [
+                // 강화된 그림자 효과 (바둑판이 더 누운 시점에 맞춘 강한 입체감)
+                BoxShadow(
+                  color: Colors.black.withOpacity(
+                    0.4,
                   ),
-                  child: GestureDetector(
-                    onTapDown: (details) =>
-                        _handleTapDown(
-                          details,
-                          size,
+                  offset: const Offset(
+                    0,
+                    -15,
+                  ), // 그림자가 더 멀리 뒤쪽으로 떨어짐
+                  blurRadius: 25,
+                  spreadRadius: 3,
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(
+                    0.2,
+                  ),
+                  offset: const Offset(
+                    0,
+                    -8,
+                  ), // 보조 그림자도 더 강하게
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Transform(
+              // 🎯 2.5D 효과: 위에서 아래로 내려다보는 시점
+              transform: Matrix4.identity()
+                ..setEntry(
+                  3,
+                  2,
+                  0.003,
+                ) // 원근감 대폭 강화
+                ..rotateX(
+                  -0.5,
+                ), // X축 기준 회전 (더 세워서 전체 보이도록)
+              alignment: Alignment.center,
+              child: Container(
+                width: boardSize,
+                height: boardSize,
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.circular(12),
+                  // 바둑판 자체의 색상과 질감
+                  color: Colors.brown[100],
+                ),
+                child: ClipRRect(
+                  borderRadius:
+                      BorderRadius.circular(12),
+                  child: Stack(
+                    children: [
+                      // 기존 바둑판 레이어
+                      MouseRegion(
+                        onHover: (event) =>
+                            _handleHover(
+                              event,
+                              boardSize,
+                            ),
+                        onExit: (_) => setState(
+                          () => _hoverPosition =
+                              null,
                         ),
-                    onTapUp: (_) => setState(
-                      () => _isPressed = false,
-                    ),
-                    onTapCancel: () => setState(
-                      () => _isPressed = false,
-                    ),
-                    // 모바일 터치 개선: 더 정확한 터치 감지
-                    behavior:
-                        HitTestBehavior.opaque,
-                    child: CustomPaint(
-                      size: Size(size, size),
-                      painter:
-                          EnhancedOmokBoardPainter(
-                            gameState:
-                                widget.gameState,
-                            boardSizeType: widget
-                                .boardSizeType,
-                            showCoordinates: widget
-                                .showCoordinates,
-                            hoverPosition:
-                                _hoverPosition,
-                            isPressed: _isPressed,
+                        child: GestureDetector(
+                          onTapDown: (details) =>
+                              _handleTapDown(
+                                details,
+                                boardSize,
+                              ),
+                          onTapUp: (_) =>
+                              setState(
+                                () => _isPressed =
+                                    false,
+                              ),
+                          onTapCancel: () =>
+                              setState(
+                                () => _isPressed =
+                                    false,
+                              ),
+                          // 모바일 터치 개선: 더 정확한 터치 감지
+                          behavior:
+                              HitTestBehavior
+                                  .opaque,
+                          child: CustomPaint(
+                            size: Size(
+                              boardSize,
+                              boardSize,
+                            ),
+                            painter: EnhancedOmokBoardPainter(
+                              gameState: widget
+                                  .gameState,
+                              boardSizeType: widget
+                                  .boardSizeType,
+                              showCoordinates: widget
+                                  .showCoordinates,
+                              hoverPosition:
+                                  _hoverPosition,
+                              isPressed:
+                                  _isPressed,
+                            ),
                           ),
-                    ),
+                        ),
+                      ),
+
+                      // 🎯 캐릭터 이미지 레이어 - 돌이 놓인 위치에만 표시
+                      ..._buildStoneImages(
+                        boardSize,
+                      ),
+                    ],
                   ),
                 ),
-                // 추후 캐릭터 이미지 레이어가 여기에 추가될 예정
-                // Positioned 위젯들로 각 돌 위치에 캐릭터 PNG 배치 가능
-              ],
+              ),
             ),
           ),
         ),
@@ -185,11 +303,24 @@ class _EnhancedGameBoardWidgetState
     );
     if (position != null &&
         _isValidPosition(position)) {
+      // 자동 스크롤: 돌을 놓은 위치가 화면 중앙에 오도록 조정
+      _autoScrollToPosition(position, size);
+
       widget.onTileTap(
         position.row,
         position.col,
       );
     }
+  }
+
+  // 자동 스크롤 기능: 돌을 놓은 위치로 부드럽게 이동
+  void _autoScrollToPosition(
+    Position position,
+    double boardSize,
+  ) {
+    // InteractiveViewer는 자동 스크롤을 지원하지 않으므로
+    // 사용자가 수동으로 드래그/줌해서 확인할 수 있도록 함
+    // 추후 필요시 TransformationController를 사용하여 구현 가능
   }
 
   Position? _getGridPosition(
@@ -234,5 +365,171 @@ class _EnhancedGameBoardWidgetState
     return widget.gameState.board[position
             .row][position.col] ==
         null;
+  }
+
+  List<Widget> _buildStoneImages(
+    double boardSize,
+  ) {
+    final List<Widget> stoneWidgets = [];
+    final cellSize =
+        boardSize /
+        (widget.gameState.boardSize + 1);
+
+    // 바둑판의 모든 위치를 확인하여 돌이 놓인 곳에 PNG 이미지 배치
+    for (
+      int row = 0;
+      row < widget.gameState.boardSize;
+      row++
+    ) {
+      for (
+        int col = 0;
+        col < widget.gameState.boardSize;
+        col++
+      ) {
+        final stone =
+            widget.gameState.board[row][col];
+
+        // 🎯 돌이 놓인 위치에만 PNG 이미지 표시
+        if (stone != null) {
+          // 격자점의 실제 픽셀 위치 계산
+          final x = cellSize * (col + 1);
+          final y = cellSize * (row + 1);
+
+          // 🎨 감성적인 3D 오목돌 fallback (PNG 이미지 없을 때)
+          stoneWidgets.add(
+            Positioned(
+              left:
+                  x -
+                  (cellSize * 0.85 / 2), // 중앙 정렬
+              top:
+                  y -
+                  (cellSize * 0.85 / 2), // 중앙 정렬
+              child: Image.asset(
+                stone == PlayerType.black
+                    ? 'assets/images/stone_black_glossy.png'
+                    : 'assets/images/stone_white_glossy.png',
+                width: cellSize * 0.85,
+                height: cellSize * 0.85,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  // 🎨 감성적인 3D 오목돌 fallback (PNG 이미지 없을 때)
+                  return Container(
+                    width: cellSize * 0.85,
+                    height: cellSize * 0.85,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient:
+                          stone ==
+                              PlayerType.black
+                          ? RadialGradient(
+                              center:
+                                  const Alignment(
+                                    -0.3,
+                                    -0.3,
+                                  ),
+                              radius: 0.8,
+                              colors: [
+                                Colors.grey[400]!,
+                                Colors.grey[700]!,
+                                Colors.grey[900]!,
+                                Colors.black,
+                              ],
+                              stops: const [
+                                0.0,
+                                0.3,
+                                0.7,
+                                1.0,
+                              ],
+                            )
+                          : RadialGradient(
+                              center:
+                                  const Alignment(
+                                    -0.3,
+                                    -0.3,
+                                  ),
+                              radius: 0.8,
+                              colors: [
+                                Colors.white,
+                                const Color(
+                                  0xFFF8F8F8,
+                                ),
+                                const Color(
+                                  0xFFE8E8E8,
+                                ),
+                                const Color(
+                                  0xFFD0D0D0,
+                                ),
+                              ],
+                              stops: const [
+                                0.0,
+                                0.3,
+                                0.7,
+                                1.0,
+                              ],
+                            ),
+                      boxShadow: [
+                        // 주 그림자
+                        BoxShadow(
+                          color: Colors.black
+                              .withOpacity(0.3),
+                          offset: const Offset(
+                            3,
+                            4,
+                          ),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                        // 접촉 그림자
+                        BoxShadow(
+                          color: Colors.black
+                              .withOpacity(0.1),
+                          offset: const Offset(
+                            1,
+                            2,
+                          ),
+                          blurRadius: 4,
+                          spreadRadius: 0,
+                        ),
+                      ],
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        // 하이라이트 효과
+                        gradient: RadialGradient(
+                          center: const Alignment(
+                            -0.4,
+                            -0.4,
+                          ),
+                          radius: 0.3,
+                          colors: [
+                            stone ==
+                                    PlayerType
+                                        .black
+                                ? Colors
+                                      .grey[300]!
+                                      .withOpacity(
+                                        0.4,
+                                      )
+                                : Colors.white
+                                      .withOpacity(
+                                        0.8,
+                                      ),
+                            Colors.transparent,
+                          ],
+                          stops: const [0.0, 1.0],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        }
+      }
+    }
+
+    return stoneWidgets;
   }
 }
