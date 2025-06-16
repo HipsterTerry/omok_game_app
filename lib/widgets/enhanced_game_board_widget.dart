@@ -4,6 +4,7 @@ import '../models/enhanced_game_state.dart';
 import '../models/player_profile.dart';
 import '../models/game_state.dart';
 import '../models/character.dart';
+import '../logic/advanced_renju_rule_evaluator.dart';
 import 'enhanced_omok_board_painter.dart';
 
 class EnhancedGameBoardWidget
@@ -288,8 +289,13 @@ class _EnhancedGameBoardWidgetState
                         ),
                       ),
 
-                      // 🎯 캐릭터 이미지 레이어 - 돌이 놓인 위치에만 표시
+                      // 🎯 오목돌 이미지 레이어 - 돌이 놓인 위치에만 표시
                       ..._buildStoneImages(
+                        boardSize,
+                      ),
+
+                      // 🚫 렌주룰 금지수 오버레이 - 바둑판과 동일한 Transform 적용
+                      ..._buildForbiddenMoveOverlay(
                         boardSize,
                       ),
                     ],
@@ -565,5 +571,92 @@ class _EnhancedGameBoardWidgetState
     }
 
     return stoneWidgets;
+  }
+
+  // 🚫 렌주룰 금지수 오버레이 빌드 - 바둑판과 완전 동일한 위치
+  List<Widget> _buildForbiddenMoveOverlay(
+    double boardSize,
+  ) {
+    final List<Widget> forbiddenWidgets = [];
+
+    // 흑돌이 아니면 렌주룰 적용 안함
+    if (widget.gameState.currentPlayer !=
+        PlayerType.black) {
+      return forbiddenWidgets;
+    }
+
+    final cellSize =
+        boardSize /
+        (widget.gameState.boardSize + 1);
+
+    // 금지 위치 계산
+    final forbiddenPositions =
+        AdvancedRenjuRuleEvaluator.getForbiddenPositions(
+          widget.gameState.board,
+          widget.gameState.currentPlayer,
+          null, // aiDifficulty - wrapper에서 처리하므로 null
+        );
+
+    // 디버깅: 금지 위치가 있을 때만 로그 출력
+    if (forbiddenPositions.isNotEmpty) {
+      print(
+        '🚫 렌주룰 금지수 발견! 개수: ${forbiddenPositions.length}',
+      );
+      for (final pos in forbiddenPositions) {
+        print(
+          '🚫 금지 위치: (${pos.row}, ${pos.col})',
+        );
+      }
+    }
+
+    // 각 금지 위치에 X 마크 표시
+    for (final position in forbiddenPositions) {
+      // 격자점의 실제 픽셀 위치 계산 (오목돌과 정확히 동일한 방식)
+      final x = cellSize * (position.col + 1);
+      final y = cellSize * (position.row + 1);
+
+      forbiddenWidgets.add(
+        Positioned(
+          left: x - 14, // 중앙 정렬 (28/2 = 14)
+          top: y - 14,
+          child: IgnorePointer(
+            // 터치 이벤트 무시
+            child: Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(
+                  0.3,
+                ),
+                borderRadius:
+                    BorderRadius.circular(14),
+                border: Border.all(
+                  color: Colors.red.withOpacity(
+                    0.9,
+                  ),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.red.withOpacity(
+                      0.3,
+                    ),
+                    blurRadius: 6,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.clear,
+                size: 20,
+                color: Colors.red.shade700,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return forbiddenWidgets;
   }
 }
