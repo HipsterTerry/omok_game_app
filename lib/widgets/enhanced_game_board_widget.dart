@@ -611,45 +611,55 @@ class _EnhancedGameBoardWidgetState
 
     // 각 금지 위치에 X 마크 표시
     for (final position in forbiddenPositions) {
+      // 해당 위치에 이미 돌이 있는지 확인
+      final hasStone =
+          widget.gameState.board[position
+              .row][position.col] !=
+          null;
+
       // 격자점의 실제 픽셀 위치 계산 (오목돌과 정확히 동일한 방식)
       final x = cellSize * (position.col + 1);
       final y = cellSize * (position.row + 1);
 
+      // 🎯 돌이 있으면 작고 투명하게, 없으면 명확하게 표시
+      final markerSize = hasStone
+          ? cellSize * 0.6
+          : cellSize * 0.75; // 오목돌보다 약간 작게
+      final opacity = hasStone
+          ? 0.4
+          : 0.8; // 돌이 있으면 더 투명하게
+
       forbiddenWidgets.add(
         Positioned(
-          left: x - 14, // 중앙 정렬 (28/2 = 14)
-          top: y - 14,
+          // 🎯 격자줄 중심에 완벽하게 맞춤 - 픽셀 단위로 정확하게
+          left: (x - (markerSize / 2))
+              .roundToDouble(),
+          top: (y - (markerSize / 2))
+              .roundToDouble(),
           child: IgnorePointer(
             // 터치 이벤트 무시
-            child: Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(
-                  0.3,
-                ),
-                borderRadius:
-                    BorderRadius.circular(14),
-                border: Border.all(
-                  color: Colors.red.withOpacity(
-                    0.9,
-                  ),
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.red.withOpacity(
-                      0.3,
-                    ),
-                    blurRadius: 6,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.clear,
-                size: 20,
-                color: Colors.red.shade700,
+            child: Opacity(
+              opacity: opacity,
+              child: Image.asset(
+                'assets/images/forbidden_move_marker.png',
+                width: markerSize,
+                height: markerSize,
+                fit: BoxFit.contain,
+                errorBuilder:
+                    (context, error, stackTrace) {
+                      // PNG 파일이 없을 경우 CustomPainter로 fallback
+                      return CustomPaint(
+                        size: Size(
+                          markerSize,
+                          markerSize,
+                        ),
+                        painter:
+                            ForbiddenMovePainter(
+                              opacity: opacity,
+                              size: markerSize,
+                            ),
+                      );
+                    },
               ),
             ),
           ),
@@ -659,4 +669,104 @@ class _EnhancedGameBoardWidgetState
 
     return forbiddenWidgets;
   }
+}
+
+/// 🚫 렌주룰 금지수 X 표시를 그리는 CustomPainter
+/// 격자점에 자연스럽게 안착된 느낌을 위해 직접 그리기
+class ForbiddenMovePainter extends CustomPainter {
+  final double opacity;
+  final double size;
+
+  const ForbiddenMovePainter({
+    this.opacity = 0.8,
+    this.size = 36.0,
+  });
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(
+      size.width / 2,
+      size.height / 2,
+    );
+    final radius = size.width * 0.4; // 크기 조정
+
+    // 🎯 바둑돌과 유사한 원형 베이스 그리기
+    final basePaint = Paint()
+      ..color = Colors.white.withOpacity(
+        0.95 * opacity,
+      )
+      ..style = PaintingStyle.fill;
+
+    final shadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.2)
+      ..style = PaintingStyle.fill
+      ..maskFilter = const MaskFilter.blur(
+        BlurStyle.normal,
+        2,
+      );
+
+    // 그림자 원
+    canvas.drawCircle(
+      center + const Offset(1.5, 2),
+      radius,
+      shadowPaint,
+    );
+
+    // 메인 원형 베이스
+    canvas.drawCircle(center, radius, basePaint);
+
+    // 테두리
+    final borderPaint = Paint()
+      ..color = Colors.red.withOpacity(
+        0.7 * opacity,
+      )
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+
+    canvas.drawCircle(
+      center,
+      radius,
+      borderPaint,
+    );
+
+    // 🚫 X 표시 그리기 (더 굵고 명확하게)
+    final xPaint = Paint()
+      ..color = Colors.red.shade800.withOpacity(
+        opacity,
+      )
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+
+    final xSize = radius * 0.6; // X 크기
+
+    // X의 첫 번째 선 (\)
+    canvas.drawLine(
+      center - Offset(xSize, xSize),
+      center + Offset(xSize, xSize),
+      xPaint,
+    );
+
+    // X의 두 번째 선 (/)
+    canvas.drawLine(
+      center - Offset(xSize, -xSize),
+      center + Offset(xSize, -xSize),
+      xPaint,
+    );
+
+    // 🌟 미세한 하이라이트 효과 (격자점에 안착된 느낌)
+    final highlightPaint = Paint()
+      ..color = Colors.white.withOpacity(0.6)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(
+      center - const Offset(3, 3), // 좌상단 하이라이트
+      radius * 0.3,
+      highlightPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(
+    covariant CustomPainter oldDelegate,
+  ) => false;
 }

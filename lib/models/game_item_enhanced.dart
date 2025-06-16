@@ -67,32 +67,16 @@ class GameItemEnhanced {
   LinearGradient get rarityGradient {
     switch (rarity) {
       case ItemRarity.common:
-        return LinearGradient(
-          colors: [
-            Colors.grey[300]!,
-            Colors.grey[500]!,
-          ],
-        );
+        return LinearGradient(colors: [Colors.grey[300]!, Colors.grey[500]!]);
       case ItemRarity.rare:
-        return LinearGradient(
-          colors: [
-            Colors.blue[300]!,
-            Colors.blue[600]!,
-          ],
-        );
+        return LinearGradient(colors: [Colors.blue[300]!, Colors.blue[600]!]);
       case ItemRarity.epic:
         return LinearGradient(
-          colors: [
-            Colors.purple[300]!,
-            Colors.purple[600]!,
-          ],
+          colors: [Colors.purple[300]!, Colors.purple[600]!],
         );
       case ItemRarity.legendary:
         return LinearGradient(
-          colors: [
-            Colors.orange[300]!,
-            Colors.orange[600]!,
-          ],
+          colors: [Colors.orange[300]!, Colors.orange[600]!],
         );
     }
   }
@@ -138,8 +122,7 @@ class ItemService {
       isPremium: false,
       icon: Icons.block,
       color: Colors.red,
-      effectDescription:
-          '상대방의 스킬을 3턴간 사용할 수 없게 합니다.',
+      effectDescription: '상대방의 스킬을 3턴간 사용할 수 없게 합니다.',
     ),
 
     GameItemEnhanced(
@@ -184,34 +167,21 @@ class ItemService {
     ),
   ];
 
-  static List<GameItemEnhanced> getItemsByRarity(
-    ItemRarity rarity,
-  ) {
-    return allItems
-        .where((item) => item.rarity == rarity)
-        .toList();
+  static List<GameItemEnhanced> getItemsByRarity(ItemRarity rarity) {
+    return allItems.where((item) => item.rarity == rarity).toList();
   }
 
   static List<GameItemEnhanced> getFreeItems() {
-    return allItems
-        .where((item) => !item.isPremium)
-        .toList();
+    return allItems.where((item) => !item.isPremium).toList();
   }
 
-  static List<GameItemEnhanced>
-  getPremiumItems() {
-    return allItems
-        .where((item) => item.isPremium)
-        .toList();
+  static List<GameItemEnhanced> getPremiumItems() {
+    return allItems.where((item) => item.isPremium).toList();
   }
 
-  static GameItemEnhanced? getItemById(
-    String id,
-  ) {
+  static GameItemEnhanced? getItemById(String id) {
     try {
-      return allItems.firstWhere(
-        (item) => item.id == id,
-      );
+      return allItems.firstWhere((item) => item.id == id);
     } catch (e) {
       return null;
     }
@@ -221,10 +191,8 @@ class ItemService {
 // 플레이어가 보유한 아이템 정보
 class PlayerItemInventory {
   final Map<String, int> items; // 아이템 ID -> 개수
-  final Map<String, int>
-  usedInGame; // 현재 게임에서 사용한 아이템 ID -> 사용 횟수
-  final Map<String, int>
-  cooldowns; // 아이템 ID -> 남은 쿨다운 턴
+  final Map<String, int> usedInGame; // 현재 게임에서 사용한 아이템 ID -> 사용 횟수
+  final Map<String, int> cooldowns; // 아이템 ID -> 남은 쿨다운 턴
 
   PlayerItemInventory({
     Map<String, int>? items,
@@ -243,12 +211,10 @@ class PlayerItemInventory {
     if ((items[itemId] ?? 0) <= 0) return false;
 
     // 게임 내 사용 횟수 체크 (최대 2회)
-    if ((usedInGame[itemId] ?? 0) >= 2)
-      return false;
+    if ((usedInGame[itemId] ?? 0) >= 2) return false;
 
     // 쿨다운 체크
-    if ((cooldowns[itemId] ?? 0) > 0)
-      return false;
+    if ((cooldowns[itemId] ?? 0) > 0) return false;
 
     return true;
   }
@@ -258,23 +224,17 @@ class PlayerItemInventory {
     if (!canUseItem(itemId)) return this;
 
     final newItems = Map<String, int>.from(items);
-    final newUsedInGame = Map<String, int>.from(
-      usedInGame,
-    );
-    final newCooldowns = Map<String, int>.from(
-      cooldowns,
-    );
+    final newUsedInGame = Map<String, int>.from(usedInGame);
+    final newCooldowns = Map<String, int>.from(cooldowns);
 
     // 아이템 개수 감소
-    newItems[itemId] =
-        (newItems[itemId] ?? 0) - 1;
+    newItems[itemId] = (newItems[itemId] ?? 0) - 1;
     if (newItems[itemId]! <= 0) {
       newItems.remove(itemId);
     }
 
     // 게임 내 사용 횟수 증가
-    newUsedInGame[itemId] =
-        (newUsedInGame[itemId] ?? 0) + 1;
+    newUsedInGame[itemId] = (newUsedInGame[itemId] ?? 0) + 1;
 
     // 쿨다운 설정 (아이템별로 다름)
     final item = ItemService.getItemById(itemId);
@@ -291,9 +251,7 @@ class PlayerItemInventory {
 
   // 쿨다운 감소 (턴 종료시 호출)
   PlayerItemInventory reduceCooldowns() {
-    final newCooldowns = Map<String, int>.from(
-      cooldowns,
-    );
+    final newCooldowns = Map<String, int>.from(cooldowns);
 
     newCooldowns.forEach((key, value) {
       if (value > 0) {
@@ -302,9 +260,7 @@ class PlayerItemInventory {
     });
 
     // 쿨다운이 0인 항목 제거
-    newCooldowns.removeWhere(
-      (key, value) => value <= 0,
-    );
+    newCooldowns.removeWhere((key, value) => value <= 0);
 
     return PlayerItemInventory(
       items: items,
@@ -314,13 +270,9 @@ class PlayerItemInventory {
   }
 
   // 아이템 추가
-  PlayerItemInventory addItem(
-    String itemId,
-    int count,
-  ) {
+  PlayerItemInventory addItem(String itemId, int count) {
     final newItems = Map<String, int>.from(items);
-    newItems[itemId] =
-        (newItems[itemId] ?? 0) + count;
+    newItems[itemId] = (newItems[itemId] ?? 0) + count;
 
     return PlayerItemInventory(
       items: newItems,
@@ -331,11 +283,7 @@ class PlayerItemInventory {
 
   // 게임 종료시 사용 기록 초기화
   PlayerItemInventory resetGameUsage() {
-    return PlayerItemInventory(
-      items: items,
-      usedInGame: {},
-      cooldowns: {},
-    );
+    return PlayerItemInventory(items: items, usedInGame: {}, cooldowns: {});
   }
 
   PlayerItemInventory copyWith({
