@@ -95,26 +95,19 @@ class GameItemState {
     this.lastUsedTurn = -1,
   });
 
-  bool get canUse =>
-      usedCount < item.maxUsesPerGame;
+  bool get canUse => usedCount < item.maxUsesPerGame;
 
   bool canUseOnTurn(int currentTurn) {
     if (!canUse) return false;
     if (lastUsedTurn == -1) return true;
-    return currentTurn - lastUsedTurn >=
-        item.cooldown;
+    return currentTurn - lastUsedTurn >= item.cooldown;
   }
 
-  GameItemState copyWith({
-    GameItem? item,
-    int? usedCount,
-    int? lastUsedTurn,
-  }) {
+  GameItemState copyWith({GameItem? item, int? usedCount, int? lastUsedTurn}) {
     return GameItemState(
       item: item ?? this.item,
       usedCount: usedCount ?? this.usedCount,
-      lastUsedTurn:
-          lastUsedTurn ?? this.lastUsedTurn,
+      lastUsedTurn: lastUsedTurn ?? this.lastUsedTurn,
     );
   }
 }

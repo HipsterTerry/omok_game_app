@@ -52,10 +52,8 @@ class AppDimensions {
   static const double characterCardHeight = 160.0;
 
   // 🎯 화면 여백
-  static const double screenPaddingHorizontal =
-      20.0;
-  static const double screenPaddingVertical =
-      16.0;
+  static const double screenPaddingHorizontal = 20.0;
+  static const double screenPaddingVertical = 16.0;
   static const double screenPaddingTop = 40.0;
   static const double screenPaddingBottom = 20.0;
 

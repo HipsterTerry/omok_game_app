@@ -5,52 +5,28 @@ class AppColors {
   AppColors._(); // private constructor
 
   // 🎨 기본 테마 색상
-  static const Color background = Color(
-    0xFFDFFBFF,
-  ); // 민트빛 파스텔 배경
+  static const Color background = Color(0xFFDFFBFF); // 민트빛 파스텔 배경
   static const Color primary = Color(
     0xFF5C47CE,
   ); // 전체 텍스트 색상 (기존 primaryText를 primary로 통합)
-  static const Color primaryText = Color(
-    0xFF5C47CE,
-  ); // 전체 텍스트 색상 (하위 호환성)
-  static const Color primaryContainer = Color(
-    0xFF8BBEDC,
-  ); // 버튼 테두리
+  static const Color primaryText = Color(0xFF5C47CE); // 전체 텍스트 색상 (하위 호환성)
+  static const Color primaryContainer = Color(0xFF8BBEDC); // 버튼 테두리
   static const Color secondary = Color(
     0xFF89E0F7,
   ); // 버튼 배경색 (기존 primary를 secondary로 변경)
-  static const Color secondaryContainer = Color(
-    0xFF8BBEDC,
-  ); // 보조 컨테이너 색상
-  static const Color tertiary = Color(
-    0xFF51D4EB,
-  ); // 강조 테두리
+  static const Color secondaryContainer = Color(0xFF8BBEDC); // 보조 컨테이너 색상
+  static const Color tertiary = Color(0xFF51D4EB); // 강조 테두리
 
   // 🎨 게임 모드 버튼 색상
-  static const Color accent1 = Color(
-    0xFF7B68EE,
-  ); // 온라인 플레이 버튼 (미디엄 슬레이트 블루)
-  static const Color accent2 = Color(
-    0xFF4169E1,
-  ); // 2인 플레이 버튼 (로열 블루)
-  static const Color accent3 = Color(
-    0xFF483D8B,
-  ); // 1인 플레이 버튼 (다크 슬레이트 블루)
+  static const Color accent1 = Color(0xFF7B68EE); // 온라인 플레이 버튼 (미디엄 슬레이트 블루)
+  static const Color accent2 = Color(0xFF4169E1); // 2인 플레이 버튼 (로열 블루)
+  static const Color accent3 = Color(0xFF483D8B); // 1인 플레이 버튼 (다크 슬레이트 블루)
 
   // 🎨 UI 컨테이너 색상
-  static const Color surfaceHigh = Color(
-    0xFFF4FEFF,
-  ); // 클라우드형 UI 영역 배경
-  static const Color surface = Color(
-    0xFFFAF9FB,
-  ); // 캐릭터 선택 배경
-  static const Color surfaceLow = Color(
-    0xFFFFFDFB,
-  ); // 오목판 바탕
-  static const Color outline = Color(
-    0xFFC5F6F9,
-  ); // 오목판 외곽 테두리
+  static const Color surfaceHigh = Color(0xFFF4FEFF); // 클라우드형 UI 영역 배경
+  static const Color surface = Color(0xFFFAF9FB); // 캐릭터 선택 배경
+  static const Color surfaceLow = Color(0xFFFFFDFB); // 오목판 바탕
+  static const Color outline = Color(0xFFC5F6F9); // 오목판 외곽 테두리
 
   // 🎨 상태별 색상
   static const Color success = Color(0xFF4CAF50);
@@ -59,13 +35,10 @@ class AppColors {
   static const Color info = Color(0xFF2196F3);
 
   // 🎨 투명도 적용 색상 헬퍼
-  static Color primaryWithOpacity(
-    double opacity,
-  ) => primaryText.withOpacity(opacity);
-  static Color backgroundWithOpacity(
-    double opacity,
-  ) => background.withOpacity(opacity);
-  static Color primaryContainerWithOpacity(
-    double opacity,
-  ) => primaryContainer.withOpacity(opacity);
+  static Color primaryWithOpacity(double opacity) =>
+      primaryText.withOpacity(opacity);
+  static Color backgroundWithOpacity(double opacity) =>
+      background.withOpacity(opacity);
+  static Color primaryContainerWithOpacity(double opacity) =>
+      primaryContainer.withOpacity(opacity);
 }

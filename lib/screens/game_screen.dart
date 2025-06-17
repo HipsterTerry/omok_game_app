@@ -9,8 +9,7 @@ class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
 
   @override
-  State<GameScreen> createState() =>
-      _GameScreenState();
+  State<GameScreen> createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
@@ -33,11 +32,7 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     setState(() {
-      _gameState = OmokGameLogic.makeMove(
-        _gameState,
-        row,
-        col,
-      );
+      _gameState = OmokGameLogic.makeMove(_gameState, row, col);
     });
 
     // 게임 종료 시 결과 표시
@@ -86,9 +81,7 @@ class _GameScreenState extends State<GameScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              Navigator.of(
-                context,
-              ).pop(); // 홈으로 돌아가기
+              Navigator.of(context).pop(); // 홈으로 돌아가기
             },
             child: const Text('홈으로'),
           ),
@@ -109,10 +102,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   String _getCurrentPlayerText() {
-    return _gameState.currentPlayer ==
-            PlayerType.black
-        ? '흑돌'
-        : '백돌';
+    return _gameState.currentPlayer == PlayerType.black ? '흑돌' : '백돌';
   }
 
   @override
@@ -120,9 +110,7 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Omok Arena'),
-        backgroundColor: Theme.of(
-          context,
-        ).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
             onPressed: _resetGame,
@@ -140,59 +128,39 @@ class _GameScreenState extends State<GameScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primaryContainer,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                 ),
                 child: Column(
                   children: [
                     Text(
                       '현재 턴: ${_getCurrentPlayerText()}',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.headlineSmall,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '수 순서: ${_gameState.moves.length + 1}',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyLarge,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    if (_gameState.status !=
-                        GameStatus.playing)
+                    if (_gameState.status != GameStatus.playing)
                       Container(
-                        margin:
-                            const EdgeInsets.only(
-                              top: 8,
-                            ),
-                        padding:
-                            const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.green,
-                          borderRadius:
-                              BorderRadius.circular(
-                                20,
-                              ),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          _gameState.status ==
-                                  GameStatus
-                                      .blackWin
+                          _gameState.status == GameStatus.blackWin
                               ? '흑돌 승리!'
-                              : _gameState
-                                        .status ==
-                                    GameStatus
-                                        .whiteWin
+                              : _gameState.status == GameStatus.whiteWin
                               ? '백돌 승리!'
                               : '무승부!',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontWeight:
-                                FontWeight.bold,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -205,10 +173,7 @@ class _GameScreenState extends State<GameScreen> {
                 child: Center(
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding:
-                          const EdgeInsets.all(
-                            16,
-                          ),
+                      padding: const EdgeInsets.all(16),
                       child: SimpleRenjuWrapper(
                         gameState: _gameState,
                         onTileTap: _onTileTap,
@@ -222,25 +187,16 @@ class _GameScreenState extends State<GameScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment
-                          .spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton.icon(
                       onPressed: _resetGame,
-                      icon: const Icon(
-                        Icons.refresh,
-                      ),
+                      icon: const Icon(Icons.refresh),
                       label: const Text('새 게임'),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () =>
-                          Navigator.of(
-                            context,
-                          ).pop(),
-                      icon: const Icon(
-                        Icons.home,
-                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.home),
                       label: const Text('홈으로'),
                     ),
                   ],
@@ -252,8 +208,7 @@ class _GameScreenState extends State<GameScreen> {
           // 카운트다운 오버레이
           GameCountdownOverlay(
             showCountdown: _showCountdown,
-            onCountdownComplete:
-                _onCountdownComplete,
+            onCountdownComplete: _onCountdownComplete,
           ),
         ],
       ),

@@ -23,8 +23,7 @@ class LotteryReward {
   final RewardType type;
   final int quantity;
   final String? itemId; // 아이템인 경우
-  final CharacterType?
-  characterType; // 캐릭터 조각인 경우
+  final CharacterType? characterType; // 캐릭터 조각인 경우
   final ItemRarity? itemRarity;
   final Color color;
   final IconData icon;
@@ -53,8 +52,7 @@ class LotteryTicket {
   final Color secondaryColor;
   final IconData icon;
   final List<LotteryReward> possibleRewards;
-  final Map<String, double>
-  rewardProbabilities; // 보상 ID -> 확률
+  final Map<String, double> rewardProbabilities; // 보상 ID -> 확률
 
   const LotteryTicket({
     required this.id,
@@ -76,8 +74,7 @@ class LotteryTicket {
     final randomValue = random.nextDouble();
 
     for (final reward in possibleRewards) {
-      totalProbability +=
-          rewardProbabilities[reward.id] ?? 0.0;
+      totalProbability += rewardProbabilities[reward.id] ?? 0.0;
       if (randomValue <= totalProbability) {
         return reward;
       }
@@ -90,102 +87,100 @@ class LotteryTicket {
 
 class LotteryService {
   // 동 복권 보상
-  static const List<LotteryReward> bronzeRewards =
-      [
-        LotteryReward(
-          id: 'bronze_coins_50',
-          name: '50 코인',
-          description: '소량의 코인을 획득합니다',
-          type: RewardType.coins,
-          quantity: 50,
-          color: Colors.amber,
-          icon: Icons.monetization_on,
-        ),
-        LotteryReward(
-          id: 'bronze_coins_100',
-          name: '100 코인',
-          description: '코인을 획득합니다',
-          type: RewardType.coins,
-          quantity: 100,
-          color: Colors.amber,
-          icon: Icons.monetization_on,
-        ),
-        LotteryReward(
-          id: 'bronze_time_extend',
-          name: '시간 연장',
-          description: '시간 연장 아이템을 획득합니다',
-          type: RewardType.item,
-          quantity: 1,
-          itemId: 'time_extend',
-          itemRarity: ItemRarity.common,
-          color: Colors.blue,
-          icon: Icons.access_time,
-        ),
-        LotteryReward(
-          id: 'bronze_rat_fragment',
-          name: '쥐 조각',
-          description: '쥐 캐릭터 조각을 획득합니다',
-          type: RewardType.character,
-          quantity: 1,
-          characterType: CharacterType.rat,
-          color: Colors.grey,
-          icon: Icons.pets,
-        ),
-      ];
+  static const List<LotteryReward> bronzeRewards = [
+    LotteryReward(
+      id: 'bronze_coins_50',
+      name: '50 코인',
+      description: '소량의 코인을 획득합니다',
+      type: RewardType.coins,
+      quantity: 50,
+      color: Colors.amber,
+      icon: Icons.monetization_on,
+    ),
+    LotteryReward(
+      id: 'bronze_coins_100',
+      name: '100 코인',
+      description: '코인을 획득합니다',
+      type: RewardType.coins,
+      quantity: 100,
+      color: Colors.amber,
+      icon: Icons.monetization_on,
+    ),
+    LotteryReward(
+      id: 'bronze_time_extend',
+      name: '시간 연장',
+      description: '시간 연장 아이템을 획득합니다',
+      type: RewardType.item,
+      quantity: 1,
+      itemId: 'time_extend',
+      itemRarity: ItemRarity.common,
+      color: Colors.blue,
+      icon: Icons.access_time,
+    ),
+    LotteryReward(
+      id: 'bronze_rat_fragment',
+      name: '쥐 조각',
+      description: '쥐 캐릭터 조각을 획득합니다',
+      type: RewardType.character,
+      quantity: 1,
+      characterType: CharacterType.rat,
+      color: Colors.grey,
+      icon: Icons.pets,
+    ),
+  ];
 
   // 은 복권 보상
-  static const List<LotteryReward> silverRewards =
-      [
-        LotteryReward(
-          id: 'silver_coins_200',
-          name: '200 코인',
-          description: '코인을 획득합니다',
-          type: RewardType.coins,
-          quantity: 200,
-          color: Colors.amber,
-          icon: Icons.monetization_on,
-        ),
-        LotteryReward(
-          id: 'silver_coins_500',
-          name: '500 코인',
-          description: '많은 코인을 획득합니다',
-          type: RewardType.coins,
-          quantity: 500,
-          color: Colors.amber,
-          icon: Icons.monetization_on,
-        ),
-        LotteryReward(
-          id: 'silver_skill_block',
-          name: '스킬 차단',
-          description: '스킬 차단 아이템을 획득합니다',
-          type: RewardType.item,
-          quantity: 1,
-          itemId: 'skill_block',
-          itemRarity: ItemRarity.rare,
-          color: Colors.red,
-          icon: Icons.block,
-        ),
-        LotteryReward(
-          id: 'silver_tiger_fragment',
-          name: '호랑이 조각',
-          description: '호랑이 캐릭터 조각을 획득합니다',
-          type: RewardType.character,
-          quantity: 2,
-          characterType: CharacterType.tiger,
-          color: Colors.orange,
-          icon: Icons.pets,
-        ),
-        LotteryReward(
-          id: 'silver_rabbit_fragment',
-          name: '토끼 조각',
-          description: '토끼 캐릭터 조각을 획득합니다',
-          type: RewardType.character,
-          quantity: 2,
-          characterType: CharacterType.rabbit,
-          color: Colors.pink,
-          icon: Icons.pets,
-        ),
-      ];
+  static const List<LotteryReward> silverRewards = [
+    LotteryReward(
+      id: 'silver_coins_200',
+      name: '200 코인',
+      description: '코인을 획득합니다',
+      type: RewardType.coins,
+      quantity: 200,
+      color: Colors.amber,
+      icon: Icons.monetization_on,
+    ),
+    LotteryReward(
+      id: 'silver_coins_500',
+      name: '500 코인',
+      description: '많은 코인을 획득합니다',
+      type: RewardType.coins,
+      quantity: 500,
+      color: Colors.amber,
+      icon: Icons.monetization_on,
+    ),
+    LotteryReward(
+      id: 'silver_skill_block',
+      name: '스킬 차단',
+      description: '스킬 차단 아이템을 획득합니다',
+      type: RewardType.item,
+      quantity: 1,
+      itemId: 'skill_block',
+      itemRarity: ItemRarity.rare,
+      color: Colors.red,
+      icon: Icons.block,
+    ),
+    LotteryReward(
+      id: 'silver_tiger_fragment',
+      name: '호랑이 조각',
+      description: '호랑이 캐릭터 조각을 획득합니다',
+      type: RewardType.character,
+      quantity: 2,
+      characterType: CharacterType.tiger,
+      color: Colors.orange,
+      icon: Icons.pets,
+    ),
+    LotteryReward(
+      id: 'silver_rabbit_fragment',
+      name: '토끼 조각',
+      description: '토끼 캐릭터 조각을 획득합니다',
+      type: RewardType.character,
+      quantity: 2,
+      characterType: CharacterType.rabbit,
+      color: Colors.pink,
+      icon: Icons.pets,
+    ),
+  ];
 
   // 금 복권 보상
   static const List<LotteryReward> goldRewards = [
@@ -295,26 +290,19 @@ class LotteryService {
 
   static LotteryTicket? getTicketById(String id) {
     try {
-      return tickets.firstWhere(
-        (ticket) => ticket.id == id,
-      );
+      return tickets.firstWhere((ticket) => ticket.id == id);
     } catch (e) {
       return null;
     }
   }
 
-  static List<LotteryTicket>
-  getAvailableTickets() {
+  static List<LotteryTicket> getAvailableTickets() {
     return tickets;
   }
 
-  static LotteryTicket? getTicketByType(
-    LotteryType type,
-  ) {
+  static LotteryTicket? getTicketByType(LotteryType type) {
     try {
-      return tickets.firstWhere(
-        (ticket) => ticket.type == type,
-      );
+      return tickets.firstWhere((ticket) => ticket.type == type);
     } catch (e) {
       return null;
     }
@@ -323,15 +311,11 @@ class LotteryService {
 
 // 플레이어의 복권 관련 정보
 class PlayerLotteryData {
-  final Map<String, int>
-  ownedTickets; // 보유 복권 ID -> 개수
-  final List<LotteryReward>
-  rewardHistory; // 획득한 보상 기록
-  final Map<String, int>
-  characterFragments; // 캐릭터 조각 ID -> 개수
+  final Map<String, int> ownedTickets; // 보유 복권 ID -> 개수
+  final List<LotteryReward> rewardHistory; // 획득한 보상 기록
+  final Map<String, int> characterFragments; // 캐릭터 조각 ID -> 개수
   final int totalCoins;
-  final DateTime?
-  lastFreeTicketTime; // 마지막 무료 복권 시간
+  final DateTime? lastFreeTicketTime; // 마지막 무료 복권 시간
 
   PlayerLotteryData({
     Map<String, int>? ownedTickets,
@@ -341,8 +325,7 @@ class PlayerLotteryData {
     this.lastFreeTicketTime,
   }) : ownedTickets = ownedTickets ?? {},
        rewardHistory = rewardHistory ?? [],
-       characterFragments =
-           characterFragments ?? {};
+       characterFragments = characterFragments ?? {};
 
   // 복권 사용 가능 여부
   bool canUseTicket(String ticketId) {
@@ -354,31 +337,20 @@ class PlayerLotteryData {
     if (lastFreeTicketTime == null) return true;
 
     final now = DateTime.now();
-    final difference = now.difference(
-      lastFreeTicketTime!,
-    );
+    final difference = now.difference(lastFreeTicketTime!);
     return difference.inHours >= 24;
   }
 
   // 복권 사용
-  PlayerLotteryData useTicket(
-    String ticketId,
-    LotteryReward reward,
-  ) {
-    final newOwnedTickets = Map<String, int>.from(
-      ownedTickets,
-    );
-    final newRewardHistory =
-        List<LotteryReward>.from(rewardHistory);
-    final newCharacterFragments =
-        Map<String, int>.from(characterFragments);
+  PlayerLotteryData useTicket(String ticketId, LotteryReward reward) {
+    final newOwnedTickets = Map<String, int>.from(ownedTickets);
+    final newRewardHistory = List<LotteryReward>.from(rewardHistory);
+    final newCharacterFragments = Map<String, int>.from(characterFragments);
     int newTotalCoins = totalCoins;
 
     // 복권 개수 감소
-    if (newOwnedTickets[ticketId] != null &&
-        newOwnedTickets[ticketId]! > 0) {
-      newOwnedTickets[ticketId] =
-          newOwnedTickets[ticketId]! - 1;
+    if (newOwnedTickets[ticketId] != null && newOwnedTickets[ticketId]! > 0) {
+      newOwnedTickets[ticketId] = newOwnedTickets[ticketId]! - 1;
       if (newOwnedTickets[ticketId]! <= 0) {
         newOwnedTickets.remove(ticketId);
       }
@@ -393,12 +365,9 @@ class PlayerLotteryData {
         break;
       case RewardType.character:
         if (reward.characterType != null) {
-          final fragmentId =
-              reward.characterType!.name;
+          final fragmentId = reward.characterType!.name;
           newCharacterFragments[fragmentId] =
-              (newCharacterFragments[fragmentId] ??
-                  0) +
-              reward.quantity;
+              (newCharacterFragments[fragmentId] ?? 0) + reward.quantity;
         }
         break;
       case RewardType.item:
@@ -419,15 +388,9 @@ class PlayerLotteryData {
   }
 
   // 복권 추가
-  PlayerLotteryData addTicket(
-    String ticketId,
-    int count,
-  ) {
-    final newOwnedTickets = Map<String, int>.from(
-      ownedTickets,
-    );
-    newOwnedTickets[ticketId] =
-        (newOwnedTickets[ticketId] ?? 0) + count;
+  PlayerLotteryData addTicket(String ticketId, int count) {
+    final newOwnedTickets = Map<String, int>.from(ownedTickets);
+    newOwnedTickets[ticketId] = (newOwnedTickets[ticketId] ?? 0) + count;
 
     return PlayerLotteryData(
       ownedTickets: newOwnedTickets,
@@ -452,10 +415,7 @@ class PlayerLotteryData {
   }
 
   // 코인으로 복권 구매
-  PlayerLotteryData buyTicket(
-    String ticketId,
-    int cost,
-  ) {
+  PlayerLotteryData buyTicket(String ticketId, int cost) {
     if (totalCoins < cost) return this; // 코인 부족
 
     return PlayerLotteryData(
@@ -475,17 +435,11 @@ class PlayerLotteryData {
     DateTime? lastFreeTicketTime,
   }) {
     return PlayerLotteryData(
-      ownedTickets:
-          ownedTickets ?? this.ownedTickets,
-      rewardHistory:
-          rewardHistory ?? this.rewardHistory,
-      characterFragments:
-          characterFragments ??
-          this.characterFragments,
+      ownedTickets: ownedTickets ?? this.ownedTickets,
+      rewardHistory: rewardHistory ?? this.rewardHistory,
+      characterFragments: characterFragments ?? this.characterFragments,
       totalCoins: totalCoins ?? this.totalCoins,
-      lastFreeTicketTime:
-          lastFreeTicketTime ??
-          this.lastFreeTicketTime,
+      lastFreeTicketTime: lastFreeTicketTime ?? this.lastFreeTicketTime,
     );
   }
 }

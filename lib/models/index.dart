@@ -4,8 +4,7 @@
 export 'character.dart';
 export 'enhanced_game_state.dart';
 export 'game_item.dart';
-export 'game_item_enhanced.dart'
-    hide ItemType, ItemRarity;
+export 'game_item_enhanced.dart' hide ItemType, ItemRarity;
 export 'game_state.dart';
 export 'lottery_system.dart';
 export 'player_profile.dart';

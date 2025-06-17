@@ -440,22 +440,22 @@ class _EnhancedGameBoardWidgetState
             Positioned(
               left:
                   x -
-                  (cellSize * 0.85 / 2), // 중앙 정렬
+                  (cellSize * 2.4 / 2), // 중앙 정렬
               top:
                   y -
-                  (cellSize * 0.85 / 2), // 중앙 정렬
+                  (cellSize * 2.4 / 2), // 중앙 정렬
               child: Image.asset(
                 stone == PlayerType.black
-                    ? 'assets/images/stone_black.png'
-                    : 'assets/images/stone_white.png',
-                width: cellSize * 0.85,
-                height: cellSize * 0.85,
+                    ? 'assets/image/black_stone.png'
+                    : 'assets/image/white_stone.png',
+                width: cellSize * 2.4,
+                height: cellSize * 2.4,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
                   // 🎨 감성적인 3D 오목돌 fallback (PNG 이미지 없을 때)
                   return Container(
-                    width: cellSize * 0.85,
-                    height: cellSize * 0.85,
+                    width: cellSize * 2.4,
+                    height: cellSize * 2.4,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient:

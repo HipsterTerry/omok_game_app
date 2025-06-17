@@ -22,8 +22,7 @@ enum TitleType {
 class GameRank {
   final int level; // 1~48 (30급부터 마스터까지)
   final RankTier tier;
-  final String
-  displayName; // "30급", "1급", "초단", "9단", "마스터" 등
+  final String displayName; // "30급", "1급", "초단", "9단", "마스터" 등
   final String description;
   final int requiredWins; // 승급에 필요한 승수
   final int requiredPoints; // 승급에 필요한 포인트
@@ -78,8 +77,7 @@ class PlayerRankData {
 
   // 승급 가능 여부
   bool get canRankUp {
-    return currentPoints >=
-            currentRank.requiredPoints &&
+    return currentPoints >= currentRank.requiredPoints &&
         totalWins >= currentRank.requiredWins;
   }
 
@@ -87,9 +85,7 @@ class PlayerRankData {
   PlayerRankData rankUp() {
     if (!canRankUp) return this;
 
-    final nextRank = RankService.getNextRank(
-      currentRank.level,
-    );
+    final nextRank = RankService.getNextRank(currentRank.level);
     if (nextRank == null) return this; // 최고 랭크
 
     return PlayerRankData(
@@ -112,21 +108,17 @@ class PlayerRankData {
     required String characterId,
     int? bonusPoints,
   }) {
-    final newCharacterWins =
-        Map<String, int>.from(characterWins);
+    final newCharacterWins = Map<String, int>.from(characterWins);
 
     if (isWin) {
       // 승리시
-      newCharacterWins[characterId] =
-          (newCharacterWins[characterId] ?? 0) +
-          1;
+      newCharacterWins[characterId] = (newCharacterWins[characterId] ?? 0) + 1;
 
       return PlayerRankData(
         currentRank: currentRank,
         totalWins: totalWins + 1,
         totalLosses: totalLosses,
-        currentPoints:
-            currentPoints + (bonusPoints ?? 10),
+        currentPoints: currentPoints + (bonusPoints ?? 10),
         winStreak: winStreak + 1,
         lossStreak: 0,
         earnedTitles: earnedTitles,
@@ -140,10 +132,7 @@ class PlayerRankData {
         currentRank: currentRank,
         totalWins: totalWins,
         totalLosses: totalLosses + 1,
-        currentPoints: math.max(
-          0,
-          currentPoints - 5,
-        ), // 포인트 감소 (0 미만 불가)
+        currentPoints: math.max(0, currentPoints - 5), // 포인트 감소 (0 미만 불가)
         winStreak: 0,
         lossStreak: lossStreak + 1,
         earnedTitles: earnedTitles,
@@ -158,9 +147,7 @@ class PlayerRankData {
   PlayerRankData earnTitle(TitleType title) {
     if (earnedTitles.contains(title)) return this;
 
-    final newEarnedTitles = List<TitleType>.from(
-      earnedTitles,
-    );
+    final newEarnedTitles = List<TitleType>.from(earnedTitles);
     newEarnedTitles.add(title);
 
     return PlayerRankData(
@@ -179,8 +166,7 @@ class PlayerRankData {
 
   // 활성 칭호 변경
   PlayerRankData setActiveTitle(TitleType title) {
-    if (!earnedTitles.contains(title) &&
-        title != TitleType.none) {
+    if (!earnedTitles.contains(title) && title != TitleType.none) {
       return this;
     }
 
@@ -211,23 +197,16 @@ class PlayerRankData {
     DateTime? lastRankUpTime,
   }) {
     return PlayerRankData(
-      currentRank:
-          currentRank ?? this.currentRank,
+      currentRank: currentRank ?? this.currentRank,
       totalWins: totalWins ?? this.totalWins,
-      totalLosses:
-          totalLosses ?? this.totalLosses,
-      currentPoints:
-          currentPoints ?? this.currentPoints,
+      totalLosses: totalLosses ?? this.totalLosses,
+      currentPoints: currentPoints ?? this.currentPoints,
       winStreak: winStreak ?? this.winStreak,
       lossStreak: lossStreak ?? this.lossStreak,
-      earnedTitles:
-          earnedTitles ?? this.earnedTitles,
-      activeTitle:
-          activeTitle ?? this.activeTitle,
-      characterWins:
-          characterWins ?? this.characterWins,
-      lastRankUpTime:
-          lastRankUpTime ?? this.lastRankUpTime,
+      earnedTitles: earnedTitles ?? this.earnedTitles,
+      activeTitle: activeTitle ?? this.activeTitle,
+      characterWins: characterWins ?? this.characterWins,
+      lastRankUpTime: lastRankUpTime ?? this.lastRankUpTime,
     );
   }
 }
@@ -659,32 +638,23 @@ class RankService {
 
   static GameRank getRankByLevel(int level) {
     try {
-      return allRanks.firstWhere(
-        (rank) => rank.level == level,
-      );
+      return allRanks.firstWhere((rank) => rank.level == level);
     } catch (e) {
       return allRanks.first; // 기본값
     }
   }
 
   static GameRank? getNextRank(int currentLevel) {
-    if (currentLevel >= allRanks.length)
-      return null;
+    if (currentLevel >= allRanks.length) return null;
     try {
-      return allRanks.firstWhere(
-        (rank) => rank.level == currentLevel + 1,
-      );
+      return allRanks.firstWhere((rank) => rank.level == currentLevel + 1);
     } catch (e) {
       return null;
     }
   }
 
-  static List<GameRank> getRanksByTier(
-    RankTier tier,
-  ) {
-    return allRanks
-        .where((rank) => rank.tier == tier)
-        .toList();
+  static List<GameRank> getRanksByTier(RankTier tier) {
+    return allRanks.where((rank) => rank.tier == tier).toList();
   }
 
   static GameRank getStartingRank() {
@@ -693,8 +663,7 @@ class RankService {
 }
 
 class TitleService {
-  static const Map<TitleType, TitleInfo>
-  titleInfos = {
+  static const Map<TitleType, TitleInfo> titleInfos = {
     TitleType.none: TitleInfo(
       name: '칭호 없음',
       description: '',
@@ -746,14 +715,11 @@ class TitleService {
   };
 
   static TitleInfo getTitleInfo(TitleType type) {
-    return titleInfos[type] ??
-        titleInfos[TitleType.none]!;
+    return titleInfos[type] ?? titleInfos[TitleType.none]!;
   }
 
   static List<TitleType> getAvailableTitles() {
-    return TitleType.values
-        .where((title) => title != TitleType.none)
-        .toList();
+    return TitleType.values.where((title) => title != TitleType.none).toList();
   }
 }
 

@@ -17,13 +17,12 @@ class AppTextStyles {
     color: AppColors.primaryText,
   );
 
-  static const TextStyle displayMedium =
-      TextStyle(
-        fontFamily: 'Cafe24Ohsquare',
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-        color: AppColors.primaryText,
-      );
+  static const TextStyle displayMedium = TextStyle(
+    fontFamily: 'Cafe24Ohsquare',
+    fontSize: 28,
+    fontWeight: FontWeight.bold,
+    color: AppColors.primaryText,
+  );
 
   static const TextStyle displaySmall = TextStyle(
     fontFamily: 'Cafe24Ohsquare',
@@ -33,29 +32,26 @@ class AppTextStyles {
   );
 
   // 🎯 헤드라인 - SUIT
-  static const TextStyle headlineLarge =
-      TextStyle(
-        fontFamily: 'SUIT',
-        fontSize: 22,
-        fontWeight: FontWeight.bold,
-        color: AppColors.primaryText,
-      );
+  static const TextStyle headlineLarge = TextStyle(
+    fontFamily: 'SUIT',
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: AppColors.primaryText,
+  );
 
-  static const TextStyle headlineMedium =
-      TextStyle(
-        fontFamily: 'SUIT',
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: AppColors.primaryText,
-      );
+  static const TextStyle headlineMedium = TextStyle(
+    fontFamily: 'SUIT',
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    color: AppColors.primaryText,
+  );
 
-  static const TextStyle headlineSmall =
-      TextStyle(
-        fontFamily: 'SUIT',
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: AppColors.primaryText,
-      );
+  static const TextStyle headlineSmall = TextStyle(
+    fontFamily: 'SUIT',
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: AppColors.primaryText,
+  );
 
   // 🎯 본문 텍스트 - Pretendard
   static const TextStyle bodyLarge = TextStyle(
@@ -109,12 +105,11 @@ class AppTextStyles {
     color: AppColors.primaryText,
   );
 
-  static const TextStyle splashSubtitle =
-      TextStyle(
-        fontFamily: 'SUIT',
-        fontSize: 16,
-        color: AppColors.primaryText,
-      );
+  static const TextStyle splashSubtitle = TextStyle(
+    fontFamily: 'SUIT',
+    fontSize: 16,
+    color: AppColors.primaryText,
+  );
 
   static const TextStyle buttonText = TextStyle(
     fontFamily: 'SUIT',
