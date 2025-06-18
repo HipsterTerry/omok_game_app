@@ -237,43 +237,20 @@ class _EnhancedGameBoardWidgetState
                       BorderRadius.circular(16),
                   child: Stack(
                     children: [
-                      // 🎯 바둑판 배경 이미지 (CustomPaint 대체)
+                      // 🎯 바둑판 배경 (CustomPaint fallback으로 임시 변경)
                       Positioned.fill(
-                        child: Image.asset(
-                          'assets/image/board/board_17x17.png',
-                          fit: BoxFit.cover,
-                          errorBuilder:
-                              (
-                                context,
-                                error,
-                                stackTrace,
-                              ) {
-                                // 🚨 이미지 로딩 실패시 빨간 배경으로 표시
-                                return Container(
-                                  color: Colors
-                                      .red
-                                      .withOpacity(
-                                        0.3,
-                                      ),
-                                  child: Center(
-                                    child: Text(
-                                      '바둑판 이미지\n로딩 실패',
-                                      style: TextStyle(
-                                        color: Colors
-                                            .white,
-                                        fontSize:
-                                            16,
-                                        fontWeight:
-                                            FontWeight
-                                                .bold,
-                                      ),
-                                      textAlign:
-                                          TextAlign
-                                              .center,
-                                    ),
-                                  ),
-                                );
-                              },
+                        child: CustomPaint(
+                          painter: EnhancedOmokBoardPainter(
+                            gameState:
+                                widget.gameState,
+                            boardSizeType: widget
+                                .boardSizeType,
+                            showCoordinates: widget
+                                .showCoordinates,
+                            hoverPosition:
+                                _hoverPosition,
+                            isPressed: _isPressed,
+                          ),
                         ),
                       ),
 
@@ -305,14 +282,15 @@ class _EnhancedGameBoardWidgetState
                                     false,
                               ),
                           // 모바일 터치 개선: 더 정확한 터치 감지
-                          behavior:
-                              HitTestBehavior
-                                  .opaque,
+                          behavior: HitTestBehavior
+                              .translucent, // opaque에서 translucent로 변경
                           child: Container(
                             width: boardSize,
                             height: boardSize,
                             color: Colors
                                 .transparent, // 투명한 터치 감지 영역
+                            // 🔍 디버깅용: 터치 영역 시각화 (임시)
+                            // color: Colors.blue.withOpacity(0.1),
                           ),
                         ),
                       ),
@@ -365,12 +343,25 @@ class _EnhancedGameBoardWidgetState
     HapticFeedback.lightImpact();
 
     setState(() => _isPressed = true);
+
+    // 🔍 디버깅: 터치 위치 로그
+    print(
+      '🎯 터치 감지: ${details.localPosition}, 보드 크기: $size',
+    );
+
     final position = _getGridPosition(
       details.localPosition,
       size,
     );
+
+    print('🎯 계산된 격자 위치: $position');
+
     if (position != null &&
         _isValidPosition(position)) {
+      print(
+        '🎯 유효한 위치에 돌 놓기: (${position.row}, ${position.col})',
+      );
+
       // 자동 스크롤: 돌을 놓은 위치가 화면 중앙에 오도록 조정
       _autoScrollToPosition(position, size);
 
@@ -378,6 +369,8 @@ class _EnhancedGameBoardWidgetState
         position.row,
         position.col,
       );
+    } else {
+      print('🚫 무효한 위치 또는 이미 돌이 있음');
     }
   }
 
@@ -400,7 +393,7 @@ class _EnhancedGameBoardWidgetState
 
     // 모바일 터치 정밀도 개선: 허용 오차 확대
     final touchTolerance =
-        cellSize * 0.45; // 45% 허용 오차
+        cellSize * 0.6; // 60% 허용 오차 (더 관대하게)
 
     final col =
         ((localPosition.dx / cellSize) - 1)
