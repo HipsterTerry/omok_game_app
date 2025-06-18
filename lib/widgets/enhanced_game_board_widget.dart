@@ -238,8 +238,11 @@ class _EnhancedGameBoardWidgetState
                   child: Stack(
                     children: [
                       // 🎯 바둑판 배경 이미지 (CustomPaint 대체)
-                      _buildBoardBackground(
-                        widget.boardSizeType,
+                      Positioned.fill(
+                        child: Image.asset(
+                          'assets/images/board/board_17x17.png',
+                          fit: BoxFit.cover,
+                        ),
                       ),
 
                       // 🎮 터치 감지 레이어 (투명한 오버레이)
@@ -564,52 +567,6 @@ class _EnhancedGameBoardWidgetState
     }
 
     return stoneWidgets;
-  }
-
-  // 🎯 바둑판 배경 이미지 빌드 (보드 크기별 동적 선택)
-  Widget _buildBoardBackground(
-    BoardSize boardSizeType,
-  ) {
-    String imagePath;
-    switch (boardSizeType) {
-      case BoardSize.small: // 13x13
-        imagePath =
-            'assets/images/board/board_13x13.png';
-        break;
-      case BoardSize.medium: // 17x17
-        imagePath =
-            'assets/images/board/board_17x17.png';
-        break;
-      case BoardSize.large: // 21x21
-        imagePath =
-            'assets/images/board/board_21x21.png';
-        break;
-    }
-
-    return Positioned.fill(
-      child: Image.asset(
-        imagePath,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          // 🎨 이미지 로딩 실패시 CustomPainter fallback
-          return Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: CustomPaint(
-              painter: EnhancedOmokBoardPainter(
-                gameState: widget.gameState,
-                boardSizeType:
-                    widget.boardSizeType,
-                showCoordinates:
-                    widget.showCoordinates,
-                hoverPosition: _hoverPosition,
-                isPressed: _isPressed,
-              ),
-            ),
-          );
-        },
-      ),
-    );
   }
 
   // 🚫 렌주룰 금지수 오버레이 빌드 - 바둑판과 완전 동일한 위치
