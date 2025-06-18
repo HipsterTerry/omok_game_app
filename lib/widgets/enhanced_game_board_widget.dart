@@ -240,8 +240,40 @@ class _EnhancedGameBoardWidgetState
                       // 🎯 바둑판 배경 이미지 (CustomPaint 대체)
                       Positioned.fill(
                         child: Image.asset(
-                          'assets/images/board/board_17x17.png',
+                          'assets/image/board/board_17x17.png',
                           fit: BoxFit.cover,
+                          errorBuilder:
+                              (
+                                context,
+                                error,
+                                stackTrace,
+                              ) {
+                                // 🚨 이미지 로딩 실패시 빨간 배경으로 표시
+                                return Container(
+                                  color: Colors
+                                      .red
+                                      .withOpacity(
+                                        0.3,
+                                      ),
+                                  child: Center(
+                                    child: Text(
+                                      '바둑판 이미지\n로딩 실패',
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white,
+                                        fontSize:
+                                            16,
+                                        fontWeight:
+                                            FontWeight
+                                                .bold,
+                                      ),
+                                      textAlign:
+                                          TextAlign
+                                              .center,
+                                    ),
+                                  ),
+                                );
+                              },
                         ),
                       ),
 
