@@ -1,360 +1,266 @@
-# 🛠️ 개발자 가이드 (Development Guide)
+# Omok Arena 개발 가이드 📋
 
-## 📋 목차
-1. [프로젝트 구조](#프로젝트-구조)
-2. [UI 시스템](#ui-시스템)
-3. [게임 로직](#게임-로직)
-4. [주요 컴포넌트](#주요-컴포넌트)
-5. [개발 규칙](#개발-규칙)
+> **최종 업데이트**: 2024년 12월 (Figma 기반 UI 시스템 통합 완료)
 
-## 🏗️ 프로젝트 구조
+## 🎯 프로젝트 현재 상태
 
-### 📁 디렉토리 구조
+### ✅ 완료된 주요 기능들
+
+#### 🎨 **UI/UX 시스템 (100% 완료)**
+- **Figma 기반 디자인**: 전체 화면 다크 테마 통합
+- **색상 시스템**: 기능별 색상 코딩 (파란색/주황색/빨간색/노란색)
+- **타이포그래피**: Cafe24Ohsquare 폰트 적용
+- **컴포넌트**: 그라데이션 버튼, 카드, 입력 필드 표준화
+- **캐릭터 마스코트**: 호랑이🐯, 토끼🐰, 돼지🐷
+
+#### 📱 **화면 구현 (100% 완료)**
+1. **스플래시 화면**: 호랑이 캐릭터, 로딩 애니메이션, 스킵 옵션
+2. **온보딩 화면**: 4페이지 색상별 소개, 뒤로가기 버튼
+3. **로그인 화면**: 돼지 캐릭터, 소셜 로그인, 개선된 레이아웃
+4. **회원가입 화면**: 비밀번호 강도 검증, 실시간 유효성 검사
+5. **홈 화면**: Figma 스타일 메인 메뉴, 캐릭터 로고
+6. **캐릭터 선택**: 12지신 캐릭터, 스킬 정보, 보드 크기 선택
+7. **게임 화면**: 향상된 보드, 실시간 타이머, 카운트다운
+8. **게임 규칙**: 탭별 규칙 설명 (기본/렌주/전략)
+9. **복권 화면**: 코인 시스템, 아이템 획득
+10. **비밀번호 찾기**: 이메일 인증 시스템
+
+#### 🎮 **게임 시스템 (90% 완료)**
+- **보드 크기**: 13x13, 17x17, 21x21 지원
+- **게임 로직**: 5목 승리 조건, 렌주 규칙
+- **타이머 시스템**: AnimatedCountdown 위젯 (30초)
+- **캐릭터 시스템**: 12지신 캐릭터와 스킬 구조
+- **아이템 시스템**: 기본 구조 완성
+- **복권 시스템**: 코인/티켓 기반 보상 시스템
+
+#### 🔧 **기술적 구현 (90% 완료)**
+- **상태 관리**: Provider 패턴
+- **오디오 시스템**: 게임 사운드와 효과음
+- **애니메이션**: 페이지 전환, 버튼 효과
+- **에러 핸들링**: 이미지 로딩, 네트워크 에러
+- **반응형 디자인**: 다양한 화면 크기 지원
+
+## 🚀 다음 작업 우선순위
+
+### 🔥 **높은 우선순위 (즉시 진행 가능)**
+
+#### 1. AI 대전 시스템 구현
+```bash
+# 작업 위치: lib/logic/ai_player.dart
+# 목표: 간단한 AI 알고리즘으로 "AI 연습게임" 버튼 활성화
+```
+- **미니맥스 알고리즘** 또는 **휴리스틱 기반** AI
+- **난이도 설정**: 초급/중급/고급
+- **AI 응답 시간**: 1-3초 딜레이로 자연스러운 플레이
+
+#### 2. 캐릭터 스킬 시스템 완성
+```bash
+# 작업 위치: lib/models/character.dart, lib/widgets/skill_activation_widget.dart
+# 목표: 게임당 1회 사용 가능한 캐릭터별 고유 스킬
+```
+- **12지신 캐릭터별 스킬 정의**
+- **스킬 활성화 UI/UX**
+- **게임 로직과 연동**
+- **쿨다운 및 제한 시스템**
+
+#### 3. 아이템 시스템 완성
+```bash
+# 작업 위치: lib/models/game_item_enhanced.dart
+# 목표: 게임당 2회 사용 가능한 전략적 아이템
+```
+- **아이템 종류 정의**: 공격/방어/특수
+- **사용 제한 로직**: 게임당 2회
+- **스킬-아이템 동시 사용 금지**
+- **아이템 효과 애니메이션**
+
+### ⚡ **중간 우선순위 (주요 기능)**
+
+#### 4. 온라인 대전 시스템
+```bash
+# 기술 스택: Firebase Firestore + Real-time Database
+# 작업 범위: 매칭, 실시간 동기화, 연결 관리
+```
+- **Firebase 프로젝트 설정**
+- **실시간 게임 상태 동기화**
+- **매칭 시스템** (랜덤/친구)
+- **연결 끊김 처리**
+
+#### 5. 사용자 인증 시스템
+```bash
+# 기술 스택: Firebase Auth
+# 연동: Google, Apple, 이메일 인증
+```
+- **소셜 로그인 실제 연동**
+- **사용자 프로필 관리**
+- **게임 기록 저장**
+
+#### 6. 랭킹 및 통계 시스템
+```bash
+# 작업 위치: lib/models/rank_system.dart
+# 기능: 전국 랭킹, 개인 통계, 업적 시스템
+```
+
+### 🔮 **낮은 우선순위 (향후 확장)**
+
+#### 7. 고급 기능들
+- **토너먼트 시스템**
+- **친구 시스템**
+- **상점 시스템** (캐릭터/아이템 구매)
+- **업적 및 도전 과제**
+- **푸시 알림**
+
+## 🛠️ 개발 환경 설정
+
+### 📋 **프로젝트 클론 및 실행**
+```bash
+# GitHub에서 클론
+git clone https://github.com/HipsterTerry/omok_game_app.git
+cd omok_game_app
+
+# 의존성 설치
+flutter pub get
+
+# 실행 (Chrome 권장)
+flutter run -d chrome
+```
+
+### 🔧 **주요 의존성**
+```yaml
+dependencies:
+  flutter: sdk: flutter
+  cupertino_icons: ^1.0.8
+  audioplayers: ^6.1.0
+
+dev_dependencies:
+  flutter_test: sdk: flutter
+  flutter_lints: ^5.0.0
+```
+
+### 📁 **핵심 폴더 구조**
 ```
 lib/
-├── screens/                    # 화면 컴포넌트
-│   ├── home_screen.dart       # 홈 화면 (오버플로우 해결됨)
-│   ├── character_selection_screen.dart  # 캐릭터 선택
-│   ├── enhanced_game_screen.dart        # 메인 게임 화면
-│   ├── lottery_screen.dart    # 복권/가챠 시스템
-│   └── game_rules_screen.dart # 게임 규칙 설명
-│
-├── widgets/                   # 재사용 위젯
-│   ├── enhanced_game_board_widget.dart # 오목판 렌더링
-│   ├── skill_activation_widget.dart    # 스킬 효과 시스템
-│   ├── game_timer_widget.dart # 듀얼 타이머
-│   └── character_card_widget.dart      # 캐릭터 카드
-│
-├── logic/                     # 게임 로직
-│   ├── omok_game_logic.dart   # 핵심 오목 규칙
-│   ├── ai_player.dart         # AI 알고리즘
-│   └── renju_rule_checker.dart # 렌주 규칙 검증
-│
-├── models/                    # 데이터 모델
-│   ├── enhanced_game_state.dart # 게임 상태 관리
-│   ├── character.dart         # 캐릭터 정보
-│   └── player_profile.dart    # 플레이어 프로필
-│
-└── services/                  # 서비스 레이어
-    ├── sound_manager.dart     # 사운드 관리
-    └── character_service.dart # 캐릭터 서비스
+├── screens/          # 화면 UI (10개 완성)
+├── widgets/          # 재사용 위젯 (22개 완성)
+├── models/           # 데이터 모델 (8개 완성)
+├── logic/            # 게임 로직
+├── core/             # 핵심 유틸리티
+├── theme/            # 테마 설정
+└── services/         # 서비스 레이어
 ```
 
-## 🎨 UI 시스템
+## 🎨 디자인 시스템 가이드
 
-### 🎯 2024.12.28 완전 개선된 UI 시스템
-
-#### 📝 폰트 시스템
+### 🎯 **색상 코드**
 ```dart
-// 3단계 폰트 계층 구조
-const String TITLE_FONT = 'Cafe24Ohsquare';    // 타이틀, 강조
-const String PRIMARY_FONT = 'SUIT';             // 기본 텍스트, 버튼
-const String SECONDARY_FONT = 'Pretendard';     // 부제목, 설명
-
-// 사용 예시
-Text(
-  '오목 게임',
-  style: TextStyle(
-    fontFamily: TITLE_FONT,     // 타이틀용
-    fontSize: 36,
-    fontWeight: FontWeight.bold,
-  ),
-)
+// 주요 색상
+static const Color primaryBlue = Color(0xFF2196F3);    // AI 연습게임
+static const Color orange = Color(0xFFFF9800);         // 2인 플레이
+static const Color red = Color(0xFFF44336);            // 온라인 플레이
+static const Color yellow = Color(0xFFFFC107);         // 규칙/상점
+static const Color green = Color(0xFF4CAF50);          // 성공/시작
+static const Color gray = Color(0xFF757575);           // 중립
 ```
 
-#### 🌈 색상 시스템
+### 📝 **버튼 스타일 템플릿**
 ```dart
-// 통일된 색상 테마
-class AppColors {
-  static const Color background = Color(0xFFFDF7E3);  // 따뜻한 크림
-  static const Color mainText = Color(0xFF2D2D2D);    // 진한 회색
-  static const Color button = Color(0xFFFFD966);      // 노란색
-  static const Color accentPink = Color(0xFFFFA3A3);  // 핑크
-  static const Color accentBlue = Color(0xFFA3D8F4);  // 하늘색
-}
-
-// 모든 화면에 일관되게 적용
+// Figma 스타일 버튼
 Container(
-  decoration: const BoxDecoration(
-    color: AppColors.background,
+  width: 280,
+  height: 60,
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      begin: Alignment(0.00, -1.00),
+      end: Alignment(0, 1),
+      colors: [color1, color2],
+    ),
+    borderRadius: BorderRadius.circular(24),
+    border: Border.all(color: Colors.white, width: 6),
   ),
-  child: AppBar(
-    backgroundColor: AppColors.background,
-    foregroundColor: AppColors.mainText,
-  ),
+  // ...
 )
 ```
 
-#### 📱 레이아웃 시스템
-```dart
-// 오버플로우 방지 패턴 (홈 스크린에서 완전 해결됨)
-SingleChildScrollView(
-  child: Container(
-    decoration: const BoxDecoration(
-      color: AppColors.background,
-    ),
-    child: SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20.0,
-          vertical: 10.0,  // 축소된 패딩
-        ),
-        child: Column(
-          children: [
-            // 컨텐츠들...
-          ],
-        ),
-      ),
-    ),
-  ),
-)
+## 🧪 테스트 전략
+
+### ✅ **현재 테스트 가능한 기능**
+1. **UI 네비게이션**: 모든 화면 전환
+2. **게임 로직**: 5목 승리 조건
+3. **타이머 시스템**: 30초 카운트다운
+4. **캐릭터 선택**: 12지신 캐릭터
+5. **복권 시스템**: 코인/아이템 획득
+
+### 🚀 **실행 명령어**
+```bash
+# 앱 실행
+flutter run -d chrome    # 웹 (권장)
+flutter run -d ios       # iOS 시뮬레이터
+flutter run -d android   # Android 에뮬레이터
+
+# 테스트
+flutter test
+flutter test --coverage
 ```
 
-## 🎮 게임 로직
+## 🐛 알려진 이슈 및 해결 방법
 
-### 🏆 승리 판정 시스템 (완전 검증됨)
-```dart
-// lib/logic/omok_game_logic.dart
-class OmokGameLogic {
-  static const int winCondition = 5; // 5목으로 승리
+### ⚠️ **현재 이슈들**
+1. **AI 대전**: 아직 구현되지 않음 → "AI 연습게임" 버튼 비활성화
+2. **온라인 플레이**: Firebase 연동 필요
+3. **소셜 로그인**: UI만 구현, 실제 연동 필요
+4. **스킬 시스템**: 기본 구조만 완성
 
-  /// 승리 조건 확인 - 가로/세로/대각선 모든 방향 검사
-  static PlayerType? checkWinner(
-    List<List<PlayerType?>> board,
-    Position lastMove,
-  ) {
-    final player = board[lastMove.row][lastMove.col];
-    if (player == null) return null;
+### 🔧 **개발 팁**
+```bash
+# Flutter 캐시 정리 (에러 발생시)
+flutter clean
+flutter pub get
 
-    // 4방향 검사: 가로, 세로, 우하향 대각선, 좌하향 대각선
-    final directions = [
-      [0, 1],  // 가로 →
-      [1, 0],  // 세로 ↓
-      [1, 1],  // 우하향 대각선 ↘
-      [1, -1], // 좌하향 대각선 ↙
-    ];
-
-    for (final direction in directions) {
-      final count = 1 +
-        countDirection(board, lastMove, player, direction[0], direction[1]) +
-        countDirection(board, lastMove, player, -direction[0], -direction[1]);
-
-      if (count >= winCondition) {
-        return player; // 5목 달성!
-      }
-    }
-
-    return null; // 승리 조건 미충족
-  }
-}
+# Hot Reload 활용
+r키 - 핫 리로드
+R키 - 핫 리스타트
 ```
 
-### 🚫 렌주룰 시스템 (완전 적용됨)
-```dart
-// lib/logic/renju_rule_checker.dart
-class RenjuRuleChecker {
-  /// 렌주 룰 위반 체크 (흑돌만 적용)
-  static bool isValidMove(
-    List<List<PlayerType?>> board,
-    int row,
-    int col,
-    PlayerType player,
-  ) {
-    if (player != PlayerType.black) {
-      return true; // 백돌은 렌주 룰 적용 안함
-    }
+## 🎯 다음 작업 시작 프롬프트
 
-    // 임시로 돌 놓기
-    board[row][col] = player;
-
-    bool isValid = true;
-
-    // 삼삼 체크: 두 개의 열린 3을 동시에 만드는 수
-    if (_hasDoubleThree(board, row, col, player)) {
-      isValid = false;
-    }
-
-    // 사사 체크: 두 개의 4를 동시에 만드는 수
-    if (_hasDoubleFour(board, row, col, player)) {
-      isValid = false;
-    }
-
-    // 장목 체크: 6목 이상 연속
-    if (_hasOverline(board, row, col, player)) {
-      isValid = false;
-    }
-
-    // 임시 돌 제거
-    board[row][col] = null;
-
-    return isValid;
-  }
-}
+### 🚀 **AI 대전 시스템 구현부터 시작**
+```
+"Omok Arena 프로젝트에서 AI 대전 시스템을 구현하고 싶습니다. 
+현재 'AI 연습게임' 버튼이 있지만 실제 AI 로직이 없어서 작동하지 않습니다.
+간단한 미니맥스 알고리즘이나 휴리스틱 기반 AI를 구현해서 
+사용자가 컴퓨터와 오목 게임을 할 수 있도록 만들어주세요.
+난이도는 중급 정도로 설정하고, AI 응답 시간은 2-3초 정도로 해주세요."
 ```
 
-## ⚡ 주요 컴포넌트
-
-### 🎭 스킬 효과 시스템 (액션 RPG 스타일)
-```dart
-// lib/widgets/skill_activation_widget.dart
-
-/// 순수 비주얼 스킬 효과 - 텍스트 설명 완전 제거됨
-class SkillActivationWidget extends StatelessWidget {
-  
-  /// 일반 스킬: 1초간 방사형 그라데이션 효과
-  void _showNormalSkillEffect() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.transparent,
-      builder: (context) => TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.0, end: 1.0),
-        duration: const Duration(seconds: 1),
-        builder: (context, value, child) {
-          return Center(
-            child: Transform.scale(
-              scale: value * 2,
-              child: Opacity(
-                opacity: 1 - value,
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppColors.accentPink.withOpacity(0.8),
-                        AppColors.accentBlue.withOpacity(0.4),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-        onEnd: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    );
-  }
-
-  /// 메가 스킬: 2초간 전체화면 확장 링 + 캐릭터 아이콘
-  void _showMegaSkillEffect() {
-    // 햅틱 피드백
-    HapticFeedback.heavyImpact(); // 발동시 강한 진동
-    
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.black54,
-      builder: (context) => TweenAnimationBuilder<double>(
-        tween: Tween(begin: 0.0, end: 1.0),
-        duration: const Duration(seconds: 2),
-        builder: (context, value, child) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 확장하는 링 효과
-                Transform.scale(
-                  scale: value * 5,
-                  child: Opacity(
-                    opacity: 1 - value,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.accentPink,
-                          width: 3,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // 캐릭터 아이콘
-                Icon(
-                  Icons.star,
-                  size: 80,
-                  color: AppColors.accentPink,
-                ),
-              ],
-            ),
-          );
-        },
-        onEnd: () {
-          HapticFeedback.lightImpact(); // 완료시 약한 진동
-          Navigator.of(context).pop();
-        },
-      ),
-    );
-  }
-}
+### 🎮 **캐릭터 스킬 시스템 완성**
+```
+"12지신 캐릭터 시스템에서 각 캐릭터별 고유 스킬을 구현하고 싶습니다.
+현재 캐릭터 선택 화면과 기본 구조는 완성되어 있지만, 
+실제 게임에서 스킬을 사용할 수 있는 시스템이 필요합니다.
+게임당 1회 제한으로 캐릭터별 특수 능력을 사용할 수 있게 해주세요."
 ```
 
-### 🎯 게임 보드 렌더링
-```dart
-// lib/widgets/enhanced_game_board_widget.dart
+## 📚 참고 자료
 
-/// 고성능 CustomPainter 기반 오목판
-class EnhancedOmokBoardPainter extends CustomPainter {
-  
-  @override
-  void paint(Canvas canvas, Size size) {
-    // 1. 배경 그리기 (새로운 크림색 배경)
-    final backgroundPaint = Paint()..color = AppColors.background;
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), backgroundPaint);
+### 🔗 **중요 파일들**
+- **메인 진입점**: `lib/main.dart`
+- **게임 로직**: `lib/logic/omok_game_logic.dart`
+- **향상된 게임 화면**: `lib/screens/enhanced_game_screen.dart`
+- **캐릭터 모델**: `lib/models/character.dart`
+- **애니메이션 타이머**: `lib/widgets/animated_countdown.dart`
 
-    // 2. 격자선 그리기 (외곽선, 중앙선, 그림자 효과)
-    _drawGridLines(canvas, size);
-    
-    // 3. 화점 그리기 (3D 효과)
-    _drawStarPoints(canvas, size);
-    
-    // 4. 돌 그리기
-    _drawStones(canvas, size);
-    
-    // 5. 마지막 수 강조 (다중 링과 십자가)
-    _drawLastMoveHighlight(canvas, size);
-    
-    // 6. 승리 라인 표시
-    _drawWinningLine(canvas, size);
-  }
-}
-```
-
-## 📏 개발 규칙
-
-### ✅ 코딩 컨벤션
-1. **폰트 사용**: 3단계 시스템 (Cafe24Ohsquare, SUIT, Pretendard) 준수
-2. **색상 사용**: AppColors 클래스의 정의된 색상만 사용
-3. **레이아웃**: SingleChildScrollView + SafeArea + 적절한 패딩
-4. **스킬 효과**: 텍스트 설명 금지, 순수 비주얼만 허용
-5. **주석**: 모든 핵심 함수에 상세한 주석 작성
-
-### 🔧 성능 최적화
-1. **메모리 관리**: 불필요한 위젯 재생성 방지
-2. **애니메이션**: TweenAnimationBuilder 활용
-3. **렌더링**: CustomPainter로 고성능 그래픽
-4. **상태 관리**: 필요한 부분만 setState 호출
-
-### 🧪 테스트 가이드
-1. **승리 판정**: 가로/세로/대각선 모든 경우 테스트
-2. **렌주룰**: 삼삼/사사/장목 금지 확인
-3. **UI 일관성**: 모든 화면의 폰트/색상 확인
-4. **오버플로우**: 다양한 화면 크기에서 테스트
-
-### 🚀 배포 준비
-1. **코드 정리**: 불필요한 print문, 주석 제거
-2. **에러 처리**: 모든 예외 상황 처리
-3. **성능 프로파일링**: 메모리 누수 확인
-4. **다국어**: 하드코딩된 문자열 제거
+### 🎨 **디자인 레퍼런스**
+- **Figma 디자인**: 다크 테마 기반
+- **색상 가이드**: 기능별 색상 코딩 시스템
+- **폰트**: Cafe24Ohsquare (한국어 최적화)
 
 ---
 
-> **중요**: 이 가이드는 2024.12.28 완전 개선된 UI 시스템을 기준으로 작성되었습니다. 모든 개발은 이 기준을 따라야 합니다. 
+## ⭐ **핵심 요약**
+
+1. **현재 상태**: Figma 기반 UI 완성, 기본 게임 로직 구현
+2. **다음 작업**: AI 대전 → 스킬 시스템 → 아이템 시스템
+3. **기술 스택**: Flutter 3.8.1+, Dart, Material Design 3
+4. **GitHub**: https://github.com/HipsterTerry/omok_game_app.git
+5. **모든 변경사항 커밋 완료**: 60개 파일, 10K+ 줄 코드
+
+**🚀 내일부터 AI 대전 시스템 구현으로 시작하면 됩니다!** 🎮 
