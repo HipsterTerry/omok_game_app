@@ -57,19 +57,19 @@ final ThemeData omokArenaTheme = ThemeData(
       fontFamily: 'Cafe24Ohsquare',
       fontSize: 22,
       fontWeight: FontWeight.bold,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     headlineMedium: TextStyle(
       fontFamily: 'Cafe24Ohsquare',
       fontSize: 20,
       fontWeight: FontWeight.bold,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     headlineSmall: TextStyle(
       fontFamily: 'Cafe24Ohsquare',
       fontSize: 18,
       fontWeight: FontWeight.bold,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
 
     // 타이틀 - SUIT
@@ -77,19 +77,19 @@ final ThemeData omokArenaTheme = ThemeData(
       fontFamily: 'SUIT',
       fontSize: 18,
       fontWeight: FontWeight.w600,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     titleMedium: TextStyle(
       fontFamily: 'SUIT',
       fontSize: 16,
       fontWeight: FontWeight.w600,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     titleSmall: TextStyle(
       fontFamily: 'SUIT',
       fontSize: 14,
       fontWeight: FontWeight.w600,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
 
     // 본문 - Pretendard
@@ -97,19 +97,19 @@ final ThemeData omokArenaTheme = ThemeData(
       fontFamily: 'Pretendard',
       fontSize: 16,
       fontWeight: FontWeight.normal,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     bodyMedium: TextStyle(
       fontFamily: 'Pretendard',
       fontSize: 14,
       fontWeight: FontWeight.normal,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     bodySmall: TextStyle(
       fontFamily: 'Pretendard',
       fontSize: 12,
       fontWeight: FontWeight.normal,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
 
     // 라벨 - SUIT
@@ -117,19 +117,19 @@ final ThemeData omokArenaTheme = ThemeData(
       fontFamily: 'SUIT',
       fontSize: 14,
       fontWeight: FontWeight.w500,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     labelMedium: TextStyle(
       fontFamily: 'SUIT',
       fontSize: 12,
       fontWeight: FontWeight.w500,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
     labelSmall: TextStyle(
       fontFamily: 'SUIT',
       fontSize: 10,
       fontWeight: FontWeight.w500,
-      color: Color(0xFF5C47CE),
+      color: AppColors.primaryText,
     ),
   ),
 
@@ -137,12 +137,10 @@ final ThemeData omokArenaTheme = ThemeData(
   elevatedButtonTheme: ElevatedButtonThemeData(
     style:
         ElevatedButton.styleFrom(
-          backgroundColor: const Color(
-            0xFF89E0F7,
-          ), // 버튼 배경색
-          foregroundColor: const Color(
-            0xFF5C47CE,
-          ), // 버튼 텍스트
+          backgroundColor:
+              AppColors.primary, // 버튼 배경색 #FF6A5E
+          foregroundColor: AppColors
+              .buttonText, // 버튼 텍스트 #F7F7F7
           side: const BorderSide(
             color: Color(0xFF8BBEDC), // 버튼 테두리
             width: 1.5,
@@ -172,16 +170,14 @@ final ThemeData omokArenaTheme = ThemeData(
                 if (states.contains(
                   WidgetState.pressed,
                 )) {
-                  return const Color(
-                    0xFF51D4EB,
-                  ).withOpacity(0.2);
+                  return AppColors.primary
+                      .withValues(alpha: 0.2);
                 }
                 if (states.contains(
                   WidgetState.hovered,
                 )) {
-                  return const Color(
-                    0xFF89E0F7,
-                  ).withOpacity(0.1);
+                  return AppColors.primary
+                      .withValues(alpha: 0.1);
                 }
                 return null;
               }),
@@ -191,7 +187,7 @@ final ThemeData omokArenaTheme = ThemeData(
   // 텍스트 버튼 테마
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
-      foregroundColor: const Color(0xFF5C47CE),
+      foregroundColor: AppColors.primaryText,
       textStyle: const TextStyle(
         fontFamily: 'SUIT',
         fontSize: 14,
@@ -203,7 +199,7 @@ final ThemeData omokArenaTheme = ThemeData(
   // 아웃라인 버튼 테마
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
-      foregroundColor: const Color(0xFF5C47CE),
+      foregroundColor: AppColors.primaryText,
       side: const BorderSide(
         color: Color(0xFF51D4EB), // 강조 테두리
         width: 2,
@@ -221,11 +217,13 @@ final ThemeData omokArenaTheme = ThemeData(
 
   // 카드 테마 - Cloud BG 효과 강화
   cardTheme: CardThemeData(
-    color: const Color(
-      0xFFF4FEFF,
-    ).withOpacity(0.9), // 클라우드형 UI 영역 배경 - 투명도 적용
+    color: const Color(0xFFF4FEFF).withValues(
+      alpha: 0.9,
+    ), // 클라우드형 UI 영역 배경 - 투명도 적용
     elevation: 12,
-    shadowColor: Colors.white.withOpacity(0.8),
+    shadowColor: Colors.white.withValues(
+      alpha: 0.8,
+    ),
     shape: RoundedRectangleBorder(
       borderRadius: const BorderRadius.all(
         Radius.circular(24),
@@ -233,7 +231,7 @@ final ThemeData omokArenaTheme = ThemeData(
       side: BorderSide(
         color: const Color(
           0xFFC5F6F9,
-        ).withOpacity(0.6),
+        ).withValues(alpha: 0.6),
         width: 0.8,
       ),
     ),
@@ -301,11 +299,13 @@ final ThemeData omokArenaTheme = ThemeData(
   // 다이얼로그 테마 - Cloud BG 효과 강화
   dialogTheme: DialogThemeData(
     backgroundColor: const Color(0xFFF4FEFF)
-        .withOpacity(
-          0.95,
+        .withValues(
+          alpha: 0.95,
         ), // 클라우드형 UI 영역 배경 - 투명도 적용
     elevation: 16,
-    shadowColor: Colors.white.withOpacity(0.9),
+    shadowColor: Colors.white.withValues(
+      alpha: 0.9,
+    ),
     shape: RoundedRectangleBorder(
       borderRadius: const BorderRadius.all(
         Radius.circular(28),
@@ -313,7 +313,7 @@ final ThemeData omokArenaTheme = ThemeData(
       side: BorderSide(
         color: const Color(
           0xFF51D4EB,
-        ).withOpacity(0.8), // 강조 테두리
+        ).withValues(alpha: 0.8), // 강조 테두리
         width: 1.5,
       ),
     ),
@@ -328,7 +328,7 @@ final ThemeData omokArenaTheme = ThemeData(
       fontSize: 14,
       color: const Color(
         0xFF5C47CE,
-      ).withOpacity(0.8), // 캡션 텍스트 반투명
+      ).withValues(alpha: 0.8), // 캡션 텍스트 반투명
     ),
   ),
 

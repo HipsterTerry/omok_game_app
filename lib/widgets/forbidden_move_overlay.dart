@@ -52,13 +52,12 @@ class ForbiddenMoveOverlay
       print('🚫 금지 위치: (${pos.row}, ${pos.col})');
     }
 
-    // 🎯 바둑판과 동일한 2.5D Transform 적용
+    // 🎯 바둑판과 동일한 15도 각도 적용
     return IgnorePointer(
       child: Transform(
-        // 바둑판과 정확히 동일한 Transform 적용
         transform: Matrix4.identity()
-          ..setEntry(3, 2, 0.003) // 원근감 대폭 강화
-          ..rotateX(-0.5), // X축 기준 회전 (바둑판과 동일)
+          ..setEntry(3, 2, 0.001) // 약간의 원근감
+          ..rotateX(-0.26), // 약 15도 각도 (바둑판과 동일)
         alignment: Alignment.center,
         child: SizedBox(
           width: boardSize,
@@ -79,20 +78,20 @@ class ForbiddenMoveOverlay
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(
+                    color: Colors.red.withValues(alpha: 
                       0.3,
                     ),
                     borderRadius:
                         BorderRadius.circular(14),
                     border: Border.all(
                       color: Colors.red
-                          .withOpacity(0.9),
+                          .withValues(alpha: 0.9),
                       width: 2,
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.red
-                            .withOpacity(0.3),
+                            .withValues(alpha: 0.3),
                         blurRadius: 6,
                         spreadRadius: 2,
                       ),

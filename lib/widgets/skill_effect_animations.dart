@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import '../models/character.dart';
 
-class SkillEffectAnimations
-    extends StatefulWidget {
+class SkillEffectAnimations extends StatefulWidget {
   final SkillType skillType;
   final CharacterTier tier;
   final Size boardSize;
@@ -18,12 +17,10 @@ class SkillEffectAnimations
   }) : super(key: key);
 
   @override
-  State<SkillEffectAnimations> createState() =>
-      _SkillEffectAnimationsState();
+  State<SkillEffectAnimations> createState() => _SkillEffectAnimationsState();
 }
 
-class _SkillEffectAnimationsState
-    extends State<SkillEffectAnimations>
+class _SkillEffectAnimationsState extends State<SkillEffectAnimations>
     with TickerProviderStateMixin {
   late AnimationController _mainController;
   late AnimationController _rippleController;
@@ -40,9 +37,7 @@ class _SkillEffectAnimationsState
     super.initState();
 
     _mainController = AnimationController(
-      duration: const Duration(
-        milliseconds: 1500,
-      ),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
 
@@ -52,44 +47,21 @@ class _SkillEffectAnimationsState
     );
 
     _particleController = AnimationController(
-      duration: const Duration(
-        milliseconds: 2000,
-      ),
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
 
-    _mainAnimation =
-        Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(
-          CurvedAnimation(
-            parent: _mainController,
-            curve: Curves.easeOutExpo,
-          ),
-        );
+    _mainAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _mainController, curve: Curves.easeOutExpo),
+    );
 
-    _rippleAnimation =
-        Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(
-          CurvedAnimation(
-            parent: _rippleController,
-            curve: Curves.easeOut,
-          ),
-        );
+    _rippleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _rippleController, curve: Curves.easeOut),
+    );
 
-    _particleAnimation =
-        Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(
-          CurvedAnimation(
-            parent: _particleController,
-            curve: Curves.linear,
-          ),
-        );
+    _particleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _particleController, curve: Curves.linear),
+    );
 
     _initializeParticles();
     _startAnimation();
@@ -148,12 +120,9 @@ class _SkillEffectAnimationsState
     _particleController.forward();
 
     // 완료 후 콜백 호출
-    Future.delayed(
-      const Duration(milliseconds: 1500),
-      () {
-        widget.onComplete?.call();
-      },
-    );
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      widget.onComplete?.call();
+    });
   }
 
   @override
@@ -181,10 +150,8 @@ class _SkillEffectAnimationsState
               skillType: widget.skillType,
               tier: widget.tier,
               mainProgress: _mainAnimation.value,
-              rippleProgress:
-                  _rippleAnimation.value,
-              particleProgress:
-                  _particleAnimation.value,
+              rippleProgress: _rippleAnimation.value,
+              particleProgress: _particleAnimation.value,
               particles: particles,
               boardSize: widget.boardSize,
             ),
@@ -234,10 +201,7 @@ class SkillEffectPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(
-      size.width / 2,
-      size.height / 2,
-    );
+    final center = Offset(size.width / 2, size.height / 2);
 
     // 1. 배경 이펙트
     _drawBackgroundEffect(canvas, size, center);
@@ -252,82 +216,50 @@ class SkillEffectPainter extends CustomPainter {
     _drawCenterIcon(canvas, center);
   }
 
-  void _drawBackgroundEffect(
-    Canvas canvas,
-    Size size,
-    Offset center,
-  ) {
+  void _drawBackgroundEffect(Canvas canvas, Size size, Offset center) {
     final paint = Paint()
       ..shader =
           RadialGradient(
             colors: [
-              _getSkillColor().withOpacity(
-                0.3 * mainProgress,
-              ),
-              _getSkillColor().withOpacity(
-                0.1 * mainProgress,
-              ),
+              _getSkillColor().withValues(alpha: 0.3 * mainProgress),
+              _getSkillColor().withValues(alpha: 0.1 * mainProgress),
               Colors.transparent,
             ],
           ).createShader(
             Rect.fromCircle(
               center: center,
-              radius:
-                  size.width * 0.8 * mainProgress,
+              radius: size.width * 0.8 * mainProgress,
             ),
           );
 
-    canvas.drawCircle(
-      center,
-      size.width * 0.8 * mainProgress,
-      paint,
-    );
+    canvas.drawCircle(center, size.width * 0.8 * mainProgress, paint);
   }
 
-  void _drawRippleEffect(
-    Canvas canvas,
-    Offset center,
-  ) {
+  void _drawRippleEffect(Canvas canvas, Offset center) {
     final ripplePaint = Paint()
-      ..color = _getSkillColor().withOpacity(
-        (1 - rippleProgress) * 0.8,
-      )
+      ..color = _getSkillColor().withValues(alpha: (1 - rippleProgress) * 0.8)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
 
     for (int i = 0; i < 3; i++) {
-      final rippleRadius =
-          (i * 50 + rippleProgress * 150);
-      final opacity =
-          (1 - rippleProgress) * (1 - i * 0.3);
+      final rippleRadius = (i * 50 + rippleProgress * 150);
+      final opacity = (1 - rippleProgress) * (1 - i * 0.3);
 
-      ripplePaint.color = _getSkillColor()
-          .withOpacity(opacity);
+      ripplePaint.color = _getSkillColor().withValues(alpha: opacity);
 
-      canvas.drawCircle(
-        center,
-        rippleRadius,
-        ripplePaint,
-      );
+      canvas.drawCircle(center, rippleRadius, ripplePaint);
     }
   }
 
   void _drawParticles(Canvas canvas) {
-    final particlePaint = Paint()
-      ..style = PaintingStyle.fill;
+    final particlePaint = Paint()..style = PaintingStyle.fill;
 
     for (final particle in particles) {
-      final currentX =
-          particle.x +
-          particle.vx * particleProgress;
-      final currentY =
-          particle.y +
-          particle.vy * particleProgress;
-      final currentLife =
-          particle.life * (1 - particleProgress);
+      final currentX = particle.x + particle.vx * particleProgress;
+      final currentY = particle.y + particle.vy * particleProgress;
+      final currentLife = particle.life * (1 - particleProgress);
 
-      particlePaint.color = particle.color
-          .withOpacity(currentLife);
+      particlePaint.color = particle.color.withValues(alpha: currentLife);
 
       canvas.drawCircle(
         Offset(currentX, currentY),
@@ -337,50 +269,25 @@ class SkillEffectPainter extends CustomPainter {
     }
   }
 
-  void _drawCenterIcon(
-    Canvas canvas,
-    Offset center,
-  ) {
+  void _drawCenterIcon(Canvas canvas, Offset center) {
     final iconPaint = Paint()
-      ..color = _getSkillColor().withOpacity(
-        mainProgress,
-      )
+      ..color = _getSkillColor().withValues(alpha: mainProgress)
       ..style = PaintingStyle.fill;
 
     final iconSize = 40.0 * mainProgress;
 
     switch (skillType) {
       case SkillType.offensive:
-        _drawLightningIcon(
-          canvas,
-          center,
-          iconSize,
-          iconPaint,
-        );
+        _drawLightningIcon(canvas, center, iconSize, iconPaint);
         break;
       case SkillType.defensive:
-        _drawShieldIcon(
-          canvas,
-          center,
-          iconSize,
-          iconPaint,
-        );
+        _drawShieldIcon(canvas, center, iconSize, iconPaint);
         break;
       case SkillType.disruptive:
-        _drawSwirlIcon(
-          canvas,
-          center,
-          iconSize,
-          iconPaint,
-        );
+        _drawSwirlIcon(canvas, center, iconSize, iconPaint);
         break;
       case SkillType.timeControl:
-        _drawClockIcon(
-          canvas,
-          center,
-          iconSize,
-          iconPaint,
-        );
+        _drawClockIcon(canvas, center, iconSize, iconPaint);
         break;
     }
   }
@@ -405,88 +312,37 @@ class SkillEffectPainter extends CustomPainter {
     Paint paint,
   ) {
     final path = Path();
-    path.moveTo(
-      center.dx - size * 0.2,
-      center.dy - size * 0.4,
-    );
-    path.lineTo(
-      center.dx + size * 0.1,
-      center.dy - size * 0.1,
-    );
-    path.lineTo(
-      center.dx - size * 0.1,
-      center.dy,
-    );
-    path.lineTo(
-      center.dx + size * 0.2,
-      center.dy + size * 0.4,
-    );
-    path.lineTo(
-      center.dx - size * 0.1,
-      center.dy + size * 0.1,
-    );
-    path.lineTo(
-      center.dx + size * 0.1,
-      center.dy,
-    );
+    path.moveTo(center.dx - size * 0.2, center.dy - size * 0.4);
+    path.lineTo(center.dx + size * 0.1, center.dy - size * 0.1);
+    path.lineTo(center.dx - size * 0.1, center.dy);
+    path.lineTo(center.dx + size * 0.2, center.dy + size * 0.4);
+    path.lineTo(center.dx - size * 0.1, center.dy + size * 0.1);
+    path.lineTo(center.dx + size * 0.1, center.dy);
     path.close();
 
     canvas.drawPath(path, paint);
   }
 
-  void _drawShieldIcon(
-    Canvas canvas,
-    Offset center,
-    double size,
-    Paint paint,
-  ) {
+  void _drawShieldIcon(Canvas canvas, Offset center, double size, Paint paint) {
     final path = Path();
-    path.moveTo(
-      center.dx,
-      center.dy - size * 0.4,
-    );
-    path.lineTo(
-      center.dx + size * 0.3,
-      center.dy - size * 0.2,
-    );
-    path.lineTo(
-      center.dx + size * 0.3,
-      center.dy + size * 0.2,
-    );
-    path.lineTo(
-      center.dx,
-      center.dy + size * 0.4,
-    );
-    path.lineTo(
-      center.dx - size * 0.3,
-      center.dy + size * 0.2,
-    );
-    path.lineTo(
-      center.dx - size * 0.3,
-      center.dy - size * 0.2,
-    );
+    path.moveTo(center.dx, center.dy - size * 0.4);
+    path.lineTo(center.dx + size * 0.3, center.dy - size * 0.2);
+    path.lineTo(center.dx + size * 0.3, center.dy + size * 0.2);
+    path.lineTo(center.dx, center.dy + size * 0.4);
+    path.lineTo(center.dx - size * 0.3, center.dy + size * 0.2);
+    path.lineTo(center.dx - size * 0.3, center.dy - size * 0.2);
     path.close();
 
     canvas.drawPath(path, paint);
   }
 
-  void _drawSwirlIcon(
-    Canvas canvas,
-    Offset center,
-    double size,
-    Paint paint,
-  ) {
+  void _drawSwirlIcon(Canvas canvas, Offset center, double size, Paint paint) {
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 4.0;
 
     final path = Path();
-    for (
-      double i = 0;
-      i < 4 * math.pi;
-      i += 0.1
-    ) {
-      final radius =
-          size * 0.3 * (i / (4 * math.pi));
+    for (double i = 0; i < 4 * math.pi; i += 0.1) {
+      final radius = size * 0.3 * (i / (4 * math.pi));
       final x = center.dx + radius * math.cos(i);
       final y = center.dy + radius * math.sin(i);
 
@@ -500,12 +356,7 @@ class SkillEffectPainter extends CustomPainter {
     canvas.drawPath(path, paint);
   }
 
-  void _drawClockIcon(
-    Canvas canvas,
-    Offset center,
-    double size,
-    Paint paint,
-  ) {
+  void _drawClockIcon(Canvas canvas, Offset center, double size, Paint paint) {
     // 시계 외곽
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 3.0;
@@ -521,16 +372,11 @@ class SkillEffectPainter extends CustomPainter {
     );
     canvas.drawLine(
       center,
-      Offset(
-        center.dx + handLength * 0.7,
-        center.dy,
-      ),
+      Offset(center.dx + handLength * 0.7, center.dy),
       paint..strokeWidth = 1.5,
     );
   }
 
   @override
-  bool shouldRepaint(
-    covariant CustomPainter oldDelegate,
-  ) => true;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

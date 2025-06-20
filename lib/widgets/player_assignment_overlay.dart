@@ -105,7 +105,7 @@ class _PlayerAssignmentOverlayState
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: Colors.black.withOpacity(0.8),
+      color: Colors.black.withValues(alpha: 0.8),
       child: AnimatedBuilder(
         animation: _animationController,
         builder: (context, child) {
@@ -133,7 +133,7 @@ class _PlayerAssignmentOverlayState
                           BoxShadow(
                             color:
                                 _getPlayerColor()
-                                    .withOpacity(
+                                    .withValues(alpha: 
                                       0.5,
                                     ),
                             blurRadius: 20,
@@ -191,7 +191,7 @@ class _PlayerAssignmentOverlayState
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white
-                            .withOpacity(0.8),
+                            .withValues(alpha: 0.8),
                       ),
                     ),
                   ],

@@ -94,7 +94,7 @@ class _GameCountdownOverlayState
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: Colors.black.withOpacity(0.7),
+      color: Colors.black.withValues(alpha: 0.7),
       child: Center(
         child: _currentCount > 0
             ? Text(

@@ -170,7 +170,7 @@ class EnhancedOmokBoardPainter
     final grainPaint = Paint()
       ..color = const Color(
         0xFFDEB887,
-      ).withOpacity(opacity)
+      ).withValues(alpha: opacity)
       ..strokeWidth = 0.5;
 
     final random = math.Random(
@@ -204,7 +204,7 @@ class EnhancedOmokBoardPainter
     final patternPaint = Paint()
       ..color = const Color(
         0xFF8B4513,
-      ).withOpacity(0.08)
+      ).withValues(alpha: 0.08)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
@@ -325,7 +325,7 @@ class EnhancedOmokBoardPainter
     int boardSize,
   ) {
     final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.05)
+      ..color = Colors.black.withValues(alpha: 0.05)
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 
@@ -431,7 +431,7 @@ class EnhancedOmokBoardPainter
 
       // 화점 그림자 그리기 (입체감)
       final shadowPaint = Paint()
-        ..color = Colors.black.withOpacity(0.3)
+        ..color = Colors.black.withValues(alpha: 0.3)
         ..style = PaintingStyle.fill;
 
       canvas.drawCircle(
@@ -467,7 +467,7 @@ class EnhancedOmokBoardPainter
       if (isCenterPoint) {
         // 내부 하이라이트
         final highlightPaint = Paint()
-          ..color = Colors.white.withOpacity(0.4)
+          ..color = Colors.white.withValues(alpha: 0.4)
           ..style = PaintingStyle.fill;
 
         canvas.drawCircle(
@@ -490,7 +490,7 @@ class EnhancedOmokBoardPainter
 
         // 보조 링 (더 미묘하게)
         final secondaryRingPaint = Paint()
-          ..color = Colors.black.withOpacity(0.2)
+          ..color = Colors.black.withValues(alpha: 0.2)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.0;
 
@@ -504,7 +504,7 @@ class EnhancedOmokBoardPainter
       // 일반 화점에도 미묘한 외곽선
       if (!isCenterPoint) {
         final outlinePaint = Paint()
-          ..color = Colors.black.withOpacity(0.6)
+          ..color = Colors.black.withValues(alpha: 0.6)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.0;
 
@@ -617,7 +617,7 @@ class EnhancedOmokBoardPainter
     // 🎯 간소화된 그림자 시스템 (2단계만)
     // 1단계: 주 그림자 (더 작고 자연스럽게)
     final mainShadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.4)
+      ..color = Colors.black.withValues(alpha: 0.4)
       ..maskFilter = const MaskFilter.blur(
         BlurStyle.normal,
         6,
@@ -634,7 +634,7 @@ class EnhancedOmokBoardPainter
 
     // 2단계: 접촉 그림자 (돌이 바둑판에 닿는 부분)
     final contactShadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.2)
+      ..color = Colors.black.withValues(alpha: 0.2)
       ..maskFilter = const MaskFilter.blur(
         BlurStyle.normal,
         2,
@@ -691,7 +691,7 @@ class EnhancedOmokBoardPainter
 
       // 🔥 검은돌 하이라이트 (절제된 밝기)
       final blackHighlightPaint = Paint()
-        ..color = Colors.grey[400]!.withOpacity(
+        ..color = Colors.grey[400]!.withValues(alpha: 
           0.6,
         )
         ..maskFilter = const MaskFilter.blur(
@@ -710,7 +710,7 @@ class EnhancedOmokBoardPainter
 
       // ✨ 검은돌 핀포인트 하이라이트
       final blackPinpointPaint = Paint()
-        ..color = Colors.grey[300]!.withOpacity(
+        ..color = Colors.grey[300]!.withValues(alpha: 
           0.8,
         );
 
@@ -764,7 +764,7 @@ class EnhancedOmokBoardPainter
 
       // 🔥 흰돌 하이라이트 (강한 밝기)
       final whiteHighlightPaint = Paint()
-        ..color = Colors.white.withOpacity(0.9)
+        ..color = Colors.white.withValues(alpha: 0.9)
         ..maskFilter = const MaskFilter.blur(
           BlurStyle.normal,
           2,
@@ -813,7 +813,7 @@ class EnhancedOmokBoardPainter
             (player == PlayerType.black
                     ? Colors.white
                     : Colors.red)
-                .withOpacity(0.9)
+                .withValues(alpha: 0.9)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3.0
         ..maskFilter = const MaskFilter.blur(
@@ -870,7 +870,7 @@ class EnhancedOmokBoardPainter
     if (character != null) {
       // 캐릭터 오라 효과
       final auraPaint = Paint()
-        ..color = character.tierColor.withOpacity(
+        ..color = character.tierColor.withValues(alpha: 
           0.3,
         )
         ..maskFilter = const MaskFilter.blur(
@@ -928,7 +928,7 @@ class EnhancedOmokBoardPainter
     Color color,
   ) {
     final starPaint = Paint()
-      ..color = color.withOpacity(0.6)
+      ..color = color.withValues(alpha: 0.6)
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
 
@@ -960,7 +960,7 @@ class EnhancedOmokBoardPainter
     Color color,
   ) {
     final ringPaint = Paint()
-      ..color = color.withOpacity(0.5)
+      ..color = color.withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -984,7 +984,7 @@ class EnhancedOmokBoardPainter
     Color color,
   ) {
     final dotPaint = Paint()
-      ..color = color.withOpacity(0.6)
+      ..color = color.withValues(alpha: 0.6)
       ..style = PaintingStyle.fill;
 
     // 8방향으로 점 배치
@@ -1023,12 +1023,12 @@ class EnhancedOmokBoardPainter
           (isBlackTurn
                   ? Colors.black
                   : Colors.white)
-              .withOpacity(isPressed ? 0.7 : 0.4)
+              .withValues(alpha: isPressed ? 0.7 : 0.4)
       ..style = PaintingStyle.fill;
 
     // 미리보기 돌 그림자
     final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.15)
+      ..color = Colors.black.withValues(alpha: 0.15)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(
@@ -1047,7 +1047,7 @@ class EnhancedOmokBoardPainter
     // 흰 돌인 경우 외곽선 추가
     if (!isBlackTurn) {
       final outlinePaint = Paint()
-        ..color = Colors.black.withOpacity(
+        ..color = Colors.black.withValues(alpha: 
           isPressed ? 0.5 : 0.3,
         )
         ..style = PaintingStyle.stroke
@@ -1066,7 +1066,7 @@ class EnhancedOmokBoardPainter
           (isBlackTurn
                   ? Colors.white
                   : Colors.black)
-              .withOpacity(0.6)
+              .withValues(alpha: 0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -1082,7 +1082,7 @@ class EnhancedOmokBoardPainter
           (isBlackTurn
                   ? Colors.white
                   : Colors.black)
-              .withOpacity(0.2)
+              .withValues(alpha: 0.2)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
@@ -1110,16 +1110,16 @@ class EnhancedOmokBoardPainter
         .board[lastMove.row][lastMove.col];
     final indicatorColor =
         stoneColor == PlayerType.black
-        ? Colors.white.withOpacity(
+        ? Colors.white.withValues(alpha: 
             0.9,
           ) // 검은 돌에는 흰색 표시
-        : Colors.red.withOpacity(
+        : Colors.red.withValues(alpha: 
             0.9,
           ); // 흰 돌에는 빨간색 표시
 
     // 외곽 그림자 효과
     final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.4)
+      ..color = Colors.black.withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
 
@@ -1146,7 +1146,7 @@ class EnhancedOmokBoardPainter
 
     // 내부 보조 링 (더 가는 선)
     final innerRingPaint = Paint()
-      ..color = indicatorColor.withOpacity(0.6)
+      ..color = indicatorColor.withValues(alpha: 0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -1159,8 +1159,8 @@ class EnhancedOmokBoardPainter
     // 펄스 효과를 위한 외부 링
     final pulseColor =
         stoneColor == PlayerType.black
-        ? Colors.yellow.withOpacity(0.4)
-        : Colors.orange.withOpacity(0.4);
+        ? Colors.yellow.withValues(alpha: 0.4)
+        : Colors.orange.withValues(alpha: 0.4);
 
     final pulsePaint = Paint()
       ..color = pulseColor
@@ -1175,7 +1175,7 @@ class EnhancedOmokBoardPainter
 
     // 더 큰 외부 펄스
     final outerPulsePaint = Paint()
-      ..color = pulseColor.withOpacity(0.2)
+      ..color = pulseColor.withValues(alpha: 0.2)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
@@ -1198,7 +1198,7 @@ class EnhancedOmokBoardPainter
 
     // 4방향 강조 선 (십자가 형태)
     final crossPaint = Paint()
-      ..color = indicatorColor.withOpacity(0.7)
+      ..color = indicatorColor.withValues(alpha: 0.7)
       ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
 

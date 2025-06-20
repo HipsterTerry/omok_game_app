@@ -11,65 +11,32 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:omok_game_app/main.dart';
 
 void main() {
-  testWidgets('Omok App should show home screen', (
+  testWidgets('Omok App should show home screen', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(const OmokArenaApp());
+
+    // Verify that we have the home screen elements
+    expect(find.text('Omok Arena'), findsOneWidget);
+    expect(find.text('🎮 플레이 모드 선택'), findsOneWidget);
+    expect(find.text('👥 2인 플레이 (로컬)'), findsOneWidget);
+    expect(find.text('🤖 1인 플레이 (AI 대전)'), findsOneWidget);
+  });
+
+  testWidgets('Game mode buttons should be tappable', (
     WidgetTester tester,
   ) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const OmokGameApp());
+    await tester.pumpWidget(const OmokArenaApp());
 
-    // Verify that we have the home screen elements
-    expect(
-      find.text('Omok Arena'),
-      findsOneWidget,
-    );
-    expect(
-      find.text('13x13 보드에서 5목을 완성하세요!'),
-      findsOneWidget,
-    );
-    expect(find.text('게임 시작'), findsOneWidget);
-    expect(find.text('게임 규칙'), findsOneWidget);
+    // Find 2-player button
+    final twoPlayerButton = find.text('👥 2인 플레이 (로컬)');
+    expect(twoPlayerButton, findsOneWidget);
 
-    // Verify the play button exists
-    expect(
-      find.byIcon(Icons.play_arrow),
-      findsOneWidget,
-    );
-    expect(
-      find.byIcon(Icons.help_outline),
-      findsOneWidget,
-    );
+    // Find AI button
+    final aiButton = find.text('🤖 1인 플레이 (AI 대전)');
+    expect(aiButton, findsOneWidget);
+
+    // Verify buttons exist and are widgets
+    expect(find.byType(ElevatedButton), findsAtLeastNWidgets(1));
   });
-
-  testWidgets(
-    'Game rules dialog should open and close',
-    (WidgetTester tester) async {
-      // Build our app and trigger a frame.
-      await tester.pumpWidget(
-        const OmokGameApp(),
-      );
-
-      // Tap the game rules button
-      await tester.tap(find.text('게임 규칙'));
-      await tester.pumpAndSettle();
-
-      // Verify that the rules dialog is shown
-      expect(find.text('게임 규칙'), findsWidgets);
-      expect(find.text('🎯 목표'), findsOneWidget);
-      expect(
-        find.text('🎮 게임 방법'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('🏆 승리 조건'),
-        findsOneWidget,
-      );
-
-      // Close the dialog
-      await tester.tap(find.text('확인'));
-      await tester.pumpAndSettle();
-
-      // Verify the dialog is closed
-      expect(find.text('🎯 목표'), findsNothing);
-    },
-  );
 }

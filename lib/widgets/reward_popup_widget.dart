@@ -114,7 +114,7 @@ class _RewardPopupWidgetState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(
+      backgroundColor: Colors.black.withValues(alpha: 
         0.8,
       ),
       body: AnimatedBuilder(
@@ -159,7 +159,7 @@ class _RewardPopupWidgetState
                           color: widget
                               .reward
                               .color
-                              .withOpacity(0.3),
+                              .withValues(alpha: 0.3),
                           blurRadius: 30,
                           offset: const Offset(
                             0,
@@ -184,7 +184,7 @@ class _RewardPopupWidgetState
                                 widget
                                     .reward
                                     .color
-                                    .withOpacity(
+                                    .withValues(alpha: 
                                       0.8,
                                     ),
                                 widget
@@ -256,7 +256,7 @@ class _RewardPopupWidgetState
                                     color: widget
                                         .reward
                                         .color
-                                        .withOpacity(
+                                        .withValues(alpha: 
                                           0.1,
                                         ),
                                     shape: BoxShape
@@ -451,7 +451,7 @@ class SparkleBackgroundPainter
             center: Alignment.center,
             radius: 1.0,
             colors: [
-              rewardColor.withOpacity(
+              rewardColor.withValues(alpha: 
                 0.1 * sparkleProgress,
               ),
               Colors.transparent,
@@ -514,7 +514,7 @@ class SparkleBackgroundPainter
           2;
 
       final sparklePaint = Paint()
-        ..color = Colors.white.withOpacity(
+        ..color = Colors.white.withValues(alpha: 
           alpha * 0.8,
         );
 
@@ -533,7 +533,7 @@ class SparkleBackgroundPainter
         math.min(size.width, size.height) /
         2;
     final ringPaint = Paint()
-      ..color = rewardColor.withOpacity(
+      ..color = rewardColor.withValues(alpha: 
         0.3 * (1 - sparkleProgress),
       )
       ..style = PaintingStyle.stroke

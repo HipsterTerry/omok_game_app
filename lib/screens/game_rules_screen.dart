@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/omok_arena_theme.dart';
+
 import '../widgets/enhanced_visual_effects.dart';
 
 class GameRulesScreen extends StatefulWidget {
@@ -30,54 +30,256 @@ class _GameRulesScreenState
     super.dispose();
   }
 
+  // 홈 화면 스타일의 Figma 버튼
+  Widget _buildFigmaButton({
+    required String text,
+    required Color color,
+    required VoidCallback onPressed,
+    double width = 120,
+    double fontSize = 16,
+  }) {
+    return Container(
+      width: width,
+      height: 45,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            top: 0,
+            child: Container(
+              width: width,
+              height: 45,
+              clipBehavior: Clip.antiAlias,
+              decoration: ShapeDecoration(
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    width: 2,
+                    strokeAlign: BorderSide
+                        .strokeAlignOutside,
+                    color: Color(0x590A0A0A),
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(22),
+                ),
+                shadows: [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Container(
+                decoration: ShapeDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment(0.00, -1.00),
+                    end: Alignment(0, 1),
+                    colors: [
+                      color,
+                      color.withOpacity(0.7),
+                    ],
+                  ),
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      width: 4,
+                      color: Colors.white,
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(22),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 8,
+            top: 5,
+            right: 8,
+            child: Container(
+              height: 35,
+              child: GestureDetector(
+                onTap: onPressed,
+                child: Center(
+                  child: Text(
+                    text,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: fontSize,
+                      fontFamily:
+                          'Cafe24Ohsquare',
+                      height: 0,
+                      letterSpacing: -0.25,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFDFFBFF),
+      backgroundColor:
+          Colors.black, // 홈 화면과 동일한 검은색 배경
       appBar: AppBar(
-        title: const Text(
-          '🎮 오목 게임 방법',
-          style: TextStyle(
-            fontFamily: 'Cafe24Ohsquare',
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF5C47CE),
-          ),
-        ),
-        backgroundColor: const Color(0xFF89E0F7),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(
-          color: Color(0xFF5C47CE),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: const Color(0xFF5C47CE),
-          unselectedLabelColor: const Color(
-            0xFF5C47CE,
-          ).withOpacity(0.6),
-          indicatorColor: const Color(0xFF51D4EB),
-          labelStyle: const TextStyle(
-            fontFamily: 'SUIT',
-            fontWeight: FontWeight.w600,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 24,
           ),
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.sports_esports),
-              text: '기본 룰',
-            ),
-            Tab(
-              icon: Icon(Icons.rule),
-              text: '렌주 룰',
-            ),
-            Tab(
-              icon: Icon(Icons.people),
-              text: '캐릭터',
-            ),
-            Tab(
-              icon: Icon(Icons.schedule),
-              text: '타이머',
+          onPressed: () =>
+              Navigator.of(context).pop(),
+        ),
+        title: Row(
+          mainAxisAlignment:
+              MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment(0.00, -1.00),
+                  end: Alignment(0, 1),
+                  colors: [
+                    const Color(0xFFFFC107),
+                    const Color(
+                      0xFFFFC107,
+                    ).withOpacity(0.7),
+                  ],
+                ),
+                borderRadius:
+                    BorderRadius.circular(15),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '🎮',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    '오목 게임 방법',
+                    style: TextStyle(
+                      fontFamily:
+                          'Cafe24Ohsquare',
+                      fontSize: 18,
+                      color: Colors.white,
+                      letterSpacing: -0.4,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
+        ),
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60),
+          child: Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(
+                0.1,
+              ),
+              borderRadius: BorderRadius.circular(
+                15,
+              ),
+              border: Border.all(
+                color: Colors.white.withOpacity(
+                  0.3,
+                ),
+                width: 1,
+              ),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white
+                  .withOpacity(0.6),
+              indicator: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment(0.00, -1.00),
+                  end: Alignment(0, 1),
+                  colors: [
+                    const Color(0xFF2196F3),
+                    const Color(
+                      0xFF2196F3,
+                    ).withOpacity(0.7),
+                  ],
+                ),
+                borderRadius:
+                    BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                ),
+              ),
+              indicatorPadding:
+                  const EdgeInsets.all(4),
+              labelStyle: const TextStyle(
+                fontFamily: 'Cafe24Ohsquare',
+                fontSize: 12,
+                letterSpacing: -0.2,
+              ),
+              unselectedLabelStyle:
+                  const TextStyle(
+                    fontFamily: 'Cafe24Ohsquare',
+                    fontSize: 12,
+                    letterSpacing: -0.2,
+                  ),
+              tabs: const [
+                Tab(
+                  icon: Icon(
+                    Icons.sports_esports,
+                    size: 18,
+                  ),
+                  text: '기본 룰',
+                ),
+                Tab(
+                  icon: Icon(
+                    Icons.rule,
+                    size: 18,
+                  ),
+                  text: '렌주 룰',
+                ),
+                Tab(
+                  icon: Icon(
+                    Icons.people,
+                    size: 18,
+                  ),
+                  text: '캐릭터',
+                ),
+                Tab(
+                  icon: Icon(
+                    Icons.schedule,
+                    size: 18,
+                  ),
+                  text: '타이머',
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -87,6 +289,190 @@ class _GameRulesScreenState
           _buildRenjuRules(),
           _buildCharacterRules(),
           _buildTimerRules(),
+        ],
+      ),
+    );
+  }
+
+  // 홈 화면 스타일의 규칙 카드
+  Widget _buildRuleCard(
+    String title,
+    String content,
+    Color accentColor, {
+    IconData? icon,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+          // 타이틀 섹션
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment(0.00, -1.00),
+                end: Alignment(0, 1),
+                colors: [
+                  accentColor,
+                  accentColor.withOpacity(0.7),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(
+                10,
+              ),
+              border: Border.all(
+                color: Colors.white,
+                width: 2,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null) ...[
+                  Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  SizedBox(width: 8),
+                ],
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontFamily: 'Cafe24Ohsquare',
+                    fontSize: 16,
+                    color: Colors.white,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // 내용 섹션
+          Text(
+            content,
+            style: TextStyle(
+              fontFamily: 'Cafe24Ohsquare',
+              fontSize: 14,
+              color: Colors.white.withOpacity(
+                0.9,
+              ),
+              letterSpacing: -0.2,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 렌주 규칙 전용 카드
+  Widget _buildRenjuCard(
+    String title,
+    String content,
+    Color dangerColor,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: dangerColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: dangerColor.withOpacity(0.5),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: dangerColor.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment(0.00, -1.00),
+                end: Alignment(0, 1),
+                colors: [
+                  dangerColor,
+                  dangerColor.withOpacity(0.7),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(
+                10,
+              ),
+              border: Border.all(
+                color: Colors.white,
+                width: 2,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.warning,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontFamily: 'Cafe24Ohsquare',
+                    fontSize: 16,
+                    color: Colors.white,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            content,
+            style: TextStyle(
+              fontFamily: 'Cafe24Ohsquare',
+              fontSize: 14,
+              color: Colors.white.withOpacity(
+                0.9,
+              ),
+              letterSpacing: -0.2,
+              height: 1.5,
+            ),
+          ),
         ],
       ),
     );
@@ -102,7 +488,8 @@ class _GameRulesScreenState
           _buildRuleCard(
             '🎯 기본 목표',
             '가로, 세로, 대각선 중 하나의 방향으로 자신의 돌을 5개 연속으로 배치하면 승리합니다.',
-            Colors.blue,
+            const Color(0xFF2196F3),
+            icon: Icons.my_location,
           ),
           _buildRuleCard(
             '🏁 게임 진행',
@@ -110,7 +497,8 @@ class _GameRulesScreenState
 • 번갈아가며 한 수씩 돌을 놓습니다
 • 한 번 놓인 돌은 옮길 수 없습니다
 • 빈 교차점에만 돌을 놓을 수 있습니다''',
-            Colors.green,
+            const Color(0xFF4CAF50),
+            icon: Icons.play_circle_outline,
           ),
           _buildRuleCard(
             '📏 바둑판 크기',
@@ -118,7 +506,8 @@ class _GameRulesScreenState
 • 17x17 (중급자용)  
 • 21x21 (고급자용)
 홀수 보드로 명확한 중앙점과 대칭성을 제공합니다.''',
-            Colors.purple,
+            const Color(0xFF9C27B0),
+            icon: Icons.grid_view,
           ),
           _buildRuleCard(
             '⭐ 화점 (별점)',
@@ -127,7 +516,8 @@ class _GameRulesScreenState
 • 17x17: 중앙(8,8)과 8방향
 • 21x21: 중앙(10,10)과 8방향
 홀수 보드로 완벽한 중앙 대칭을 이룹니다.''',
-            Colors.orange,
+            const Color(0xFFFF9800),
+            icon: Icons.star_outline,
           ),
         ],
       ),
@@ -141,48 +531,73 @@ class _GameRulesScreenState
         crossAxisAlignment:
             CrossAxisAlignment.start,
         children: [
+          // 렌주 룰 헤더
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            margin: const EdgeInsets.only(
+              bottom: 20,
+            ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
+                begin: Alignment(0.00, -1.00),
+                end: Alignment(0, 1),
                 colors: [
-                  Colors.red[400]!,
-                  Colors.red[600]!,
+                  const Color(0xFFF44336),
+                  const Color(
+                    0xFFF44336,
+                  ).withOpacity(0.7),
                 ],
               ),
               borderRadius: BorderRadius.circular(
-                12,
+                15,
               ),
+              border: Border.all(
+                color: Colors.white,
+                width: 3,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(
+                    0xFFF44336,
+                  ).withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
             child: const Column(
               children: [
                 Icon(
-                  Icons.warning,
+                  Icons.warning_amber_rounded,
                   color: Colors.white,
-                  size: 40,
+                  size: 45,
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 12),
                 Text(
                   '렌주 룰 (Renju Rule)',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    fontFamily: 'Cafe24Ohsquare',
+                    letterSpacing: -0.4,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 8),
                 Text(
                   '흑돌에게만 적용되는 특별한 제한 규칙',
                   style: TextStyle(
                     color: Colors.white70,
-                    fontSize: 14,
+                    fontSize: 16,
+                    fontFamily: 'Cafe24Ohsquare',
+                    letterSpacing: -0.3,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
 
           _buildRenjuCard(
             '❌ 3-3 금지',
@@ -190,7 +605,7 @@ class _GameRulesScreenState
 • 열린 3: 양쪽 끝이 모두 비어있는 3연속
 • 예: _●●●_ 형태
 • 3-3을 만들면 즉시 패배합니다''',
-            Colors.red[600]!,
+            const Color(0xFFF44336),
           ),
           _buildRenjuCard(
             '❌ 4-4 금지',
@@ -198,45 +613,58 @@ class _GameRulesScreenState
 • 4: 막히지 않은 4연속
 • 예: _●●●●_ 또는 ●●●●_ 형태
 • 4-4를 만들면 즉시 패배합니다''',
-            Colors.red[600]!,
+            const Color(0xFFF44336),
           ),
           _buildRenjuCard(
-            '❌ 장목 금지',
-            '''6개 이상 연속으로 배치하는 것이 금지됩니다.
-• 6목, 7목, 8목 등 모두 패배
-• 정확히 5목만 승리 조건입니다
+            '❌ 장목 (6목 이상) 금지',
+            '''6개 이상 연속으로 놓는 것이 금지됩니다.
+• 6목, 7목, 8목 등은 모두 패배
+• 정확히 5목만 승리 조건
 • 장목을 만들면 즉시 패배합니다''',
-            Colors.red[600]!,
-          ),
-          _buildRenjuCard(
-            '✅ 백돌 자유',
-            '''백돌은 렌주룰의 제한을 받지 않습니다.
-• 3-3, 4-4, 장목 모두 가능
-• 6목 이상도 승리로 인정
-• 흑돌보다 유리한 조건''',
-            Colors.green[600]!,
+            const Color(0xFFF44336),
           ),
 
+          // 백돌 안내
           Container(
-            margin: const EdgeInsets.only(
-              top: 16,
-            ),
-            padding: const EdgeInsets.all(12),
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(top: 8),
             decoration: BoxDecoration(
-              color: Colors.yellow[100],
+              color: Colors.white.withOpacity(
+                0.1,
+              ),
               borderRadius: BorderRadius.circular(
-                8,
+                12,
               ),
               border: Border.all(
-                color: Colors.yellow[600]!,
+                color: Colors.white.withOpacity(
+                  0.3,
+                ),
+                width: 2,
               ),
             ),
-            child: const Text(
-              '💡 렌주룰의 목적: 선공의 이점을 가진 흑돌에게 제한을 두어 게임의 균형을 맞추는 것입니다.',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: Colors.white,
+                  size: 24,
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '백돌은 렌주 룰 제약이 없어 자유롭게 플레이할 수 있습니다.',
+                    style: TextStyle(
+                      fontFamily:
+                          'Cafe24Ohsquare',
+                      fontSize: 14,
+                      color: Colors.white
+                          .withOpacity(0.9),
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -252,48 +680,31 @@ class _GameRulesScreenState
             CrossAxisAlignment.start,
         children: [
           _buildRuleCard(
-            '🐲 12간지 캐릭터',
-            '''쥐, 소, 호랑이, 토끼, 용, 뱀, 말, 양, 원숭이, 닭, 개, 돼지
-각 캐릭터마다 고유한 스킬과 특성을 가지고 있습니다.''',
-            Colors.purple,
+            '🐯 호랑이',
+            '''공격적이고 대담한 플레이 스타일을 상징합니다.
+• 빠른 공격 패턴 선호
+• 적극적인 수 읽기
+• 강력한 마무리 능력''',
+            const Color(0xFFFF9800),
+            icon: Icons.flash_on,
           ),
-          _buildTierCard(
-            '천급 (天級)',
-            '15% 승률 보너스',
-            '용, 호랑이, 원숭이',
-            Colors.amber[700]!,
-            Icons.star,
-          ),
-          _buildTierCard(
-            '지급 (地級)',
-            '8-10% 승률 보너스',
-            '말, 뱀, 개, 닭',
-            Colors.grey[600]!,
-            Icons.circle,
-          ),
-          _buildTierCard(
-            '인급 (人級)',
-            '2-4% 승률 보너스',
-            '쥐, 소, 토끼, 양, 돼지',
-            Colors.brown[600]!,
-            Icons.person,
+          _buildRuleCard(
+            '🐰 토끼',
+            '''신중하고 전략적인 플레이 스타일을 상징합니다.
+• 안정적인 방어 우선
+• 치밀한 계산과 분석
+• 끈기 있는 게임 운영''',
+            const Color(0xFFE91E63),
+            icon: Icons.shield_outlined,
           ),
           _buildRuleCard(
             '⚡ 스킬 시스템',
-            '''• 공격형: 공격력 증가 스킬
-• 방어형: 방어력 증가 스킬  
-• 방해형: 상대방을 방해하는 스킬
-• 시간형: 시간 관련 스킬
-각 게임당 1회만 사용 가능합니다.''',
-            Colors.red,
-          ),
-          _buildRuleCard(
-            '🎰 뽑기 시스템',
-            '''• 브론즈 티켓: 인급 캐릭터 위주
-• 실버 티켓: 지급 캐릭터 포함
-• 골드 티켓: 천급 캐릭터 확률 증가
-매일 무료 뽑기 기회가 주어집니다.''',
-            Colors.blue,
+            '''각 캐릭터는 고유한 스킬을 보유합니다.
+• 게임 중 1회 사용 가능
+• 상황에 따른 전략적 활용
+• 승부의 중요한 변수''',
+            const Color(0xFF9C27B0),
+            icon: Icons.auto_awesome,
           ),
         ],
       ),
@@ -308,243 +719,43 @@ class _GameRulesScreenState
             CrossAxisAlignment.start,
         children: [
           _buildRuleCard(
-            '⏰ 이중 타이머 시스템',
-            '''게임에는 두 가지 시간 제한이 있습니다:
-• 전체 게임 시간: 5분
-• 1수 제한 시간: 30초''',
-            Colors.blue,
+            '⏱️ 총 지속시간',
+            '''각 플레이어는 총 5분(300초)의 시간을 가집니다.
+• 자신의 턴에서만 시간이 소모됩니다
+• 총 시간이 모두 소진되면 패배
+• 상대방 턴에는 시간이 정지됩니다''',
+            const Color(0xFF2196F3),
+            icon: Icons.timer,
           ),
           _buildRuleCard(
-            '🎯 전체 게임 시간',
-            '''• 각 플레이어마다 총 5분의 시간이 주어집니다
-• 자신의 차례일 때만 시간이 차감됩니다
-• 전체 시간이 0이 되면 시간 초과로 패배합니다
-• 상단 프로그레스 바로 남은 시간을 확인할 수 있습니다''',
-            Colors.green,
+            '⚡ 턴별 제한',
+            '''각 수마다 30초의 제한 시간이 있습니다.
+• 30초 안에 수를 놓아야 합니다
+• 시간 초과시 자동으로 패배
+• 빠른 판단력이 필요합니다''',
+            const Color(0xFFFF5722),
+            icon: Icons.speed,
           ),
           _buildRuleCard(
-            '⚡ 1수 제한 시간',
-            '''• 매 턴마다 30초의 시간이 주어집니다
-• 30초 안에 돌을 놓지 않으면 시간 초과로 패배합니다
-• 턴이 바뀔 때마다 30초로 초기화됩니다
-• 원형 프로그레스로 남은 시간을 확인할 수 있습니다''',
-            Colors.orange,
+            '🎯 시간 전략',
+            '''시간 관리가 승부의 핵심입니다.
+• 초반에는 빠르게, 종반에는 신중하게
+• 상대방의 시간도 고려한 플레이
+• 심리전의 중요한 요소''',
+            const Color(0xFF4CAF50),
+            icon: Icons.psychology,
           ),
-          _buildRuleCard(
-            '⚠️ 경고 시스템',
-            '''• 1수 시간이 10초 이하일 때 빨간색으로 변합니다
-• 전체 시간이 30초 이하일 때 경고 애니메이션이 작동합니다
-• 타이머가 깜빡이며 긴급 상황을 알려줍니다''',
-            Colors.red,
-          ),
-          Container(
-            margin: const EdgeInsets.only(
-              top: 16,
-            ),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.blue[100],
-              borderRadius: BorderRadius.circular(
-                8,
-              ),
-              border: Border.all(
-                color: Colors.blue[600]!,
-              ),
-            ),
-            child: const Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '💡 타이머 전략 팁',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  '• 초반에는 신중하게, 후반에는 빠르게\n• 중요한 수일 때는 시간을 충분히 활용\n• 상대방의 시간도 주시하세요\n• 시간 압박을 이용한 심리전도 가능',
-                  style: TextStyle(fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildRuleCard(
-    String title,
-    String content,
-    Color color,
-  ) {
-    return CloudContainer(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.8),
-              borderRadius:
-                  const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
-            ),
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'SUIT',
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              content,
-              style: const TextStyle(
-                fontSize: 14,
-                height: 1.5,
-                color: Color(0xFF5C47CE),
-                fontFamily: 'Pretendard',
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRenjuCard(
-    String title,
-    String content,
-    Color color,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF4FEFF),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: const Color(0xFF51D4EB),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.white.withOpacity(0.8),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: color,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'SUIT',
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            content,
-            style: const TextStyle(
-              fontSize: 14,
-              height: 1.4,
-              color: Color(0xFF5C47CE),
-              fontFamily: 'Pretendard',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTierCard(
-    String tier,
-    String bonus,
-    String characters,
-    Color color,
-    IconData icon,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color,
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
-              children: [
-                Text(
-                  tier,
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  bonus,
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  characters,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
+          // 하단 버튼
+          const SizedBox(height: 20),
+          Center(
+            child: _buildFigmaButton(
+              text: '게임 시작하기',
+              color: const Color(0xFF4CAF50),
+              onPressed: () =>
+                  Navigator.of(context).pop(),
+              width: 200,
+              fontSize: 18,
             ),
           ),
         ],

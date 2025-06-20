@@ -192,10 +192,10 @@ class _SkillEffectWidgetState
       height: widget.radius,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withOpacity(0.8),
+        color: color.withValues(alpha: 0.8),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.5),
+            color: color.withValues(alpha: 0.5),
             blurRadius: 10,
             spreadRadius: 2,
           ),
@@ -249,7 +249,7 @@ class SkillParticlePainter extends CustomPainter {
     Offset center,
   ) {
     final paint = Paint()
-      ..color = Colors.red.withOpacity(
+      ..color = Colors.red.withValues(alpha: 
         0.7 * (1 - progress),
       )
       ..style = PaintingStyle.fill;
@@ -286,7 +286,7 @@ class SkillParticlePainter extends CustomPainter {
       );
 
       final linePaint = Paint()
-        ..color = Colors.yellow.withOpacity(
+        ..color = Colors.yellow.withValues(alpha: 
           0.8 * (1 - progress),
         )
         ..strokeWidth = 2 * (1 - progress)
@@ -305,7 +305,7 @@ class SkillParticlePainter extends CustomPainter {
     Offset center,
   ) {
     final paint = Paint()
-      ..color = Colors.blue.withOpacity(
+      ..color = Colors.blue.withValues(alpha: 
         0.6 * (1 - progress),
       )
       ..style = PaintingStyle.stroke
@@ -324,7 +324,7 @@ class SkillParticlePainter extends CustomPainter {
 
     // 방어 결정체 파티클
     final crystalPaint = Paint()
-      ..color = Colors.lightBlue.withOpacity(
+      ..color = Colors.lightBlue.withValues(alpha: 
         0.8 * (1 - progress),
       )
       ..style = PaintingStyle.fill;
@@ -353,7 +353,7 @@ class SkillParticlePainter extends CustomPainter {
     Offset center,
   ) {
     final paint = Paint()
-      ..color = Colors.purple.withOpacity(
+      ..color = Colors.purple.withValues(alpha: 
         0.7 * (1 - progress),
       )
       ..style = PaintingStyle.fill;
@@ -390,7 +390,7 @@ class SkillParticlePainter extends CustomPainter {
 
     // 중앙 소용돌이
     final spiralPaint = Paint()
-      ..color = Colors.deepPurple.withOpacity(
+      ..color = Colors.deepPurple.withValues(alpha: 
         0.5 * (1 - progress),
       )
       ..style = PaintingStyle.stroke
@@ -421,7 +421,7 @@ class SkillParticlePainter extends CustomPainter {
     Offset center,
   ) {
     final paint = Paint()
-      ..color = Colors.orange.withOpacity(
+      ..color = Colors.orange.withValues(alpha: 
         0.7 * (1 - progress),
       )
       ..style = PaintingStyle.fill;
@@ -447,7 +447,7 @@ class SkillParticlePainter extends CustomPainter {
 
     // 시계 바늘 회전 효과
     final handPaint = Paint()
-      ..color = Colors.amber.withOpacity(
+      ..color = Colors.amber.withValues(alpha: 
         0.8 * (1 - progress),
       )
       ..strokeWidth = 3 * (1 - progress)
@@ -638,7 +638,7 @@ class RipplePainter extends CustomPainter {
             (1 - rippleProgress) * 0.6;
 
         final paint = Paint()
-          ..color = color.withOpacity(opacity)
+          ..color = color.withValues(alpha: opacity)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 3;
 

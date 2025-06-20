@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/enhanced_game_state.dart';
-import '../models/player_profile.dart';
+
 import '../models/game_state.dart';
 
 class GameHudWidget extends StatefulWidget {
@@ -18,34 +18,51 @@ class GameHudWidget extends StatefulWidget {
   });
 
   @override
-  State<GameHudWidget> createState() => _GameHudWidgetState();
+  State<GameHudWidget> createState() =>
+      _GameHudWidgetState();
 }
 
-class _GameHudWidgetState extends State<GameHudWidget> {
+class _GameHudWidgetState
+    extends State<GameHudWidget> {
   @override
   Widget build(BuildContext context) {
-    final currentPlayer = widget.gameState.currentPlayer;
-    final isBlackTurn = currentPlayer == PlayerType.black;
+    final currentPlayer =
+        widget.gameState.currentPlayer;
+    final isBlackTurn =
+        currentPlayer == PlayerType.black;
 
     return Container(
       height: 50, // 높이를 50으로 더 줄임
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 4,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.grey[800]!.withOpacity(0.95),
-            Colors.grey[700]!.withOpacity(0.85),
+            Colors.grey[800]!.withValues(
+              alpha: 0.95,
+            ),
+            Colors.grey[700]!.withValues(
+              alpha: 0.85,
+            ),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment:
+            MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment:
+            CrossAxisAlignment.center,
         children: [
           // 흑돌 정보
-          _buildSimplePlayerInfo('흑돌', widget.blackTimeRemaining, isBlackTurn),
+          _buildSimplePlayerInfo(
+            '흑돌',
+            widget.blackTimeRemaining,
+            isBlackTurn,
+          ),
 
           // 중앙 정보
           Text(
@@ -58,7 +75,11 @@ class _GameHudWidgetState extends State<GameHudWidget> {
           ),
 
           // 백돌 정보
-          _buildSimplePlayerInfo('백돌', widget.whiteTimeRemaining, !isBlackTurn),
+          _buildSimplePlayerInfo(
+            '백돌',
+            widget.whiteTimeRemaining,
+            !isBlackTurn,
+          ),
         ],
       ),
     );
@@ -70,14 +91,20 @@ class _GameHudWidgetState extends State<GameHudWidget> {
     bool isCurrentTurn,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 2,
+      ),
       decoration: BoxDecoration(
         color: isCurrentTurn
-            ? Colors.orange.withOpacity(0.3)
+            ? Colors.orange.withValues(alpha: 0.3)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(6),
         border: isCurrentTurn
-            ? Border.all(color: Colors.orange, width: 1)
+            ? Border.all(
+                color: Colors.orange,
+                width: 1,
+              )
             : null,
       ),
       child: Row(
@@ -94,7 +121,10 @@ class _GameHudWidgetState extends State<GameHudWidget> {
           const SizedBox(width: 4),
           Text(
             '${timeRemaining}s',
-            style: const TextStyle(color: Colors.white70, fontSize: 10),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 10,
+            ),
           ),
         ],
       ),

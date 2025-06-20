@@ -7,21 +7,29 @@ import '../widgets/enhanced_visual_effects.dart';
 import '../core/constants/index.dart';
 
 class LotteryScreen extends StatefulWidget {
-  const LotteryScreen({Key? key}) : super(key: key);
+  const LotteryScreen({Key? key})
+    : super(key: key);
 
   @override
-  State<LotteryScreen> createState() => _LotteryScreenState();
+  State<LotteryScreen> createState() =>
+      _LotteryScreenState();
 }
 
-class _LotteryScreenState extends State<LotteryScreen>
+class _LotteryScreenState
+    extends State<LotteryScreen>
     with TickerProviderStateMixin {
   late AnimationController _backgroundController;
   late Animation<double> _backgroundAnimation;
 
-  PlayerLotteryData playerData = PlayerLotteryData(
-    totalCoins: 1500,
-    ownedTickets: {'bronze_ticket': 3, 'silver_ticket': 1, 'gold_ticket': 0},
-  );
+  PlayerLotteryData playerData =
+      PlayerLotteryData(
+        totalCoins: 1500,
+        ownedTickets: {
+          'bronze_ticket': 3,
+          'silver_ticket': 1,
+          'gold_ticket': 0,
+        },
+      );
 
   @override
   void initState() {
@@ -32,9 +40,16 @@ class _LotteryScreenState extends State<LotteryScreen>
       vsync: this,
     )..repeat();
 
-    _backgroundAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _backgroundController, curve: Curves.linear),
-    );
+    _backgroundAnimation =
+        Tween<double>(
+          begin: 0.0,
+          end: 1.0,
+        ).animate(
+          CurvedAnimation(
+            parent: _backgroundController,
+            curve: Curves.linear,
+          ),
+        );
   }
 
   @override
@@ -43,31 +58,157 @@ class _LotteryScreenState extends State<LotteryScreen>
     super.dispose();
   }
 
+  // 홈 화면 스타일의 Figma 버튼
+  Widget _buildFigmaButton({
+    required String text,
+    required Color color,
+    required VoidCallback onPressed,
+    double width = 120,
+    double fontSize = 16,
+    bool isEnabled = true,
+  }) {
+    return Container(
+      width: width,
+      height: 45,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            top: 0,
+            child: Container(
+              width: width,
+              height: 45,
+              clipBehavior: Clip.antiAlias,
+              decoration: ShapeDecoration(
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    width: 2,
+                    strokeAlign: BorderSide
+                        .strokeAlignOutside,
+                    color: Color(0x590A0A0A),
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(22),
+                ),
+                shadows: [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Container(
+                decoration: ShapeDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment(0.00, -1.00),
+                    end: Alignment(0, 1),
+                    colors: [
+                      isEnabled
+                          ? color
+                          : Colors.grey,
+                      isEnabled
+                          ? color.withOpacity(0.7)
+                          : Colors.grey
+                                .withOpacity(0.7),
+                    ],
+                  ),
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      width: 4,
+                      color: Colors.white,
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(22),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 8,
+            top: 5,
+            right: 8,
+            child: Container(
+              height: 35,
+              child: GestureDetector(
+                onTap: isEnabled
+                    ? onPressed
+                    : null,
+                child: Center(
+                  child: Text(
+                    text,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: fontSize,
+                      fontFamily:
+                          'Cafe24Ohsquare',
+                      height: 0,
+                      letterSpacing: -0.25,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _useLotteryTicket(LotteryTicket ticket) {
     if (!playerData.canUseTicket(ticket.id)) {
-      _showMessage('복권이 부족합니다!');
+      _showMessage('복권이 부족합니다! 🎫');
       return;
     }
 
     // 복권 긁기 화면으로 이동
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ScratchCardScreen(
-          ticket: ticket,
-          onComplete: (reward) {
-            setState(() {
-              playerData = playerData.useTicket(ticket.id, reward);
-            });
-            _showRewardPopup(reward);
-          },
+      PageRouteBuilder(
+        pageBuilder:
+            (
+              context,
+              animation,
+              secondaryAnimation,
+            ) => ScratchCardScreen(
+              ticket: ticket,
+              onComplete: (reward) {
+                setState(() {
+                  playerData = playerData
+                      .useTicket(
+                        ticket.id,
+                        reward,
+                      );
+                });
+                _showRewardPopup(reward);
+              },
+            ),
+        transitionDuration: const Duration(
+          milliseconds: 600,
         ),
+        transitionsBuilder:
+            (
+              context,
+              animation,
+              secondaryAnimation,
+              child,
+            ) {
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
       ),
     );
   }
 
   void _buyLotteryTicket(LotteryTicket ticket) {
     if (playerData.totalCoins < ticket.cost) {
-      _showMessage('코인이 부족합니다!');
+      _showMessage('코인이 부족합니다! 💰');
       return;
     }
 
@@ -75,24 +216,76 @@ class _LotteryScreenState extends State<LotteryScreen>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('${ticket.name} 구매'),
-          content: Text('${ticket.cost} 코인으로 ${ticket.name}을 구매하시겠습니까?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('취소'),
-              onPressed: () => Navigator.of(context).pop(),
+          backgroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              20,
             ),
-            TextButton(
-              child: const Text('구매'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                setState(() {
-                  playerData = playerData.buyTicket(ticket.id, ticket.cost);
-                });
-                _showMessage('${ticket.name}을 구매했습니다!');
-              },
+            side: const BorderSide(
+              color: Colors.white,
+              width: 2,
+            ),
+          ),
+          title: Text(
+            '${ticket.name} 구매',
+            style: TextStyle(
+              fontFamily: 'Cafe24Ohsquare',
+              fontSize: 20,
+              color: Colors.white,
+              letterSpacing: -0.4,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            '${ticket.cost} 코인으로 ${ticket.name}을 구매하시겠습니까?',
+            style: TextStyle(
+              fontFamily: 'Cafe24Ohsquare',
+              fontSize: 16,
+              color: Colors.white.withOpacity(
+                0.9,
+              ),
+              letterSpacing: -0.3,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildFigmaButton(
+                  text: '취소',
+                  color: const Color(0xFF757575),
+                  onPressed: () =>
+                      Navigator.of(context).pop(),
+                  width: 80,
+                  fontSize: 14,
+                ),
+                _buildFigmaButton(
+                  text: '구매',
+                  color: const Color(0xFF4CAF50),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() {
+                      playerData = playerData
+                          .buyTicket(
+                            ticket.id,
+                            ticket.cost,
+                          );
+                    });
+                    _showMessage(
+                      '${ticket.name}을 구매했습니다! 🎉',
+                    );
+                  },
+                  width: 80,
+                  fontSize: 14,
+                ),
+              ],
             ),
           ],
+          actionsPadding: const EdgeInsets.all(
+            16,
+          ),
         );
       },
     );
@@ -100,23 +293,32 @@ class _LotteryScreenState extends State<LotteryScreen>
 
   void _getFreeTicket() {
     if (!playerData.canGetFreeTicket()) {
-      _showMessage('24시간마다 무료 복권을 받을 수 있습니다!');
+      _showMessage('24시간마다 무료 복권을 받을 수 있습니다! ⏰');
       return;
     }
 
     setState(() {
       playerData = playerData.getFreeTicket();
     });
-    _showMessage('무료 동 복권을 받았습니다!');
+    _showMessage('무료 동 복권을 받았습니다! 🎁');
   }
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.orange,
+        content: Text(
+          message,
+          style: const TextStyle(
+            fontFamily: 'Cafe24Ohsquare',
+            color: Colors.white,
+            letterSpacing: -0.2,
+          ),
+        ),
+        backgroundColor: const Color(0xFFFFC107),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
@@ -132,118 +334,252 @@ class _LotteryScreenState extends State<LotteryScreen>
   }
 
   Widget _buildTicketCard(LotteryTicket ticket) {
-    final owned = playerData.ownedTickets[ticket.id] ?? 0;
+    final owned =
+        playerData.ownedTickets[ticket.id] ?? 0;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 12,
+      ),
       decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          colors: [ticket.primaryColor, ticket.secondaryColor],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: ticket.primaryColor.withOpacity(0.3),
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 12,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
           children: [
+            // 헤더 섹션
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
+                  padding: const EdgeInsets.all(
+                    16,
                   ),
-                  child: Icon(ticket.icon, color: Colors.white, size: 32),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment(
+                        0.00,
+                        -1.00,
+                      ),
+                      end: Alignment(0, 1),
+                      colors: [
+                        ticket.primaryColor,
+                        ticket.primaryColor
+                            .withOpacity(0.7),
+                      ],
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(15),
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 2,
+                    ),
+                  ),
+                  child: Icon(
+                    ticket.icon,
+                    color: Colors.white,
+                    size: 32,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
                     children: [
                       Text(
                         ticket.name,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          fontFamily:
+                              'Cafe24Ohsquare',
+                          letterSpacing: -0.4,
                         ),
                       ),
+                      const SizedBox(height: 4),
                       Text(
                         ticket.description,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white
+                              .withOpacity(0.8),
                           fontSize: 14,
+                          fontFamily:
+                              'Cafe24Ohsquare',
+                          letterSpacing: -0.2,
                         ),
                       ),
                     ],
                   ),
                 ),
+                // 보유 개수 표시
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      begin: Alignment(
+                        0.00,
+                        -1.00,
+                      ),
+                      end: Alignment(0, 1),
+                      colors: [
+                        const Color(0xFFFFC107),
+                        const Color(
+                          0xFFFFC107,
+                        ).withOpacity(0.7),
+                      ],
+                    ),
+                    borderRadius:
+                        BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 2,
+                    ),
                   ),
                   child: Text(
                     '보유: $owned개',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      fontFamily:
+                          'Cafe24Ohsquare',
+                      letterSpacing: -0.2,
                     ),
                   ),
                 ),
               ],
             ),
+
+            const SizedBox(height: 20),
+
+            // 정보 섹션
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(
+                  0.1,
+                ),
+                borderRadius:
+                    BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(
+                    0.2,
+                  ),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .spaceBetween,
+                    children: [
+                      Text(
+                        '💰 가격',
+                        style: TextStyle(
+                          color: Colors.white
+                              .withOpacity(0.9),
+                          fontSize: 14,
+                          fontFamily:
+                              'Cafe24Ohsquare',
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      Text(
+                        '${ticket.cost} 코인',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontFamily:
+                              'Cafe24Ohsquare',
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .spaceBetween,
+                    children: [
+                      Text(
+                        '🎯 당첨 확률',
+                        style: TextStyle(
+                          color: Colors.white
+                              .withOpacity(0.9),
+                          fontSize: 14,
+                          fontFamily:
+                              'Cafe24Ohsquare',
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      Text(
+                        '높은 확률',
+                        style: TextStyle(
+                          color: const Color(
+                            0xFF4CAF50,
+                          ),
+                          fontSize: 14,
+                          fontFamily:
+                              'Cafe24Ohsquare',
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 16),
+
+            // 버튼 섹션
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: owned > 0
-                        ? () => _useLotteryTicket(ticket)
-                        : null,
-                    icon: const Icon(Icons.card_giftcard),
-                    label: Text(owned > 0 ? '복권 긁기' : '복권 없음'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: ticket.primaryColor,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                  child: _buildFigmaButton(
+                    text: '복권 긁기',
+                    color: ticket.primaryColor,
+                    onPressed: () =>
+                        _useLotteryTicket(ticket),
+                    isEnabled: owned > 0,
+                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(width: 12),
-                ElevatedButton.icon(
-                  onPressed: () => _buyLotteryTicket(ticket),
-                  icon: const Icon(Icons.monetization_on),
-                  label: Text('${ticket.cost}'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white.withOpacity(0.2),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
+                Expanded(
+                  child: _buildFigmaButton(
+                    text: '구매하기',
+                    color: const Color(
+                      0xFF4CAF50,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    onPressed: () =>
+                        _buyLotteryTicket(ticket),
+                    isEnabled:
+                        playerData.totalCoins >=
+                        ticket.cost,
+                    fontSize: 14,
                   ),
                 ),
               ],
@@ -254,236 +590,300 @@ class _LotteryScreenState extends State<LotteryScreen>
     );
   }
 
-  Widget _buildRewardHistory() {
-    if (playerData.rewardHistory.isEmpty) {
-      return Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Center(
-          child: Column(
-            children: [
-              Icon(Icons.history, size: 48, color: Colors.grey),
-              SizedBox(height: 16),
-              Text(
-                '아직 복권을 긁어본 기록이 없습니다',
-                style: TextStyle(color: Colors.grey, fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+  @override
+  Widget build(BuildContext context) {
+    final tickets = [
+      // 임시 복권 데이터
+    ];
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '최근 보상 기록',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    return Scaffold(
+      backgroundColor:
+          Colors.black, // 홈 화면과 동일한 검은색 배경
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 24,
           ),
-          const SizedBox(height: 12),
-          ...playerData.rewardHistory.take(5).map((reward) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
+          onPressed: () =>
+              Navigator.of(context).pop(),
+        ),
+        title: Row(
+          mainAxisAlignment:
+              MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
               decoration: BoxDecoration(
-                color: reward.color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: reward.color.withOpacity(0.3)),
+                gradient: LinearGradient(
+                  begin: Alignment(0.00, -1.00),
+                  end: Alignment(0, 1),
+                  colors: [
+                    const Color(0xFFFFC107),
+                    const Color(
+                      0xFFFFC107,
+                    ).withOpacity(0.7),
+                  ],
+                ),
+                borderRadius:
+                    BorderRadius.circular(15),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                ),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(reward.icon, color: reward.color, size: 24),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          reward.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          reward.description,
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+                  Text(
+                    '🎫',
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
                   ),
+                  SizedBox(width: 8),
                   Text(
-                    'x${reward.quantity}',
+                    '복권 상점',
                     style: TextStyle(
-                      color: reward.color,
-                      fontWeight: FontWeight.bold,
+                      fontFamily:
+                          'Cafe24Ohsquare',
+                      fontSize: 18,
+                      color: Colors.white,
+                      letterSpacing: -0.4,
                     ),
                   ),
                 ],
               ),
-            );
-          }).toList(),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          '🎁 캐릭터 뽑기',
-          style: TextStyle(
-            fontFamily: 'Cafe24Ohsquare',
-            color: AppColors.primary,
-            fontWeight: FontWeight.bold,
-          ),
+            ),
+          ],
         ),
-        backgroundColor: AppColors.secondary,
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.primary),
         centerTitle: true,
       ),
-      body: SoftBlurBackground(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.background,
-                AppColors.surfaceHigh,
-                AppColors.surface,
+      body: Column(
+        children: [
+          // 코인 및 상태 표시
+          Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(
+                0.1,
+              ),
+              borderRadius: BorderRadius.circular(
+                15,
+              ),
+              border: Border.all(
+                color: Colors.white.withOpacity(
+                  0.3,
+                ),
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(
+                    0.3,
+                  ),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
               ],
             ),
-          ),
-          child: SafeArea(
-            child: Column(
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceEvenly,
               children: [
-                // 헤더
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.arrow_back),
-                        style: IconButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.all(12),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Text(
-                          '🎰 복권 센터',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.purple,
+                // 보유 코인
+                Column(
+                  children: [
+                    Container(
+                      padding:
+                          const EdgeInsets.all(
+                            12,
                           ),
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.amber,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.amber.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment(
+                            0.00,
+                            -1.00,
+                          ),
+                          end: Alignment(0, 1),
+                          colors: [
+                            const Color(
+                              0xFFFFC107,
                             ),
+                            const Color(
+                              0xFFFFC107,
+                            ).withOpacity(0.7),
                           ],
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.monetization_on,
-                              color: Colors.white,
+                        borderRadius:
+                            BorderRadius.circular(
+                              12,
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${playerData.totalCoins}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
                         ),
                       ),
-                    ],
-                  ),
+                      child: Icon(
+                        Icons.monetization_on,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${playerData.totalCoins}',
+                      style: TextStyle(
+                        fontFamily:
+                            'Cafe24Ohsquare',
+                        fontSize: 18,
+                        color: Colors.white,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    Text(
+                      '코인',
+                      style: TextStyle(
+                        fontFamily:
+                            'Cafe24Ohsquare',
+                        fontSize: 12,
+                        color: Colors.white
+                            .withOpacity(0.8),
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  ],
                 ),
 
                 // 무료 복권 버튼
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ElevatedButton.icon(
-                    onPressed: playerData.canGetFreeTicket()
-                        ? _getFreeTicket
-                        : null,
-                    icon: const Icon(Icons.card_giftcard),
-                    label: Text(
-                      playerData.canGetFreeTicket()
-                          ? '무료 복권 받기!'
-                          : '24시간 후 사용 가능',
+                Column(
+                  children: [
+                    _buildFigmaButton(
+                      text: '무료 복권',
+                      color: const Color(
+                        0xFF4CAF50,
+                      ),
+                      onPressed: _getFreeTicket,
+                      width: 100,
+                      fontSize: 14,
+                      isEnabled: playerData
+                          .canGetFreeTicket(),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: playerData.canGetFreeTicket()
-                          ? Colors.green
-                          : Colors.grey,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      minimumSize: const Size(double.infinity, 0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    const SizedBox(height: 4),
+                    Text(
+                      playerData
+                              .canGetFreeTicket()
+                          ? '사용 가능'
+                          : '24시간 대기',
+                      style: TextStyle(
+                        fontFamily:
+                            'Cafe24Ohsquare',
+                        fontSize: 10,
+                        color:
+                            playerData
+                                .canGetFreeTicket()
+                            ? const Color(
+                                0xFF4CAF50,
+                              )
+                            : Colors.white
+                                  .withOpacity(
+                                    0.6,
+                                  ),
+                        letterSpacing: -0.1,
                       ),
                     ),
-                  ),
+                  ],
                 ),
 
-                const SizedBox(height: 20),
-
-                // 복권 목록
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        ...LotteryService.getAvailableTickets()
-                            .map((ticket) => _buildTicketCard(ticket))
-                            .toList(),
-
-                        const SizedBox(height: 20),
-
-                        // 보상 기록
-                        _buildRewardHistory(),
-
-                        const SizedBox(height: 100), // 하단 여백
-                      ],
+                // 총 복권 수
+                Column(
+                  children: [
+                    Container(
+                      padding:
+                          const EdgeInsets.all(
+                            12,
+                          ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment(
+                            0.00,
+                            -1.00,
+                          ),
+                          end: Alignment(0, 1),
+                          colors: [
+                            const Color(
+                              0xFF2196F3,
+                            ),
+                            const Color(
+                              0xFF2196F3,
+                            ).withOpacity(0.7),
+                          ],
+                        ),
+                        borderRadius:
+                            BorderRadius.circular(
+                              12,
+                            ),
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.confirmation_number,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${playerData.ownedTickets.values.fold(0, (sum, count) => sum + count)}',
+                      style: TextStyle(
+                        fontFamily:
+                            'Cafe24Ohsquare',
+                        fontSize: 18,
+                        color: Colors.white,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    Text(
+                      '총 복권',
+                      style: TextStyle(
+                        fontFamily:
+                            'Cafe24Ohsquare',
+                        fontSize: 12,
+                        color: Colors.white
+                            .withOpacity(0.8),
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-        ),
+
+          // 복권 리스트
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(
+                bottom: 20,
+              ),
+              itemCount: tickets.length,
+              itemBuilder: (context, index) {
+                return _buildTicketCard(
+                  tickets[index],
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

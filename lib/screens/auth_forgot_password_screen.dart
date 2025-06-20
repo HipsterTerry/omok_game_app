@@ -116,14 +116,14 @@ class _AuthForgotPasswordScreenState
           decoration: BoxDecoration(
             color: const Color(
               0xFF89E0F7,
-            ).withOpacity(0.2),
+            ).withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(
               40,
             ),
             border: Border.all(
               color: const Color(
                 0xFF89E0F7,
-              ).withOpacity(0.5),
+              ).withValues(alpha: 0.5),
               width: 2,
             ),
           ),
@@ -162,7 +162,7 @@ class _AuthForgotPasswordScreenState
             fontSize: 14,
             color: const Color(
               0xFF5C47CE,
-            ).withOpacity(0.7),
+            ).withValues(alpha: 0.7),
             height: 1.5,
           ),
           textAlign: TextAlign.center,
@@ -208,14 +208,14 @@ class _AuthForgotPasswordScreenState
           decoration: BoxDecoration(
             color: const Color(
               0xFF89E0F7,
-            ).withOpacity(0.1),
+            ).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(
               16,
             ),
             border: Border.all(
               color: const Color(
                 0xFF89E0F7,
-              ).withOpacity(0.3),
+              ).withValues(alpha: 0.3),
             ),
           ),
           child: Column(
@@ -247,7 +247,7 @@ class _AuthForgotPasswordScreenState
                   fontSize: 14,
                   color: const Color(
                     0xFF5C47CE,
-                  ).withOpacity(0.8),
+                  ).withValues(alpha: 0.8),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -261,7 +261,7 @@ class _AuthForgotPasswordScreenState
                   fontSize: 14,
                   color: const Color(
                     0xFF5C47CE,
-                  ).withOpacity(0.7),
+                  ).withValues(alpha: 0.7),
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,
@@ -276,12 +276,12 @@ class _AuthForgotPasswordScreenState
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(
               12,
             ),
             border: Border.all(
-              color: Colors.orange.withOpacity(
+              color: Colors.orange.withValues(alpha: 
                 0.3,
               ),
             ),
@@ -358,10 +358,10 @@ class _AuthForgotPasswordScreenState
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.1),
+        color: Colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Colors.red.withOpacity(0.3),
+          color: Colors.red.withValues(alpha: 0.3),
         ),
       ),
       child: Text(
@@ -386,28 +386,28 @@ class _AuthForgotPasswordScreenState
           Icons.email_outlined,
           color: const Color(
             0xFF5C47CE,
-          ).withOpacity(0.7),
+          ).withValues(alpha: 0.7),
         ),
         labelStyle: TextStyle(
           fontFamily: 'SUIT',
           color: const Color(
             0xFF5C47CE,
-          ).withOpacity(0.7),
+          ).withValues(alpha: 0.7),
         ),
         hintStyle: TextStyle(
           fontFamily: 'Pretendard',
           color: const Color(
             0xFF5C47CE,
-          ).withOpacity(0.5),
+          ).withValues(alpha: 0.5),
         ),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.8),
+        fillColor: Colors.white.withValues(alpha: 0.8),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
             color: const Color(
               0xFF89E0F7,
-            ).withOpacity(0.5),
+            ).withValues(alpha: 0.5),
           ),
         ),
         enabledBorder: OutlineInputBorder(
@@ -415,7 +415,7 @@ class _AuthForgotPasswordScreenState
           borderSide: BorderSide(
             color: const Color(
               0xFF89E0F7,
-            ).withOpacity(0.5),
+            ).withValues(alpha: 0.5),
           ),
         ),
         focusedBorder: OutlineInputBorder(
@@ -467,7 +467,7 @@ class _AuthForgotPasswordScreenState
           elevation: 5,
           shadowColor: const Color(
             0xFF8BBEDC,
-          ).withOpacity(0.5),
+          ).withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(
               25,
@@ -475,7 +475,7 @@ class _AuthForgotPasswordScreenState
           ),
           disabledBackgroundColor: const Color(
             0xFF89E0F7,
-          ).withOpacity(0.5),
+          ).withValues(alpha: 0.5),
         ),
         child: _isLoading
             ? const SizedBox(
@@ -511,7 +511,7 @@ class _AuthForgotPasswordScreenState
           fontSize: 14,
           color: const Color(
             0xFF5C47CE,
-          ).withOpacity(0.8),
+          ).withValues(alpha: 0.8),
           decoration: TextDecoration.underline,
         ),
       ),

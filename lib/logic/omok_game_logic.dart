@@ -148,11 +148,6 @@ class OmokGameLogic {
     return count;
   }
 
-  /// 게임을 초기 상태로 리셋
-  static GameState resetGame() {
-    return GameState();
-  }
-
   /// 게임 상태를 문자열로 표현 (디버깅용)
   static String boardToString(
     List<List<PlayerType?>> board,

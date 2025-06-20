@@ -144,7 +144,7 @@ class _AnimatedStoneWidgetState extends State<AnimatedStoneWidget>
               height: widget.stoneRadius * 2,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
               ),
             ),
           ),
@@ -167,7 +167,7 @@ class _AnimatedStoneWidgetState extends State<AnimatedStoneWidget>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: _getTierColor(tier).withOpacity(0.5),
+                  color: _getTierColor(tier).withValues(alpha: 0.5),
                   blurRadius: tier == CharacterTier.heaven ? 8 : 4,
                   spreadRadius: tier == CharacterTier.heaven ? 2 : 0,
                 ),
@@ -185,7 +185,7 @@ class _AnimatedStoneWidgetState extends State<AnimatedStoneWidget>
               height: widget.stoneRadius * 0.8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(isBlack ? 0.3 : 0.7),
+                color: Colors.white.withValues(alpha: isBlack ? 0.3 : 0.7),
               ),
             ),
           ),
@@ -201,13 +201,13 @@ class _AnimatedStoneWidgetState extends State<AnimatedStoneWidget>
           return [
             const Color(0xFF4A4A4A),
             const Color(0xFF1C1C1C),
-            const Color(0xFFFFD700).withOpacity(0.3),
+            const Color(0xFFFFD700).withValues(alpha: 0.3),
           ];
         case CharacterTier.earth:
           return [
             const Color(0xFF3A3A3A),
             const Color(0xFF101010),
-            const Color(0xFFC0C0C0).withOpacity(0.2),
+            const Color(0xFFC0C0C0).withValues(alpha: 0.2),
           ];
         case CharacterTier.human:
           return [const Color(0xFF2C2C2C), const Color(0xFF000000)];
@@ -218,13 +218,13 @@ class _AnimatedStoneWidgetState extends State<AnimatedStoneWidget>
           return [
             const Color(0xFFFFFFF0),
             const Color(0xFFE0E0E0),
-            const Color(0xFFFFD700).withOpacity(0.4),
+            const Color(0xFFFFD700).withValues(alpha: 0.4),
           ];
         case CharacterTier.earth:
           return [
             const Color(0xFFFFFFFF),
             const Color(0xFFE0E0E0),
-            const Color(0xFFC0C0C0).withOpacity(0.3),
+            const Color(0xFFC0C0C0).withValues(alpha: 0.3),
           ];
         case CharacterTier.human:
           return [const Color(0xFFFFFFFF), const Color(0xFFE0E0E0)];
@@ -361,7 +361,7 @@ class _PulseAnimationWidgetState extends State<PulseAnimationWidget>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: widget.color.withOpacity(1 - _animation.value),
+                  color: widget.color.withValues(alpha: 1 - _animation.value),
                   width: 2,
                 ),
               ),
@@ -460,7 +460,7 @@ class WinningLinePainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final glowPaint = Paint()
-      ..color = color.withOpacity(0.3)
+      ..color = color.withValues(alpha: 0.3)
       ..strokeWidth = strokeWidth * 2
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
@@ -494,7 +494,7 @@ class WinningLinePainter extends CustomPainter {
 
   void _drawWinStar(Canvas canvas, Offset center, Color color, double alpha) {
     final starPaint = Paint()
-      ..color = color.withOpacity(alpha)
+      ..color = color.withValues(alpha: alpha)
       ..style = PaintingStyle.fill;
 
     final path = Path();

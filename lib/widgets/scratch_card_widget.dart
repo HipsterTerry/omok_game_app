@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
-import 'dart:ui';
+
 import '../models/lottery_system.dart';
 
 class ScratchCardScreen extends StatefulWidget {
@@ -169,8 +169,8 @@ class _ScratchCardScreenState
                     ),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(
-                    0.1,
+                  color: Colors.white.withValues(
+                    alpha: 0.1,
                   ),
                   borderRadius:
                       BorderRadius.circular(12),
@@ -261,7 +261,7 @@ class ScratchCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: ticket.primaryColor
-                  .withOpacity(0.3),
+                  .withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -334,8 +334,8 @@ class ScratchCardPainter extends CustomPainter {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          reward.color.withOpacity(0.2),
-          reward.color.withOpacity(0.4),
+          reward.color.withValues(alpha: 0.2),
+          reward.color.withValues(alpha: 0.4),
           Colors.white,
         ],
       ).createShader(rect);
@@ -496,8 +496,8 @@ class ScratchCardPainter extends CustomPainter {
     ); // 고정된 시드로 일관된 패턴
 
     final sparklePaint = Paint()
-      ..color = Colors.white.withOpacity(
-        sparkleProgress * 0.8,
+      ..color = Colors.white.withValues(
+        alpha: sparkleProgress * 0.8,
       );
 
     for (int i = 0; i < 20; i++) {

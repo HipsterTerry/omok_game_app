@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
-import 'theme/omok_arena_theme.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const OmokGameApp());
+  runApp(const OmokArenaApp());
 }
 
-class OmokGameApp extends StatelessWidget {
-  const OmokGameApp({super.key});
+class OmokArenaApp extends StatelessWidget {
+  const OmokArenaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Omok Arena',
-      theme: omokArenaTheme,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1565C0)),
+        useMaterial3: true,
+      ),
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
-      home:
-          const SplashScreen(), // 앱 시작점을 Splash Screen으로 변경
     );
   }
 }

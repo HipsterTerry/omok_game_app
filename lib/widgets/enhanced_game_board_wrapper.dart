@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/enhanced_game_state.dart';
-import '../models/game_state.dart';
+
 import '../models/player_profile.dart';
 import '../logic/ai_player.dart';
 import '../logic/advanced_renju_rule_evaluator.dart';
 import 'enhanced_game_board_widget.dart';
-import 'forbidden_move_overlay.dart';
+
 import 'renju_warning_overlay.dart';
 
 /// 기존 EnhancedGameBoardWidget을 감싸서 렌주룰 기능을 추가하는 래퍼

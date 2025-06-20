@@ -180,15 +180,15 @@ class _GameTimerWidgetState
                 colors: widget.isCurrentPlayer
                     ? [
                         widget.primaryColor
-                            .withOpacity(0.8),
+                            .withValues(alpha: 0.8),
                         widget.primaryColor
-                            .withOpacity(0.6),
+                            .withValues(alpha: 0.6),
                       ]
                     : [
-                        Colors.grey.withOpacity(
+                        Colors.grey.withValues(alpha: 
                           0.3,
                         ),
-                        Colors.grey.withOpacity(
+                        Colors.grey.withValues(alpha: 
                           0.1,
                         ),
                       ],
@@ -207,7 +207,7 @@ class _GameTimerWidgetState
                   ? [
                       BoxShadow(
                         color: widget.primaryColor
-                            .withOpacity(0.4),
+                            .withValues(alpha: 0.4),
                         blurRadius: 8,
                         offset: const Offset(
                           0,
@@ -304,7 +304,7 @@ class _GameTimerWidgetState
                               .clamp(0.0, 1.0),
                           backgroundColor: Colors
                               .white
-                              .withOpacity(0.3),
+                              .withValues(alpha: 0.3),
                           valueColor:
                               AlwaysStoppedAnimation<
                                 Color
@@ -324,11 +324,11 @@ class _GameTimerWidgetState
                           decoration: BoxDecoration(
                             color: _moveTime <= 10
                                 ? Colors.red
-                                      .withOpacity(
+                                      .withValues(alpha: 
                                         0.9,
                                       )
                                 : Colors.black
-                                      .withOpacity(
+                                      .withValues(alpha: 
                                         0.7,
                                       ),
                             shape:
@@ -581,7 +581,7 @@ class _CuteTimerWidgetState
             : 1.0;
         final containerColor = shouldBlink
             ? Color.lerp(
-                Colors.red.withOpacity(0.8),
+                Colors.red.withValues(alpha: 0.8),
                 Colors.red,
                 blinkValue,
               )!
@@ -596,18 +596,18 @@ class _CuteTimerWidgetState
             gradient: LinearGradient(
               colors: shouldBlink
                   ? [
-                      containerColor.withOpacity(
+                      containerColor.withValues(alpha: 
                         0.9 * blinkValue,
                       ),
-                      containerColor.withOpacity(
+                      containerColor.withValues(alpha: 
                         0.7 * blinkValue,
                       ),
                     ]
                   : [
                       widget.themeColor
-                          .withOpacity(0.8),
+                          .withValues(alpha: 0.8),
                       widget.themeColor
-                          .withOpacity(0.6),
+                          .withValues(alpha: 0.6),
                     ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -618,11 +618,11 @@ class _CuteTimerWidgetState
             boxShadow: [
               BoxShadow(
                 color: shouldBlink
-                    ? Colors.red.withOpacity(
+                    ? Colors.red.withValues(alpha: 
                         0.4 * blinkValue,
                       )
                     : widget.themeColor
-                          .withOpacity(0.3),
+                          .withValues(alpha: 0.3),
                 blurRadius: widget.isCurrentPlayer
                     ? 10
                     : 5,
@@ -630,7 +630,7 @@ class _CuteTimerWidgetState
               ),
               if (shouldBlink)
                 BoxShadow(
-                  color: Colors.red.withOpacity(
+                  color: Colors.red.withValues(alpha: 
                     0.2 * blinkValue,
                   ),
                   blurRadius: 15,
@@ -647,7 +647,7 @@ class _CuteTimerWidgetState
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(
+                  color: Colors.white.withValues(alpha: 
                     0.9,
                   ),
                   shape: BoxShape.circle,
@@ -655,7 +655,7 @@ class _CuteTimerWidgetState
                       ? [
                           BoxShadow(
                             color: Colors.red
-                                .withOpacity(
+                                .withValues(alpha: 
                                   0.3 *
                                       blinkValue,
                                 ),
@@ -719,7 +719,7 @@ class _CuteTimerWidgetState
                           ? [
                               Shadow(
                                 color: Colors.red
-                                    .withOpacity(
+                                    .withValues(alpha: 
                                       0.5 *
                                           blinkValue,
                                     ),

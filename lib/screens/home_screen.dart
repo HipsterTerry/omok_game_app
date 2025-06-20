@@ -2,303 +2,526 @@ import 'package:flutter/material.dart';
 import 'character_selection_screen.dart';
 import 'lottery_screen.dart';
 import 'game_rules_screen.dart';
+import 'enhanced_game_screen.dart';
 
 import '../models/player_profile.dart';
 import '../logic/ai_player.dart';
-import '../widgets/enhanced_visual_effects.dart';
-import '../core/constants/index.dart';
+import '../models/game_state.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 화면 크기 정보 가져오기
-    final screenSize = MediaQuery.of(context).size;
-    final isSmallScreen = screenSize.height < 700;
-
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: AppColors.background, // 키치 테마 배경색 적용
-        ),
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final availableHeight = constraints.maxHeight;
-              return SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: availableHeight),
-                  child: IntrinsicHeight(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                        vertical: 16.0,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // 🎨 v2.0.0: 게임 로고 + 타이틀 스택 (겹치기)
-                          // 호랑이+토끼 캐릭터 이미지와 "Omok Arena" 타이틀을 Stack으로 겹치게 배치
-                          // 캐릭터의 바둑돌이 타이틀 'k'에 거의 닿을 정도로 밀착 배치
-                          Container(
-                            height: isSmallScreen ? 240 : 280,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                // 캐릭터 이미지 (위쪽)
-                                Positioned(
-                                  top: 0,
-                                  child: Image.asset(
-                                    'assets/image/home_logo.png',
-                                    width: isSmallScreen ? 450 : 550,
-                                    height: isSmallScreen ? 225 : 275,
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        padding: const EdgeInsets.all(16),
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            width: double.infinity,
+            constraints: BoxConstraints(
+              minHeight:
+                  MediaQuery.of(
+                    context,
+                  ).size.height -
+                  MediaQuery.of(
+                    context,
+                  ).padding.top -
+                  MediaQuery.of(
+                    context,
+                  ).padding.bottom,
+            ),
+            child: Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 10), // 상단 여백 줄임
+                // 캐릭터 로고 + 타이틀 (Stack으로 겹치게 배치)
+                Container(
+                  width: 305,
+                  height:
+                      265, // 높이를 늘려서 로고가 잘리지 않게
+                  child: Stack(
+                    children: [
+                      // 캐릭터 이미지 (위쪽 잘림 방지)
+                      Positioned(
+                        top: 0, // 위쪽 여백 확보
+                        left: 0,
+                        child: Container(
+                          width: 305,
+                          height:
+                              210, // 이미지 높이 조정
+                          child: Image.asset(
+                            'assets/image/home_logo.png',
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (
+                                  context,
+                                  error,
+                                  stackTrace,
+                                ) {
+                                  // 이미지 로드 실패시 이모지 캐릭터 표시
+                                  return Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    children: [
+                                      Container(
+                                        width:
+                                            100,
+                                        height:
+                                            100,
                                         decoration: BoxDecoration(
-                                          color: AppColors.secondary,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: AppColors.secondaryContainer,
-                                            width: 2,
+                                          color: Colors
+                                              .orange
+                                              .shade300,
+                                          borderRadius:
+                                              BorderRadius.circular(
+                                                50,
+                                              ),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            '🐯',
+                                            style: TextStyle(
+                                              fontSize:
+                                                  50,
+                                            ),
                                           ),
                                         ),
-                                        child: Icon(
-                                          Icons.grid_on,
-                                          size: isSmallScreen ? 48 : 64,
-                                          color: AppColors.primary,
+                                      ),
+                                      SizedBox(
+                                        width: 30,
+                                      ),
+                                      Container(
+                                        width:
+                                            100,
+                                        height:
+                                            100,
+                                        decoration: BoxDecoration(
+                                          color: Colors
+                                              .pink
+                                              .shade100,
+                                          borderRadius:
+                                              BorderRadius.circular(
+                                                50,
+                                              ),
                                         ),
-                                      );
-                                    },
-                                  ),
-                                ),
-
-                                // 게임 제목 (아래쪽으로 이동해서 캐릭터와 겹치게)
-                                Positioned(
-                                  bottom: 0,
-                                  child: Text(
-                                    'Omok Arena',
-                                    style: TextStyle(
-                                      fontSize: isSmallScreen ? 42 : 52,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Cafe24Ohsquare',
-                                      color: AppColors.primary,
-                                      shadows: [
-                                        Shadow(
-                                          offset: const Offset(2, 2),
-                                          blurRadius: 4,
-                                          color: AppColors.tertiary.withOpacity(
-                                            0.3,
+                                        child: Center(
+                                          child: Text(
+                                            '🐰',
+                                            style: TextStyle(
+                                              fontSize:
+                                                  50,
+                                            ),
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // 플레이 모드 선택 제목 - Cloud BG 효과 적용 (간소화)
-                          CloudContainer(
-                            margin: const EdgeInsets.only(bottom: 4),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                            child: Text(
-                              '🎮 플레이 모드 선택',
-                              style: TextStyle(
-                                color: AppColors.primary, // 키치 테마 텍스트 색상
-                                fontSize: isSmallScreen ? 16 : 18,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'SUIT', // 기본 텍스트 폰트
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-
-                          // 게임 모드 선택 버튼들 (3개 버튼 비율 조정)
-                          Column(
-                            children: [
-                              // 온라인 플레이 버튼 - 새로 추가 (퍼플 계열)
-                              VolumetricPlayButton(
-                                onPressed: () {
-                                  // TODO: 온라인 플레이 기능 구현
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('온라인 플레이 기능 개발 중입니다!'),
-                                      duration: Duration(seconds: 2),
-                                    ),
+                                      ),
+                                    ],
                                   );
                                 },
-                                text: '🌐 온라인 플레이',
-                                width: double.infinity,
-                                height: isSmallScreen ? 56 : 66,
-                                backgroundColor:
-                                    AppColors.accent1, // 미디엄 슬레이트 블루
-                              ),
-
-                              const SizedBox(height: 2),
-
-                              // 2인 플레이 버튼 - 입체적 효과 적용 (블루 계열)
-                              VolumetricPlayButton(
-                                onPressed: () {
-                                  _showBoardSizeDialog(context, isAI: false);
-                                },
-                                text: '👥 2인 플레이 (로컬)',
-                                width: double.infinity,
-                                height: isSmallScreen ? 56 : 66,
-                                backgroundColor: AppColors.accent2, // 로열 블루
-                              ),
-
-                              const SizedBox(height: 2),
-
-                              // 1인 플레이 버튼 - 입체적 효과 적용 (다크 퍼플 계열)
-                              VolumetricPlayButton(
-                                onPressed: () {
-                                  _showBoardSizeDialog(context, isAI: true);
-                                },
-                                text: '🤖 1인 플레이 (AI 대전)',
-                                width: double.infinity,
-                                height: isSmallScreen ? 56 : 66,
-                                backgroundColor:
-                                    AppColors.accent3, // 다크 슬레이트 블루
-                              ),
-
-                              const SizedBox(height: 3),
-
-                              // 추가 메뉴 버튼들 - Overflow 해결
-                              Row(
-                                children: [
-                                  // 게임 규칙 버튼
-                                  Expanded(
-                                    child: Container(
-                                      height: 30,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const GameRulesScreen(),
-                                            ),
-                                          );
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 2,
-                                          ),
-                                          minimumSize: Size(0, 30),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.info_outline,
-                                              size: 12,
-                                              color: AppColors.primary,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Flexible(
-                                              child: Text(
-                                                '게임 규칙',
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  fontFamily: 'SUIT',
-                                                  color: AppColors.primary,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 8),
-
-                                  // 캐릭터 뽑기 버튼
-                                  Expanded(
-                                    child: Container(
-                                      height: 30,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const LotteryScreen(),
-                                            ),
-                                          );
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 2,
-                                          ),
-                                          minimumSize: Size(0, 30),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.casino,
-                                              size: 12,
-                                              color: AppColors.primary,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Flexible(
-                                              child: Text(
-                                                '캐릭터 뽑기',
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  fontFamily: 'SUIT',
-                                                  color: AppColors.primary,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
                           ),
-
-                          const SizedBox(height: 12),
-
-                          // 버전 정보 - 키치 테마 적용
-                          AccentText(
-                            text: 'Omok Arena v1.0.0',
-                            style: TextStyle(
-                              fontSize: 8,
-                              fontFamily: 'Pretendard',
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
+
+                      // 타이틀 텍스트 (위치 그대로 유지)
+                      Positioned(
+                        bottom: 0, // 컨테이너 하단에서
+                        left: 0,
+                        right: 0,
+                        child: Text(
+                          'Omok Arena',
+                          textAlign:
+                              TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 44,
+                            fontFamily:
+                                'Cafe24Ohsquare',
+                            height:
+                                0, // Figma 스타일 - 텍스트를 이미지와 더 가깝게
+                            letterSpacing: -0.66,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 20),
+                // AI 연습게임 버튼
+                _buildFigmaButton(
+                  context,
+                  text: 'AI 연습게임',
+                  color: Color(0xFF2196F3),
+                  onPressed: () =>
+                      _showBoardSizeDialog(
+                        context,
+                        isAI: true,
+                      ),
+                ),
+
+                SizedBox(height: 18), // 간격 줄임
+                // 2인 플레이 버튼
+                _buildFigmaButton(
+                  context,
+                  text: '2인 플레이',
+                  color: Color(0xFFFF9800),
+                  onPressed: () =>
+                      _showBoardSizeDialog(
+                        context,
+                        isAI: false,
+                      ),
+                ),
+
+                SizedBox(height: 18), // 간격 줄임
+                // 온라인 플레이 버튼
+                _buildFigmaButton(
+                  context,
+                  text: '온라인 플레이',
+                  color: Color(0xFFF44336),
+                  onPressed: () {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          '온라인 플레이 기능 개발 중입니다!',
+                        ),
+                        duration: Duration(
+                          seconds: 2,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                SizedBox(height: 20), // 간격 줄임
+                // 하단 작은 버튼들 (메인 버튼과 너비 맞춤)
+                Container(
+                  width: 250, // 메인 버튼과 동일한 너비
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .spaceBetween, // 양쪽 끝에 배치
+                    children: [
+                      _buildFigmaSmallButton(
+                        context,
+                        text: '규칙설명',
+                        color: Color(0xFFFFC107),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const GameRulesScreen(),
+                            ),
+                          );
+                        },
+                      ),
+
+                      _buildFigmaSmallButton(
+                        context,
+                        text: '복권/상점',
+                        color: Color(0xFFFFC107),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const LotteryScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 20), // 간격 줄임
+                // 버전 정보
+                SizedBox(
+                  width: 175,
+                  height: 30,
+                  child: Text(
+                    'Omok Arena v 1.0',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontFamily:
+                          'Cafe24Ohsquare',
+                      height: 0,
+                      letterSpacing: -0.23,
                     ),
                   ),
                 ),
-              );
-            },
+
+                SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  // Figma 스타일의 메인 버튼 (정확한 복사)
+  Widget _buildFigmaButton(
+    BuildContext context, {
+    required String text,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      width: 250,
+      height: 48,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            top: 0,
+            child: Container(
+              width: 250,
+              height: 48,
+              clipBehavior: Clip.antiAlias,
+              decoration: ShapeDecoration(
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    width: 3,
+                    strokeAlign: BorderSide
+                        .strokeAlignOutside,
+                    color: Color(0x590A0A0A),
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(24),
+                ),
+                shadows: [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 5,
+                    offset: Offset(0, 1),
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Color(0x1E000000),
+                    blurRadius: 4,
+                    offset: Offset(0, 3),
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Color(0x23000000),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    child: Container(
+                      width: 250,
+                      height: 48,
+                      decoration: ShapeDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment(
+                            0.00,
+                            -1.00,
+                          ),
+                          end: Alignment(0, 1),
+                          colors: [
+                            color,
+                            color.withOpacity(
+                              0.7,
+                            ),
+                          ],
+                        ),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            width: 6,
+                            color: Colors.white,
+                          ),
+                          borderRadius:
+                              BorderRadius.circular(
+                                24,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 10, // 텍스트 영역을 더 넓게
+            top: 5,
+            right: 10, // 오른쪽 여백도 확보
+            child: Container(
+              height: 38,
+              padding: const EdgeInsets.symmetric(
+                vertical: 3,
+              ),
+              child: GestureDetector(
+                onTap: onPressed,
+                child: Center(
+                  // Row 대신 Center 사용
+                  child: Text(
+                    text,
+                    textAlign: TextAlign.center,
+                    maxLines: 1, // 한 줄로 제한
+                    overflow: TextOverflow
+                        .ellipsis, // 넘치면 ... 표시
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize:
+                          22, // 크기를 25에서 22로 줄임
+                      fontFamily:
+                          'Cafe24Ohsquare',
+                      height: 0,
+                      letterSpacing:
+                          -0.30, // 글자 간격 조정
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Figma 스타일의 작은 버튼 (메인 버튼과 규격 맞춤)
+  Widget _buildFigmaSmallButton(
+    BuildContext context, {
+    required String text,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      width:
+          105, // 크기를 110에서 105로 조정 (250px 컨테이너에 양쪽 배치)
+      height: 48,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            top: 0,
+            child: Container(
+              width: 105, // 크기를 110에서 105로 조정
+              height: 48,
+              clipBehavior: Clip.antiAlias,
+              decoration: ShapeDecoration(
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    width: 3,
+                    strokeAlign: BorderSide
+                        .strokeAlignOutside,
+                    color: Color(0x590A0A0A),
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(24),
+                ),
+                shadows: [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 5,
+                    offset: Offset(0, 1),
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Color(0x1E000000),
+                    blurRadius: 4,
+                    offset: Offset(0, 3),
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Color(0x23000000),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    child: Container(
+                      width:
+                          105, // 크기를 110에서 105로 조정
+                      height: 48,
+                      decoration: ShapeDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment(
+                            0.00,
+                            -1.00,
+                          ),
+                          end: Alignment(0, 1),
+                          colors: [
+                            color,
+                            color.withOpacity(
+                              0.7,
+                            ),
+                          ],
+                        ),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(
+                            width: 6,
+                            color: Colors.white,
+                          ),
+                          borderRadius:
+                              BorderRadius.circular(
+                                24,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 5, // 텍스트 영역 조정
+            top: 5,
+            right: 5, // 텍스트 영역 조정
+            child: Container(
+              height: 38,
+              padding: const EdgeInsets.only(
+                top: 7,
+                bottom: 6,
+              ),
+              child: GestureDetector(
+                onTap: onPressed,
+                child: Center(
+                  child: Text(
+                    text,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow:
+                        TextOverflow.visible,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize:
+                          16, // 크기를 17에서 16으로 조정 (105px에 맞춤)
+                      fontFamily:
+                          'Cafe24Ohsquare',
+                      height: 0,
+                      letterSpacing:
+                          -0.25, // 글자 간격 조정
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -311,16 +534,19 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surfaceHigh,
+        backgroundColor: Colors.grey[900],
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: AppColors.tertiary, width: 2),
+          side: BorderSide(
+            color: Colors.white.withOpacity(0.2),
+            width: 2,
+          ),
         ),
         title: Text(
           '🎯 보드 크기 선택',
           style: TextStyle(
             fontFamily: 'Cafe24Ohsquare',
-            color: AppColors.primary,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -330,36 +556,46 @@ class HomeScreen extends StatelessWidget {
             Text(
               '게임할 보드 크기를 선택하세요:',
               style: TextStyle(
-                fontFamily: 'Pretendard',
-                color: AppColors.primary.withOpacity(0.8),
+                fontFamily: 'SUIT',
+                color: Colors.white.withOpacity(
+                  0.8,
+                ),
               ),
             ),
             const SizedBox(height: 16),
             ...BoardSize.values.map(
               (size) => Card(
-                color: AppColors.secondary.withOpacity(0.3),
+                color: Colors.grey[800],
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: AppColors.tertiary, width: 2),
+                  borderRadius:
+                      BorderRadius.circular(16),
+                  side: BorderSide(
+                    color: Colors.white
+                        .withOpacity(0.1),
+                    width: 1,
+                  ),
                 ),
                 child: ListTile(
                   leading: Icon(
                     _getBoardSizeIcon(size),
-                    color: _getBoardSizeColor(size),
+                    color: _getBoardSizeColor(
+                      size,
+                    ),
                   ),
                   title: Text(
                     size.description,
                     style: TextStyle(
                       fontFamily: 'SUIT',
-                      color: AppColors.primary,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   subtitle: Text(
                     '${size.size}x${size.size} 보드',
                     style: TextStyle(
-                      fontFamily: 'Pretendard',
-                      color: AppColors.primary.withOpacity(0.7),
+                      fontFamily: 'SUIT',
+                      color: Colors.white
+                          .withOpacity(0.7),
                     ),
                   ),
                   onTap: () {
@@ -379,16 +615,21 @@ class HomeScreen extends StatelessWidget {
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: AppColors.primary,
+              backgroundColor: Colors.grey[700],
+              foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius:
+                    BorderRadius.circular(12),
               ),
             ),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () =>
+                Navigator.of(context).pop(),
             child: const Text(
               '취소',
-              style: TextStyle(fontFamily: 'SUIT', fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontFamily: 'SUIT',
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -418,167 +659,6 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  void _showAIDifficultyDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surfaceHigh,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: AppColors.tertiary, width: 2),
-        ),
-        title: Text(
-          '🤖 AI 난이도 선택',
-          style: TextStyle(
-            fontFamily: 'Cafe24Ohsquare',
-            color: AppColors.primary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'AI 난이도를 선택하세요:',
-              style: TextStyle(
-                fontFamily: 'Pretendard',
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildDifficultyCard(
-              context,
-              AIDifficulty.easy,
-              '🟢 쉬움',
-              '초보자용 - AI가 무작위로 수를 둡니다',
-              Colors.green,
-            ),
-            const SizedBox(height: 8),
-            _buildDifficultyCard(
-              context,
-              AIDifficulty.normal,
-              '🟡 보통',
-              '중급자용 - 기본적인 공격/수비 전략을 사용합니다',
-              Colors.orange,
-            ),
-            const SizedBox(height: 8),
-            _buildDifficultyCard(
-              context,
-              AIDifficulty.hard,
-              '🔴 어려움',
-              '고급자용 - 고급 전략과 수읽기를 사용합니다',
-              Colors.red,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            style: TextButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
-              '취소',
-              style: TextStyle(fontFamily: 'SUIT', fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDifficultyCard(
-    BuildContext context,
-    AIDifficulty difficulty,
-    String title,
-    String description,
-    Color color,
-  ) {
-    return Card(
-      color: AppColors.secondary.withOpacity(0.3),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppColors.tertiary, width: 2),
-      ),
-      child: ListTile(
-        leading: Icon(Icons.smart_toy, color: color),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontFamily: 'SUIT',
-            color: AppColors.primary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Text(
-          description,
-          style: TextStyle(
-            fontFamily: 'Pretendard',
-            color: AppColors.primary.withOpacity(0.7),
-          ),
-        ),
-        onTap: () {
-          Navigator.of(context).pop();
-          _startGame(
-            context,
-            BoardSize.medium,
-            isAI: true,
-            aiDifficulty: difficulty,
-          );
-        },
-      ),
-    );
-  }
-
-  void _showGameRules(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('게임 규칙'),
-        content: const SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '🎯 목표',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              SizedBox(height: 8),
-              Text('13x13 보드에서 자신의 돌 5개를 연속으로 놓아 5목을 완성하면 승리합니다.'),
-              SizedBox(height: 16),
-              Text(
-                '🎮 게임 방법',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              SizedBox(height: 8),
-              Text(
-                '• 흑돌이 먼저 시작합니다\n• 턴마다 한 개씩 돌을 놓습니다\n• 가로, 세로, 대각선 중 하나로 5개가 연결되면 승리\n• 빈 자리에만 돌을 놓을 수 있습니다',
-              ),
-              SizedBox(height: 16),
-              Text(
-                '🏆 승리 조건',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              SizedBox(height: 8),
-              Text('자신의 돌 5개가 연속으로 연결되면 즉시 승리합니다.\n보드가 가득 차면 무승부입니다.'),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('확인'),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _startGame(
     BuildContext context,
     BoardSize boardSize, {
@@ -588,10 +668,11 @@ class HomeScreen extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CharacterSelectionScreen(
+        builder: (context) => EnhancedGameScreen(
           boardSize: boardSize,
           isAIGame: isAI,
-          aiDifficulty: aiDifficulty,
+          aiDifficulty:
+              aiDifficulty ?? AIDifficulty.normal,
         ),
       ),
     );

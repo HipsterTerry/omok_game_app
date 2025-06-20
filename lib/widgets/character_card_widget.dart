@@ -29,12 +29,12 @@ class CharacterCardWidget
           border: Border.all(
             color: isSelected
                 ? _getTierColor(character.tier)
-                : Colors.grey.withOpacity(0.3),
+                : Colors.grey.withValues(alpha: 0.3),
             width: isSelected ? 3 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(
+              color: Colors.black.withValues(alpha: 
                 0.1,
               ),
               blurRadius: 8,
@@ -44,7 +44,7 @@ class CharacterCardWidget
               BoxShadow(
                 color: _getTierColor(
                   character.tier,
-                ).withOpacity(0.3),
+                ).withValues(alpha: 0.3),
                 blurRadius: 12,
                 spreadRadius: 2,
               ),
@@ -72,16 +72,16 @@ class CharacterCardWidget
                         ? [
                             _getTierColor(
                               character.tier,
-                            ).withOpacity(0.1),
+                            ).withValues(alpha: 0.1),
                             _getTierColor(
                               character.tier,
-                            ).withOpacity(0.05),
+                            ).withValues(alpha: 0.05),
                           ]
                         : [
                             Colors.grey
-                                .withOpacity(0.1),
+                                .withValues(alpha: 0.1),
                             Colors.grey
-                                .withOpacity(
+                                .withValues(alpha: 
                                   0.05,
                                 ),
                           ],
@@ -96,7 +96,7 @@ class CharacterCardWidget
                     borderRadius:
                         BorderRadius.circular(16),
                     color: Colors.black
-                        .withOpacity(0.6),
+                        .withValues(alpha: 0.6),
                   ),
                 ),
 
@@ -152,11 +152,11 @@ class CharacterCardWidget
                                 ? _getTierColor(
                                     character
                                         .tier,
-                                  ).withOpacity(
+                                  ).withValues(alpha: 
                                     0.2,
                                   )
                                 : Colors.grey
-                                      .withOpacity(
+                                      .withValues(alpha: 
                                         0.3,
                                       ),
                             shape:
@@ -227,7 +227,7 @@ class CharacterCardWidget
                                   character
                                       .skill
                                       .type,
-                                ).withOpacity(
+                                ).withValues(alpha: 
                                   0.2,
                                 ),
                             borderRadius:

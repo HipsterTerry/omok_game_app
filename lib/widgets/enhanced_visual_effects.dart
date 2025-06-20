@@ -33,14 +33,14 @@ class CloudContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(
           0xFFF4FEFF,
-        ).withOpacity(0.9),
+        ).withValues(alpha: 0.9),
         borderRadius:
             borderRadius ??
             BorderRadius.circular(24),
         boxShadow: [
           // Soft white shadow for cloud effect
           BoxShadow(
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
             blurRadius: 20,
             offset: const Offset(0, -2),
             spreadRadius: 2,
@@ -49,7 +49,7 @@ class CloudContainer extends StatelessWidget {
           BoxShadow(
             color: const Color(
               0xFFC5F6F9,
-            ).withOpacity(0.3),
+            ).withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
             spreadRadius: 1,
@@ -58,7 +58,7 @@ class CloudContainer extends StatelessWidget {
         border: Border.all(
           color: const Color(
             0xFFC5F6F9,
-          ).withOpacity(0.6),
+          ).withValues(alpha: 0.6),
           width: 0.8,
         ),
       ),
@@ -160,7 +160,7 @@ class _VolumetricPlayButtonState
                             const Color(
                               0xFF89E0F7,
                             ))
-                        .withOpacity(
+                        .withValues(alpha: 
                           0.8,
                         ), // 진한 버전
                   ],
@@ -168,7 +168,7 @@ class _VolumetricPlayButtonState
                 borderRadius:
                     BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.white.withOpacity(
+                  color: Colors.white.withValues(alpha: 
                     0.3,
                   ),
                   width: 2,
@@ -177,7 +177,7 @@ class _VolumetricPlayButtonState
                   // Top inner highlight effect (강화)
                   BoxShadow(
                     color: Colors.white
-                        .withOpacity(0.8),
+                        .withValues(alpha: 0.8),
                     blurRadius: 6,
                     offset: const Offset(0, -4),
                     spreadRadius: 1,
@@ -185,7 +185,7 @@ class _VolumetricPlayButtonState
                   // Main depth shadow (강화)
                   BoxShadow(
                     color: Colors.black
-                        .withOpacity(0.25),
+                        .withValues(alpha: 0.25),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                     spreadRadius: 2,
@@ -193,7 +193,7 @@ class _VolumetricPlayButtonState
                   // Side shadow for depth
                   BoxShadow(
                     color: Colors.black
-                        .withOpacity(0.15),
+                        .withValues(alpha: 0.15),
                     blurRadius: 15,
                     offset: const Offset(2, 4),
                     spreadRadius: 0,
@@ -206,7 +206,7 @@ class _VolumetricPlayButtonState
                                   const Color(
                                     0xFF89E0F7,
                                   ))
-                              .withOpacity(0.5),
+                              .withValues(alpha: 0.5),
                       blurRadius: 20,
                       offset: const Offset(0, 0),
                       spreadRadius: 8,
@@ -267,7 +267,7 @@ class BoardBackground extends StatelessWidget {
           BoxShadow(
             color: const Color(
               0xFFC5F6F9,
-            ).withOpacity(0.3),
+            ).withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
             spreadRadius: 1,
@@ -316,13 +316,13 @@ class AccentText extends StatelessWidget {
               ) // Selection Border 색상
             : const Color(
                 0xFF5C47CE,
-              ).withOpacity(0.8), // 기본 텍스트 반투명
+              ).withValues(alpha: 0.8), // 기본 텍스트 반투명
         shadows: isSelected
             ? [
                 Shadow(
                   color: const Color(
                     0xFF51D4EB,
-                  ).withOpacity(0.3),
+                  ).withValues(alpha: 0.3),
                   blurRadius: 4,
                   offset: const Offset(0, 1),
                 ),
@@ -364,7 +364,7 @@ class CharacterBackground
                 ) // Selection Border
               : const Color(
                   0xFFC5F6F9,
-                ).withOpacity(0.5),
+                ).withValues(alpha: 0.5),
           width: isSelected ? 2 : 1,
         ),
         boxShadow: [
@@ -372,13 +372,13 @@ class CharacterBackground
             BoxShadow(
               color: const Color(
                 0xFF51D4EB,
-              ).withOpacity(0.2),
+              ).withValues(alpha: 0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
               spreadRadius: 2,
             ),
           BoxShadow(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             blurRadius: 6,
             offset: const Offset(0, -1),
             spreadRadius: 0,
@@ -415,7 +415,7 @@ class SoftBlurBackground extends StatelessWidget {
             child: Container(
               color: const Color(
                 0xFFDFFBFF,
-              ).withOpacity(0.3),
+              ).withValues(alpha: 0.3),
             ),
           ),
         ),
