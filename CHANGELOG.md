@@ -1,6 +1,6 @@
 # 📋 변경 로그 (Changelog)
 
-## [2024-12-29] - 🎨 Complete Figma-based UI Design System Unification
+## [2025-06-20] - 🎨 Complete Figma-based UI Design System Unification
 
 ### ✨ 주요 업데이트 (Major Updates)
 
